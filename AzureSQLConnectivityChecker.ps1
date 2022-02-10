@@ -12,13 +12,15 @@ using namespace System.Net
 using namespace System.net.Sockets
 using namespace System.Collections.Generic
 using namespace System.Diagnostics
+using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
+using namespace MySql.Data.MySqlClient
 
 # Parameter region for when script is run directly
 # Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
 # Supports Azure Synapse / Azure SQL Data Warehouse (*.sql.azuresynapse.net / *.database.windows.net)
 # Supports Public Cloud (*.database.windows.net), Azure China (*.database.chinacloudapi.cn), Azure Germany (*.database.cloudapi.de) and Azure Government (*.database.usgovcloudapi.net)
-$Server = '.database.windows.net' # or any other supported FQDN
-# $Database = ''  # Set the name of the database you wish to test, 'master' will be used by default if nothing is set
+$Server = '.mysql.database.azure.com' # or any other supported FQDN
+$Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
 $User = ''  # Set the login username you wish to use, 'AzSQLConnCheckerUser' will be used by default if nothing is set
 $Password = ''  # Set the login password you wish to use, 'AzSQLConnCheckerPassword' will be used by default if nothing is set
 # In case you want to hide the password (like during a remote session), uncomment the 2 lines below (by removing leading #) and password will be asked during execution
@@ -37,7 +39,7 @@ $CollectNetworkTrace = $true  # Set as $true (default) or $false
 $parameters = $args[0]
 if ($null -ne $parameters) {
     $Server = $parameters['Server']
-    # $Database = $parameters['Database']
+    $Database = $parameters['Database']
     $User = $parameters['User']
     $Password = $parameters['Password']
     if ($null -ne $parameters['SendAnonymousUsageData']) {
@@ -75,9 +77,9 @@ if ($null -eq $Password -or '' -eq $Password) {
     $Password = 'AzSQLConnCheckerPassword'
 }
 
-# if ($null -eq $Database -or '' -eq $Database) {
-#     $Database = 'master'
-# }
+if ($null -eq $Database -or '' -eq $Database) {
+    $Database = 'information_schema'
+}
 
 if ($null -eq $Local) {
     $Local = $false
@@ -585,7 +587,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
-        $masterDbConnection = [System.Data.SqlClient.SQLConnection]::new()
+        $masterDbConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
         $masterDbConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $gatewayPort, $Database, $User, $Password)
         $masterDbConnection.Open()
