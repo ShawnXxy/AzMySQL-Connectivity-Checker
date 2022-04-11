@@ -26,7 +26,7 @@ if ($null -eq $Password -or '' -eq $Password) {
 }
 
 if ($null -eq $Database -or '' -eq $Database) {
-    $Database = 'master'
+    $Database = 'information_schema'
 }
 
 if ($null -eq $Local) {
@@ -34,7 +34,7 @@ if ($null -eq $Local) {
 }
 
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'master'
+    $RepositoryBranch = 'xixia'
 }
 
 # PowerShell Container Image Support Start
@@ -211,23 +211,23 @@ if ([string]::IsNullOrEmpty($env:TEMP)) {
 
 try {
     Write-Output '******************************************'
-    Write-Output '      Azure SQL Connectivity Checker      '
+    Write-Output '      Azure MySQL Connectivity Checker      '
     Write-Output '******************************************'
-    Write-Output "WARNING: Reduced version of Azure SQL Connectivity Checker is running due to current environment's nature/limitations."
+    Write-Output "WARNING: Reduced version of Azure MySQL Connectivity Checker is running due to current environment's nature/limitations."
     Write-Output 'WARNING: This version does not create any output files, please copy the output directly from the console.'
     
     if (!$Server -or $Server.Length -eq 0) {
         Write-Output 'The $Server parameter is empty'
-        Write-Output 'Please see more details about how to use this tool at https://github.com/Azure/SQL-Connectivity-Checker'
+        Write-Output 'Please see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
         Write-Output ''
         throw
     }
     
-    if (!$Server.EndsWith('.database.windows.net') `
-            -and !$Server.EndsWith('.database.cloudapi.de') `
-            -and !$Server.EndsWith('.database.chinacloudapi.cn') `
-            -and !$Server.EndsWith('.sql.azuresynapse.net')) {
-        $Server = $Server + '.database.windows.net'
+    if (!$Server.EndsWith('.mysql.database.azure.com') `
+            -and !$Server.EndsWith('.privatelink.mysql.database.azure.com') `
+            -and !$Server.EndsWith('.mysql.database.chinacloudapi.cn') `
+            -and !$Server.EndsWith('.privatelink.mysql.database.chinacloudapi.com')) {
+        $Server = $Server + '.mysql.database.azure.com'
     }
 
     if ($SendAnonymousUsageData) {
