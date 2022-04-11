@@ -85,7 +85,7 @@ if ($null -eq $Local) {
 }
 
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'master'
+    $RepositoryBranch = 'xixia'
 }
 
 $CustomerRunningInElevatedMode = $false
@@ -159,7 +159,7 @@ $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "US Gov Virginia"; Gateways = ("13.72.48.140"); TRs = ('tr8', 'tr260'); Cluster = 'usgoveast1-a.worker.database.usgovcloudapi.net'; }
 )
 
-$TRPorts = 16000..16499
+$TRPorts = 16000..16199
 $summaryLog = New-Object -TypeName "System.Text.StringBuilder"
 $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
@@ -547,17 +547,17 @@ function ValidateDNS([String] $Server) {
     }
 }
 
-function IsManagedInstance([String] $Server) {
-    return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
-}
+# function IsManagedInstance([String] $Server) {
+#     return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
+# }
 
 function IsSqlOnDemand([String] $Server) {
     return [bool]($Server -match '-ondemand.')
 }
 
-function IsManagedInstancePublicEndpoint([String] $Server) {
-    return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
-}
+# function IsManagedInstancePublicEndpoint([String] $Server) {
+#     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
+# }
 
 function HasPrivateLink([String] $Server) {
     [bool]((((Resolve-DnsName $Server) | Where-Object { $_.Name -Match ".privatelink." } | Measure-Object).Count) -gt 0)
@@ -928,8 +928,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         TrackWarningAnonymously 'SQL on-demand'
     }
     else {
-        Write-Host 'Detected as SQL Database/Azure Synapse' -ForegroundColor Yellow
-        TrackWarningAnonymously 'SQL DB/DW'
+        Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
+        TrackWarningAnonymously 'MySQL Single'
     }
 
     $hasPrivateLink = HasPrivateLink $Server
@@ -938,7 +938,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
     if (!$gateway) {
         if ($hasPrivateLink) {
             Write-Host ' This connection seems to be using Private Link, skipping Gateway connectivity tests' -ForegroundColor Yellow
-            TrackWarningAnonymously 'SQLDB|PrivateLink'
+            TrackWarningAnonymously 'MySQL|PrivateLink'
         }
         else {
             $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid gateway address'
@@ -952,7 +952,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'SQLDB|InvalidGatewayIPAddressWarning'
+            TrackWarningAnonymously 'MySQL|InvalidGatewayIPAddressWarning'
         }
 
         RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -1005,7 +1005,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
-                TrackWarningAnonymously ('SQLDB|GatewayTestFailed|' + $gatewayAddress)
+                TrackWarningAnonymously ('MySQL|GatewayTestFailed|' + $gatewayAddress)
             }
         }
 
@@ -1045,13 +1045,13 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 $redirectTestsResultMessage.ToString()
 
                 [void]$redirectTestsResultMessage.AppendLine(' Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
-                [void]$redirectTestsResultMessage.AppendLine(' Please note this was just some tests to check connectivity using the 11000-11999 port range, not your database')
+                [void]$redirectTestsResultMessage.AppendLine(' Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
 
                 if (IsSqlOnDemand $Server) {
                     [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and SQL on-demand is a dynamic serverless environment.')
                 }
                 else {
-                    [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and SQL DB is a dynamic environment.')
+                    [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
                 }
                 $msg = $redirectTestsResultMessage.ToString()
                 Write-Host $msg -Foreground Yellow
@@ -1183,16 +1183,16 @@ function RunConnectivityPolicyTests($port) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
-                if (IsManagedInstance $Server ) {
-                    [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
-                    [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
-                    TrackWarningAnonymously ('Advanced|SQLMI|RCA|Port' + $networkingErrorPort)
-                }
-                else {
-                    [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure SQL IP addresses in the region on ports in the range of 11000-11999.')
-                    [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
-                    TrackWarningAnonymously ('Advanced|SQLDB|RCA|Port' + $networkingErrorPort)
-                }
+                # if (IsManagedInstance $Server ) {
+                #     [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
+                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
+                #     TrackWarningAnonymously ('Advanced|SQLMI|RCA|Port' + $networkingErrorPort)
+                # }
+                # else {
+                #     [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
+                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
+                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
+                # }
             }
         }
         Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
