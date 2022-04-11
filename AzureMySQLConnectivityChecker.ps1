@@ -587,10 +587,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
-        $masterDbConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $masterDbConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $gatewayPort, $Database, $User, $Password)
-        $masterDbConnection.Open()
+        $MySQLConnection.Open()
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
         return $true
@@ -637,7 +637,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             18456 {
                 if ($User -eq 'AzMySQLConnCheckerUser') {
-                    if ($Database -eq 'master') {
+                    if ($Database -eq 'information_schema') {
                         $msg = [string]::Format(" Dummy login attempt reached '{0}' database, login failed as expected.", $Database)
                         Write-Host ($msg)
                         [void]$summaryLog.AppendLine($msg)
@@ -1213,22 +1213,22 @@ function RunConnectivityPolicyTests($port) {
     }
 }
 
-function LookupDatabaseInSysDatabases($Server, $dbPort, $Database, $User, $Password) {
+function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Write-Host
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
-        Write-Host ' Checking if' $Database 'exist in sys.databases:' -ForegroundColor White
-        $masterDbConnection = [System.Data.SqlClient.SQLConnection]::new()
-        $masterDbConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='master';Persist Security Info=False;User ID='{2}';Password='{3}';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $dbPort, $User, $Password)
-        $masterDbConnection.Open()
+        $MySQLConnection.Open()
 
-        $masterDbCommand = New-Object System.Data.SQLClient.SQLCommand
-        $masterDbCommand.Connection = $masterDbConnection
+        $MySQLCommand = New-Object System.Data.SQLClient.SQLCommand
+        $MySQLCommand.Connection = $MySQLConnection
 
-        $masterDbCommand.CommandText = "select count(*) C from sys.databases where name = '" + $Database + "'"
-        $masterDbResult = $masterDbCommand.ExecuteReader()
+        $MySQLCommand.CommandText = "USE " + $Database + ";"
+        $masterDbResult = $MySQLCommand.ExecuteReader()
         $masterDbResultDataTable = new-object 'System.Data.DataTable'
         $masterDbResultDataTable.Load($masterDbResult)
 
@@ -1236,24 +1236,24 @@ function LookupDatabaseInSysDatabases($Server, $dbPort, $Database, $User, $Passw
     }
     Catch {
         Write-Host $_.Exception.Message -ForegroundColor Yellow
-        TrackWarningAnonymously 'LookupDatabaseInSysDatabases|Exception'
+        TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
         return $false
     }
 }
 
 function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Database, $User, $Password) {
     try {
-        $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'master'
+        $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
-        #Test master database
-        $canConnectToMaster = TestConnectionToDatabase $Server $dbPort 'master' $User $Password
+        #Test information_schema database
+        $canConnectToMaster = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToMaster) {
-                $databaseFound = LookupDatabaseInSysDatabases $Server $dbPort $Database $User $Password
+                $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
-                    $msg = '  ' + $Database + ' was found in sys.databases of master database'
+                    $msg = '  ' + $Database + ' was found in MySQL'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg)
 
@@ -1263,7 +1263,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     }
                 }
                 else {
-                    $msg = ' ERROR: ' + $Database + ' was not found in sys.databases!'
+                    $msg = ' ERROR: ' + $Database + ' was not found in MySQL!'
                     Write-Host $msg -Foreground Red
                     [void]$summaryLog.AppendLine()
                     [void]$summaryLog.AppendLine($msg)
@@ -1273,7 +1273,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     $msg = ' Please confirm the database name is correct and/or look at the operation logs to see if the database has been dropped by another user.'
                     Write-Host $msg -Foreground Red
                     [void]$summaryRecommendedAction.AppendLine($msg)
-                    TrackWarningAnonymously 'DatabaseNotFoundInMasterSysDatabases'
+                    TrackWarningAnonymously 'DatabaseNotFoundInMySQL'
                 }
             }
             else {
