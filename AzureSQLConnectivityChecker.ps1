@@ -16,11 +16,10 @@ using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
 # Parameter region for when script is run directly
-# Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
-# Supports Azure Synapse / Azure SQL Data Warehouse (*.sql.azuresynapse.net / *.database.windows.net)
-# Supports Public Cloud (*.database.windows.net), Azure China (*.database.chinacloudapi.cn), Azure Germany (*.database.cloudapi.de) and Azure Government (*.database.usgovcloudapi.net)
+# Supports Single, Flexible (please provide FQDN, MI public endpoint is supported)
+# Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
 $Server = '.mysql.database.azure.com' # or any other supported FQDN
-$Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
+$Database = 'information_schema'  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
 $User = ''  # Set the login username you wish to use, 'AzSQLConnCheckerUser' will be used by default if nothing is set
 $Password = ''  # Set the login password you wish to use, 'AzSQLConnCheckerPassword' will be used by default if nothing is set
 # In case you want to hide the password (like during a remote session), uncomment the 2 lines below (by removing leading #) and password will be asked during execution
@@ -86,7 +85,7 @@ if ($null -eq $Local) {
 }
 
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'xixia'
+    $RepositoryBranch = 'master'
 }
 
 $CustomerRunningInElevatedMode = $false
@@ -409,8 +408,8 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
     }
     Catch {
         $msg = "Error at PrintDNSResults for " + $dnsSource + '(' + $_.Exception.Message + ')'
-        #Write-Host $msg -Foreground Red
-        #Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host $msg -Foreground Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
         TrackWarningAnonymously $msg
     }
 }
@@ -1353,7 +1352,7 @@ try {
 
     try {
         Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '  Azure SQL Connectivity Checker v1.40  ' -ForegroundColor Green
+        Write-Host '  Azure MySQL Connectivity Checker   ' -ForegroundColor Green
         Write-Host '******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'Parameters' -ForegroundColor Yellow
@@ -1386,45 +1385,45 @@ try {
 
         $Server = $Server.Trim()
 
-        if ( (IsManagedInstancePublicEndpoint $Server) -and !($Server -match ',3342')) {
-            $msg = ' You seem to be trying to connect using SQL MI Public Endpoint but port 3342 was not specified'
+#         if ( (IsManagedInstancePublicEndpoint $Server) -and !($Server -match ',3342')) {
+#             $msg = ' You seem to be trying to connect using SQL MI Public Endpoint but port 3342 was not specified'
 
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryLog.AppendLine($msg)
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = ' Note that the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net and that the port used for the connection is 3342.
- Please specify port 3342 by setting Server parameter like: <mi_name>.public.<dns_zone>.database.windows.net,3342'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'ManagedInstancePublicEndpoint|WrongPort'
-            Write-Error '' -ErrorAction Stop
-        }
+#             $msg = ' Note that the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net and that the port used for the connection is 3342.
+#  Please specify port 3342 by setting Server parameter like: <mi_name>.public.<dns_zone>.database.windows.net,3342'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
+#             TrackWarningAnonymously 'ManagedInstancePublicEndpoint|WrongPort'
+#             Write-Error '' -ErrorAction Stop
+#         }
 
-        if ( (IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($Server -match ',3342')) {
-            $msg = ' You seem to be trying to connect using SQLMI Private Endpoint but using Public Endpoint port number (3342)'
+#         if ( (IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($Server -match ',3342')) {
+#             $msg = ' You seem to be trying to connect using SQLMI Private Endpoint but using Public Endpoint port number (3342)'
 
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryLog.AppendLine($msg)
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = ' The private endpoint host name comes in the format <mi_name>.<dns_zone>.database.windows.net and the port used for the connection is 3306.
- Please specify port 3306 by setting Server parameter like: <mi_name>.<dns_zone>.database.windows.net,3306 (or do not specify any port number).
- In case you are trying to use Public Endpoint, note that:
- - the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net
- - the port used for the connection is 3342.'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'ManagedInstancePrivateEndpoint|WrongPort'
-            Write-Error '' -ErrorAction Stop
-        }
+#             $msg = ' The private endpoint host name comes in the format <mi_name>.<dns_zone>.database.windows.net and the port used for the connection is 3306.
+#  Please specify port 3306 by setting Server parameter like: <mi_name>.<dns_zone>.database.windows.net,3306 (or do not specify any port number).
+#  In case you are trying to use Public Endpoint, note that:
+#  - the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net
+#  - the port used for the connection is 3342.'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
+#             TrackWarningAnonymously 'ManagedInstancePrivateEndpoint|WrongPort'
+#             Write-Error '' -ErrorAction Stop
+#         }
 
         $Server = $Server.Replace('tcp:', '')
         $Server = $Server.Replace(',3306', '')
-        $Server = $Server.Replace(',3342', '')
+        # $Server = $Server.Replace(',3342', '')
         $Server = $Server.Replace(';', '')
 
-        if (!$Server -or $Server.Length -eq 0 -or $Server -eq '.database.windows.net') {
+        if (!$Server -or $Server.Length -eq 0 -or $Server -eq '.mysql.database.azure.com') {
             $msg = $ServerNameNotSpecified
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
@@ -1433,12 +1432,11 @@ try {
             Write-Error '' -ErrorAction Stop
         }
 
-        if (!$Server.EndsWith('.database.windows.net') `
-                -and !$Server.EndsWith('.database.cloudapi.de') `
-                -and !$Server.EndsWith('.database.chinacloudapi.cn') `
-                -and !$Server.EndsWith('.database.usgovcloudapi.net') `
-                -and !$Server.EndsWith('.sql.azuresynapse.net')) {
-            $Server = $Server + '.database.windows.net'
+        if (!$Server.EndsWith('.mysql.database.azure.com') `
+                -and !$Server.EndsWith('.mysql.database.chinacloudapi.cn') `
+                -and !$Server.EndsWith('.mysql.database.chinacloudapi.com') `
+                -and !$Server.EndsWith('.privatelink.mysql.database.azure.com')) {
+            $Server = $Server + '.mysql.database.azure.com'
         }
 
         #Print local network configuration
@@ -1605,7 +1603,7 @@ try {
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/azure-sql/database/connect-query-content-reference-guide' -ForegroundColor Yellow
             Write-Host
-            Write-Host 'If you have any feedback/issue/request let us know at https://github.com/Azure/SQL-Connectivity-Checker/issues' -ForegroundColor Green
+            Write-Host 'If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/SQL-Connectivity-Checker/issues' -ForegroundColor Green
 
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
