@@ -99,13 +99,13 @@ if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTr
 
 # PowerShell Container Image Support End
 
-function IsManagedInstance([String] $Server) {
-    return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
-}
+# function IsManagedInstance([String] $Server) {
+#     return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
+# }
 
-function IsManagedInstancePublicEndpoint([String] $Server) {
-    return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
-}
+# function IsManagedInstancePublicEndpoint([String] $Server) {
+#     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
+# }
 
 function SendAnonymousUsageData {
     try {
@@ -276,10 +276,7 @@ try {
             }
         }
     
-        $Port = 1433
-        if (IsManagedInstancePublicEndpoint $Server) {
-            $Port = 3342
-        }
+        $Port = 3306
     
         $tdsClient = [TDSClient.TDS.Client.TDSSQLTestClient]::new($Server, $Port, $User, $Password, $Database, $encryption)
         $tdsClient.Connect()

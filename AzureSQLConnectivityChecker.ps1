@@ -101,7 +101,7 @@ else {
     }
 }
 
-$SQLDBGateways = @(
+$MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "Australia Central"; Gateways = ("20.36.105.0"); TRs = ('tr136'); Cluster = 'australiacentral1-a.worker.database.windows.net'; }
     New-Object PSObject -Property @{Region = "Australia Central2"; Gateways = ("20.36.113.0"); TRs = ('tr50', 'tr51'); Cluster = 'australiacentral2-a.worker.database.windows.net'; }
     New-Object PSObject -Property @{Region = "Australia East"; Gateways = ("13.75.149.87", "40.79.161.1"); TRs = ('tr15', 'tr596', 'tr1240', 'tr1999', 'tr2726', 'tr3782', 'tr3899', 'tr4588'); Cluster = 'australiaeast1-a.worker.database.windows.net'; }
@@ -781,102 +781,102 @@ function PrintLocalNetworkConfiguration() {
     }
 }
 
-function RunSqlMIPublicEndpointConnectivityTests($resolvedAddress) {
-    Try {
-        $msg = 'Detected as Managed Instance using Public Endpoint'
-        Write-Host $msg -ForegroundColor Yellow
-        [void]$summaryLog.AppendLine($msg)
+# function RunSqlMIPublicEndpointConnectivityTests($resolvedAddress) {
+#     Try {
+#         $msg = 'Detected as Managed Instance using Public Endpoint'
+#         Write-Host $msg -ForegroundColor Yellow
+#         [void]$summaryLog.AppendLine($msg)
 
-        Write-Host 'Public Endpoint connectivity test:' -ForegroundColor Green
-        $testResult = Test-NetConnection $resolvedAddress -Port 3342 -WarningAction SilentlyContinue
+#         Write-Host 'Public Endpoint connectivity test:' -ForegroundColor Green
+#         $testResult = Test-NetConnection $resolvedAddress -Port 3342 -WarningAction SilentlyContinue
 
-        if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP test succeed' -ForegroundColor Green
-            PrintAverageConnectionTime $resolvedAddress 3342
-            $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 succeed'
-            [void]$summaryLog.AppendLine($msg)
-            TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestSucceeded'
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3342' $Database $User $Password
-        }
-        else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 FAILED'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
+#         if ($testResult.TcpTestSucceeded) {
+#             Write-Host ' -> TCP test succeed' -ForegroundColor Green
+#             PrintAverageConnectionTime $resolvedAddress 3342
+#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 succeed'
+#             [void]$summaryLog.AppendLine($msg)
+#             TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestSucceeded'
+#             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3342' $Database $User $Password
+#         }
+#         else {
+#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 FAILED'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryLog.AppendLine($msg)
 
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3342 (SQL MI Public Endpoint)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3342 (SQL MI Public Endpoint)'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = $SQLMI_PublicEndPoint_GatewayTestFailed
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             $msg = $SQLMI_PublicEndPoint_GatewayTestFailed
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestFailed'
-        }
-    }
-    Catch {
-        Write-Host "Error at RunSqlMIPublicEndpointConnectivityTests" -Foreground Red
-        Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunSqlMIPublicEndpointConnectivityTests|Exception'
-    }
-}
+#             TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestFailed'
+#         }
+#     }
+#     Catch {
+#         Write-Host "Error at RunSqlMIPublicEndpointConnectivityTests" -Foreground Red
+#         Write-Host $_.Exception.Message -ForegroundColor Red
+#         TrackWarningAnonymously 'RunSqlMIPublicEndpointConnectivityTests|Exception'
+#     }
+# }
 
-function RunSqlMIVNetConnectivityTests($resolvedAddress) {
-    Try {
-        Write-Host 'Detected as Managed Instance' -ForegroundColor Yellow
-        $hasPrivateLink = HasPrivateLink $Server
-        if ($hasPrivateLink) {
-            Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
-            TrackWarningAnonymously 'SQLMI|PrivateLink'
-        }
-        Write-Host
-        Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
-        $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
+# function RunSqlMIVNetConnectivityTests($resolvedAddress) {
+#     Try {
+#         Write-Host 'Detected as Managed Instance' -ForegroundColor Yellow
+#         $hasPrivateLink = HasPrivateLink $Server
+#         if ($hasPrivateLink) {
+#             Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
+#             TrackWarningAnonymously 'SQLMI|PrivateLink'
+#         }
+#         Write-Host
+#         Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
+#         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
-        if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP test succeed' -ForegroundColor Green
-            PrintAverageConnectionTime $resolvedAddress 3306
-            TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestSucceeded'
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            return $true
-        }
-        else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            Write-Host
-            Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
-            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-            If ($ProcessError) {
-                Write-Host '  Could not to get IP routes for this interface'
-            }
-            Write-Host
+#         if ($testResult.TcpTestSucceeded) {
+#             Write-Host ' -> TCP test succeed' -ForegroundColor Green
+#             PrintAverageConnectionTime $resolvedAddress 3306
+#             TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestSucceeded'
+#             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+#             return $true
+#         }
+#         else {
+#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+#             Write-Host
+#             Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
+#             Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+#             If ($ProcessError) {
+#                 Write-Host '  Could not to get IP routes for this interface'
+#             }
+#             Write-Host
 
-            $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3306 FAILED'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine()
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3306 FAILED'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryLog.AppendLine()
+#             [void]$summaryLog.AppendLine($msg)
+#             [void]$summaryRecommendedAction.AppendLine()
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = ' Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             $msg = ' Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = $SQLMI_GatewayTestFailed
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#             $msg = $SQLMI_GatewayTestFailed
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestFailed'
-            return $false
-        }
-    }
-    Catch {
-        Write-Host "Error at RunSqlMIVNetConnectivityTests" -Foreground Red
-        Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunSqlMIVNetConnectivityTests|Exception'
-        return $false
-    }
-}
+#             TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestFailed'
+#             return $false
+#         }
+#     }
+#     Catch {
+#         Write-Host "Error at RunSqlMIVNetConnectivityTests" -Foreground Red
+#         Write-Host $_.Exception.Message -ForegroundColor Red
+#         TrackWarningAnonymously 'RunSqlMIVNetConnectivityTests|Exception'
+#         return $false
+#     }
+# }
 
 function PrintAverageConnectionTime($addressList, $port) {
     Write-Host ' Printing average connection times for 5 connection attempts:'
@@ -921,7 +921,7 @@ function PrintAverageConnectionTime($addressList, $port) {
     }
 }
 
-function RunSqlDBConnectivityTests($resolvedAddress) {
+function RunMySQLConnectivityTests($resolvedAddress) {
 
     if (IsSqlOnDemand $Server) {
         Write-Host 'Detected as SQL on-demand endpoint' -ForegroundColor Yellow
@@ -933,7 +933,7 @@ function RunSqlDBConnectivityTests($resolvedAddress) {
     }
 
     $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $SQLDBGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
     if (!$gateway) {
         if ($hasPrivateLink) {
@@ -1057,7 +1057,7 @@ function RunSqlDBConnectivityTests($resolvedAddress) {
                 Write-Host $msg -Foreground Yellow
                 [void]$summaryLog.AppendLine($msg)
 
-                TrackWarningAnonymously ('SQLDB|Redirect|' + $gateway.Region + '|' + $redirectSucceeded + '/' + $redirectTests)
+                TrackWarningAnonymously ('MySQL|Redirect|' + $gateway.Region + '|' + $redirectSucceeded + '/' + $redirectTests)
 
                 if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
                     $msg = ' Based on the result it is likely the Redirect Policy will work from this machine'
@@ -1070,13 +1070,13 @@ function RunSqlDBConnectivityTests($resolvedAddress) {
                         $msg = ' Based on the result the Redirect Policy will NOT work from this machine'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
-                        TrackWarningAnonymously 'SQLDB|Redirect|AllTestsFailed'
+                        TrackWarningAnonymously 'MySQL|Redirect|AllTestsFailed'
                     }
                     else {
                         $msg = ' Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
-                        TrackWarningAnonymously ('SQLDB|Redirect|MoreThanHalfFailed|' + $redirectSucceeded + '/' + $redirectTests)
+                        TrackWarningAnonymously ('MySQL|Redirect|MoreThanHalfFailed|' + $redirectSucceeded + '/' + $redirectTests)
                     }
 
                     [void]$summaryRecommendedAction.AppendLine($msg)
@@ -1309,8 +1309,8 @@ function TrackWarningAnonymously ([String] $warningCode) {
         }
     }
     Catch {
-        #Write-Host 'TrackWarningAnonymously exception:'
-        #Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host 'TrackWarningAnonymously exception:'
+        Write-Host $_.Exception.Message -ForegroundColor Red
     }
 }
 
@@ -1324,7 +1324,7 @@ try {
     Clear-Host
     $canWriteFiles = $true
     try {
-        $logsFolderName = 'AzureSQLConnectivityCheckerResults'
+        $logsFolderName = 'AzureMySQLConnectivityCheckerResults'
         Set-Location -Path $env:TEMP
         If (!(Test-Path $logsFolderName)) {
             New-Item $logsFolderName -ItemType directory | Out-Null
@@ -1338,7 +1338,7 @@ try {
         New-Item $outFolderName -ItemType directory | Out-Null
         Set-Location $outFolderName
 
-        $file = '.\Log_' + (SanitizeString ($Server.Replace('.database.windows.net', ''))) + '_' + (SanitizeString $Database) + '_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.txt'
+        $file = '.\Log_' + (SanitizeString ($Server.Replace('.mysql.database.azure.com', ''))) + '_' + (SanitizeString $Database) + '_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.txt'
         Start-Transcript -Path $file
         Write-Host '..TranscriptStart..'
     }
@@ -1347,12 +1347,12 @@ try {
         Write-Host Warning: Cannot write log file -ForegroundColor Yellow
     }
 
-    TrackWarningAnonymously 'v1.40'
+    TrackWarningAnonymously 'v1.0'
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + '|' + $PSVersionTable.Platform + '|' + $PSVersionTable.OS )
 
     try {
         Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '  Azure MySQL Connectivity Checker   ' -ForegroundColor Green
+        Write-Host '  Azure MySQL Connectivity Checker v1.0  ' -ForegroundColor Green
         Write-Host '******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'Parameters' -ForegroundColor Yellow
@@ -1465,18 +1465,18 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-            if (IsManagedInstancePublicEndpoint $Server) {
-                $msg = $DNSResolutionFailedSQLMIPublicEndpoint
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'DNSResolutionFailedSQLMIPublicEndpoint'
-            }
-            else {
-                $msg = $DNSResolutionFailed
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'DNSResolutionFailed'
-            }
+            # if (IsManagedInstancePublicEndpoint $Server) {
+            #     $msg = $DNSResolutionFailedSQLMIPublicEndpoint
+            #     Write-Host $msg -Foreground Red
+            #     [void]$summaryRecommendedAction.AppendLine($msg)
+            #     TrackWarningAnonymously 'DNSResolutionFailedSQLMIPublicEndpoint'
+            # }
+            # else {
+            #     $msg = $DNSResolutionFailed
+            #     Write-Host $msg -Foreground Red
+            #     [void]$summaryRecommendedAction.AppendLine($msg)
+            #     TrackWarningAnonymously 'DNSResolutionFailed'
+            # }
             Write-Error '' -ErrorAction Stop
         }
         $resolvedAddress = $dnsResult.AddressList[0].IPAddressToString
@@ -1484,20 +1484,22 @@ try {
 
         #Run connectivity tests
         Write-Host
-        if (IsManagedInstance $Server) {
-            if (IsManagedInstancePublicEndpoint $Server) {
-                RunSqlMIPublicEndpointConnectivityTests $resolvedAddress
-                $dbPort = 3342
-            }
-            else {
-                if (!(RunSqlMIVNetConnectivityTests $resolvedAddress)) {
-                    throw
-                }
-            }
-        }
-        else {
-            RunSqlDBConnectivityTests $resolvedAddress
-        }
+        # if (IsManagedInstance $Server) {
+        #     if (IsManagedInstancePublicEndpoint $Server) {
+        #         RunSqlMIPublicEndpointConnectivityTests $resolvedAddress
+        #         $dbPort = 3342
+        #     }
+        #     else {
+        #         if (!(RunSqlMIVNetConnectivityTests $resolvedAddress)) {
+        #             throw
+        #         }
+        #     }
+        # }
+        # else {
+        #     RunMySQLConnectivityTests $resolvedAddress
+        # }
+
+        RunMySQLConnectivityTests $resolvedAddress
 
         Write-Host
         [void]$summaryLog.AppendLine()

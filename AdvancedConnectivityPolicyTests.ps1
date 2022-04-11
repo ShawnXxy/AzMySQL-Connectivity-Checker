@@ -3,6 +3,7 @@ using namespace System.Net
 using namespace System.net.Sockets
 using namespace System.Collections.Generic
 using namespace System.Diagnostics
+using namespace MySql.Data.MySqlClient
 
 # PowerShell Container Image Support Start
 
