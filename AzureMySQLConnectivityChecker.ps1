@@ -176,16 +176,14 @@ $DNSResolutionGotMultipleAddresses = ' While testing DNS resolution from multipl
  If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
  Please review the DNS results.'
 
-$DNSResolutionGotMultipleAddressesMI = ' While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
- SQL Managed Instance IP address may change, see more at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/frequently-asked-questions-faq#connectivity
- Configuring a specific IP address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
- Please review the DNS results.'
+# $DNSResolutionGotMultipleAddressesMI = ' While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
+#  SQL Managed Instance IP address may change, see more at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/frequently-asked-questions-faq#connectivity
+#  Configuring a specific IP address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
+#  Please review the DNS results.'
 
-$DNSResolutionFailedSQLMIPublicEndpoint = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
- You seem to be trying to connect using Public Endpoint, this error can be caused if the Public Endpoint is Disabled.
- See how to enable public endpoint for your managed instance at https://aka.ms/mimanage-publicendpoint
- If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
- or a client-side networking issue that you will need to pursue with your local network administrator.'
+# $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
+#  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
+#  or a client-side networking issue that you will need to pursue with your local network administrator.'
 
 $MySQL_InvalidGatewayIPAddress = ' In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
  In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
@@ -214,51 +212,37 @@ $MySQL_Redirect = " Servers in SQL Database and Azure Synapse support Redirect, 
  If you are using Redirect, failure to reach ports in the range of 11000-11999 is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
  Please check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy"
 
-$SQLMI_GatewayTestFailed = " You can connect to SQL Managed Instance via private endpoint if you are connecting from one of the following:
+$AzureMySQLFlex_VNetTestFailed = " You can connect to Azure MySQL Flexible Server via private address if you are connecting from one of the following:
  - machine inside the same virtual network
  - machine in a peered virtual network
  - machine that is network connected by VPN or Azure ExpressRoute
 
- Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+ Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
  We strongly recommend you request assistance from your network administrator, some validations you may do together are:
 
- - The host name is valid and port used for the connection is 3306, format is tcp:<mi_name>.<dns_zone>.database.windows.net,3306
+ - The host name is valid and port used for the connection is 3306, format is tcp:<servername>.mysql.database.azure.com,3306
 
  - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
 
  - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
 
- - If the connection type is Redirect:
-    - Ensure the Network Security Groups (NSG) on the managed instance subnet allows access on ports **11000-11999**.
-    - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on ports **11000-11999**.
-
  - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
 
- - Routing is properly configured, and asymmetric routing is avoided. 
-   A route with the 0.0.0.0/0 address prefix instructs Azure how to route traffic destined for an IP address that is not within the address prefix of any other route in a subnet's route table. When a subnet is created, Azure creates a default route to the 0.0.0.0/0 address prefix, with the **Internet** next hop type. Check if this route was overridden. See the details about impact of changes on this default route at https://docs.microsoft.com/azure/virtual-network/virtual-networks-udr-overview#default-route
+ - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
 
- - If you are using virtual network peering between different regions, ensure that **global virtual network peering** is supported. See more at https://docs.microsoft.com/azure/azure-sql/managed-instance/connect-application-instance#connect-inside-a-different-vnet
-
- - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/azure/azure-sql/managed-instance/connect-application-instance#connect-from-on-premises
-
-Learn more about how to connect your application to Azure SQL Managed Instance at https://docs.microsoft.com/azure/azure-sql/managed-instance/connect-application-instance
+Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
 "
 
-$SQLMI_PublicEndPoint_GatewayTestFailed = " This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
  We strongly recommend you request assistance from your network administrator, some validations you may do together are:
 
- - You have Public Endpoint enabled, see https://docs.microsoft.com/azure/azure-sql/managed-instance/public-endpoint-configure#enabling-public-endpoint-for-a-managed-instance-in-the-azure-portal
+ - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 
  - You have allowed public endpoint traffic on the network security group, see https://docs.microsoft.com/azure/azure-sql/managed-instance/public-endpoint-configure#allow-public-endpoint-traffic-on-the-network-security-group
 
- - The host name contains .public. and that port used in the connection string is 3342, format is <mi_name>.public.<dns_zone>.database.windows.net,3342
-
  - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.).
 
- - Routing is properly configured, and asymmetric routing is avoided. 
-   A route with the 0.0.0.0/0 address prefix instructs Azure how to route traffic destined for an IP address that is not within the address prefix of any other route in a subnet's route table. When a subnet is created, Azure creates a default route to the 0.0.0.0/0 address prefix, with the **Internet** next hop type. Check if this route was overridden. See the details about impact of changes on this default route at https://docs.microsoft.com/azure/virtual-network/virtual-networks-udr-overview#default-route
-
-See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/public-endpoint-configure
+See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
 
 $AAD_login_windows_net = ' If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
@@ -277,18 +261,18 @@ $error18456RecommendedSolution = ' This error indicates that the login request w
  - Connections rejected due to DoSGuard protection: DoSGuard actively tracks failed logins from IP addresses. If there are multiple failed logins from a specific IP address within a period of time, the IP address is blocked from accessing any resources in the service for a pre-defined time period even if the password and other permissions are correct.'
 
 $ServerNameNotSpecified = ' The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
- You can see more details about how to use this tool at https://github.com/Azure/SQL-Connectivity-Checker'
+ You can see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
 
 $followUpMessage = ' If this is a database engine error code you may see more about it at https://docs.microsoft.com/sql/relational-databases/errors-events/database-engine-events-and-errors'
 
-# $SQLMI_PrivateEndpoint_Error40532 = " Error 40532 is usually related to one of the following scenarios:
-# - The username (login) contains the '@' symbol (e.g., a login of the form 'user@mydomain.com').
-#   You can't currently login with usernames containing these characters. We are working on removing this limitation.
-# - Trying to connect using the IP address instead of the FQDN of your server.
-#   Connecting to a managed instance using an IP address is not supported. A Managed Instance's host name maps to the load balancer in front of the Managed Instance's virtual cluster. As one virtual cluster can host multiple Managed Instances, a connection can't be routed to the proper Managed Instance without specifying its name.
-# - The IP address associated with your managed instance changed but you DNS record still points to previous address.
-#   The managed instance service doesn't claim static IP address support, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime.
-# "
+$SQLMI_PrivateEndpoint_Error40532 = " Error 40532 is usually related to one of the following scenarios:
+- The username (login) contains the '@' symbol (e.g., a login of the form 'user@mydomain.com').
+  You can't currently login with usernames containing these characters. We are working on removing this limitation.
+- Trying to connect using the IP address instead of the FQDN of your server.
+  Connecting to a managed instance using an IP address is not supported. A Managed Instance's host name maps to the load balancer in front of the Managed Instance's virtual cluster. As one virtual cluster can host multiple Managed Instances, a connection can't be routed to the proper Managed Instance without specifying its name.
+- The IP address associated with your managed instance changed but you DNS record still points to previous address.
+  The managed instance service doesn't claim static IP address support, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime.
+"
 
 $SQLDB_Error40532 = ' Error 40532 is usually related to one of the following scenarios:
 
@@ -315,9 +299,9 @@ $DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, no
 Logins for Azure SQL Database or Azure Synapse Analytics can land on any of the Gateways in a region.
 For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
 
-$DNSResolutionDNSfromHostsFileMI = "We detected a configuration via hosts file, note that Managed instance doesn't have a static IP address.
-The managed instance service doesn't claim static IP address support and reserves the right to change it without notice as a part of regular maintenance cycles.
-For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
+# $DNSResolutionDNSfromHostsFileMI = "We detected a configuration via hosts file, note that Managed instance doesn't have a static IP address.
+# The managed instance service doesn't claim static IP address support and reserves the right to change it without notice as a part of regular maintenance cycles.
+# For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
 
 # PowerShell Container Image Support Start
 
@@ -477,12 +461,12 @@ function ValidateDNS([String] $Server) {
             }
 
             if ($DNSfromHostsAddress) {
-                if (IsManagedInstance $Server) {
-                    $msg = $DNSResolutionDNSfromHostsFileMI
-                }
-                else {
-                    $msg = $DNSResolutionDNSfromHostsFile
-                }
+                # if (IsMySQLFlexPublic $Server) {
+                #     $msg = $DNSResolutionDNSfromHostsFileMI
+                # }
+                # else {
+                #     $msg = $DNSResolutionDNSfromHostsFile
+                # }
                 Write-Host
                 Write-Host $msg -ForegroundColor Red
                 [void]$summaryLog.AppendLine()
@@ -525,16 +509,16 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 TrackWarningAnonymously $msg
 
-                if (IsManagedInstance $Server) {
-                    $msg = $DNSResolutionGotMultipleAddressesMI
-                    Write-Host $msg -Foreground Red
-                    [void]$summaryRecommendedAction.AppendLine($msg)
-                }
-                else {
-                    $msg = $DNSResolutionGotMultipleAddresses
-                    Write-Host $msg -Foreground Red
-                    [void]$summaryRecommendedAction.AppendLine($msg)
-                }
+                # if (IsMySQLFlexPublic $resolvedAddress) {
+                #     $msg = $DNSResolutionGotMultipleAddressesMI
+                #     Write-Host $msg -Foreground Red
+                #     [void]$summaryRecommendedAction.AppendLine($msg)
+                # }
+                # else {
+                #     $msg = $DNSResolutionGotMultipleAddresses
+                #     Write-Host $msg -Foreground Red
+                #     [void]$summaryRecommendedAction.AppendLine($msg)
+                # }
             }
         }
         else {
@@ -556,8 +540,24 @@ function ValidateDNS([String] $Server) {
 # }
 
 # function IsManagedInstancePublicEndpoint([String] $Server) {
-#     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
+#     return [bool]((IsMySQLFlexPublic$Server) -and ($Server -match '.public.'))
 # }
+
+function IsMySQLFlexPublic([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and (!$hasPrivateLink))
+}
+
+function IsMySQLFlexVNet([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and ($hasPrivateLink))
+}
 
 function HasPrivateLink([String] $Server) {
     [bool]((((Resolve-DnsName $Server) | Where-Object { $_.Name -Match ".privatelink." } | Measure-Object).Count) -gt 0)
@@ -580,6 +580,7 @@ function FilterTranscript() {
         Write-Host $_.Exception.Message -ForegroundColor Red
     }
 }
+
 
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
     Write-Host
@@ -610,7 +611,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 [void]$summaryRecommendedAction.AppendLine('  We suggest you:')
                 [void]$summaryRecommendedAction.AppendLine('  - Verify if you are using an updated version of the client driver or tool.')
                 [void]$summaryRecommendedAction.AppendLine('  - Verify if you can connect using a different client driver or tool.')
-                if (IsManagedInstance $Server ) {
+                if (IsMySQLFlexPublic $resolvedAddress ) {
                     [void]$summaryRecommendedAction.AppendLine( '  See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connect-application-instance#required-versions-of-drivers-and-tools')
                 }
                 [void]$summaryRecommendedAction.AppendLine('  - Check with your local network administrator for client-side networking issues.')
@@ -665,7 +666,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 }
             }
             40532 {
-                if (IsManagedInstance $Server ) {
+                if (IsMySQLFlexPublic $resolvedAddress) {
                     if ($gatewayPort -eq 3342) {
                         $msg = ' You seem to be trying to connect to MI using Public Endpoint but Public Endpoint may be disabled'
                         Write-Host ($msg) -ForegroundColor Red
@@ -781,102 +782,102 @@ function PrintLocalNetworkConfiguration() {
     }
 }
 
-# function RunSqlMIPublicEndpointConnectivityTests($resolvedAddress) {
-#     Try {
-#         $msg = 'Detected as Managed Instance using Public Endpoint'
-#         Write-Host $msg -ForegroundColor Yellow
-#         [void]$summaryLog.AppendLine($msg)
+function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
+    Try {
+        $msg = 'Detected as MySQL FLexible Server using Public Endpoint'
+        Write-Host $msg -ForegroundColor Yellow
+        [void]$summaryLog.AppendLine($msg)
 
-#         Write-Host 'Public Endpoint connectivity test:' -ForegroundColor Green
-#         $testResult = Test-NetConnection $resolvedAddress -Port 3342 -WarningAction SilentlyContinue
+        Write-Host 'Public Endpoint connectivity test:' -ForegroundColor Green
+        $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
-#         if ($testResult.TcpTestSucceeded) {
-#             Write-Host ' -> TCP test succeed' -ForegroundColor Green
-#             PrintAverageConnectionTime $resolvedAddress 3342
-#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 succeed'
-#             [void]$summaryLog.AppendLine($msg)
-#             TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestSucceeded'
-#             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3342' $Database $User $Password
-#         }
-#         else {
-#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3342 FAILED'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryLog.AppendLine($msg)
+        if ($testResult.TcpTestSucceeded) {
+            Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            PrintAverageConnectionTime $resolvedAddress 3306
+            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 succeed'
+            [void]$summaryLog.AppendLine($msg)
+            TrackWarningAnonymously 'MySQL|FlexPublic|TestSucceeded'
+            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+        }
+        else {
+            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine($msg)
 
-#             $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3342 (SQL MI Public Endpoint)'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
+            $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
 
-#             $msg = $SQLMI_PublicEndPoint_GatewayTestFailed
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
+            $msg = $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
 
-#             TrackWarningAnonymously 'SQLMI|PublicEndpoint|GatewayTestFailed'
-#         }
-#     }
-#     Catch {
-#         Write-Host "Error at RunSqlMIPublicEndpointConnectivityTests" -Foreground Red
-#         Write-Host $_.Exception.Message -ForegroundColor Red
-#         TrackWarningAnonymously 'RunSqlMIPublicEndpointConnectivityTests|Exception'
-#     }
-# }
+            TrackWarningAnonymously 'MySQL|FlexPublic|TestFailed'
+        }
+    }
+    Catch {
+        Write-Host "Error at RunMySQLFlexPublicConnectivityTests" -Foreground Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
+        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests|Exception'
+    }
+}
 
-# function RunSqlMIVNetConnectivityTests($resolvedAddress) {
-#     Try {
-#         Write-Host 'Detected as Managed Instance' -ForegroundColor Yellow
-#         $hasPrivateLink = HasPrivateLink $Server
-#         if ($hasPrivateLink) {
-#             Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
-#             TrackWarningAnonymously 'SQLMI|PrivateLink'
-#         }
-#         Write-Host
-#         Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
-#         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
+function RunMySQLFlexVNetConnectivityTests($resolvedAddress) {
+    Try {
+        Write-Host 'Detected as Azure MySQL FLexible Server VNET Integrated' -ForegroundColor Yellow
+        $hasPrivateLink = HasPrivateLink $Server
+        if ($hasPrivateLink) {
+            Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
+            TrackWarningAnonymously 'MySQL|FlexPrivate'
+        }
+        Write-Host
+        Write-Host 'Connectivity tests (please wait):' -ForegroundColor Green
+        $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
-#         if ($testResult.TcpTestSucceeded) {
-#             Write-Host ' -> TCP test succeed' -ForegroundColor Green
-#             PrintAverageConnectionTime $resolvedAddress 3306
-#             TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestSucceeded'
-#             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-#             return $true
-#         }
-#         else {
-#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-#             Write-Host
-#             Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
-#             Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-#             If ($ProcessError) {
-#                 Write-Host '  Could not to get IP routes for this interface'
-#             }
-#             Write-Host
+        if ($testResult.TcpTestSucceeded) {
+            Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            PrintAverageConnectionTime $resolvedAddress 3306
+            TrackWarningAnonymously 'MySQL|FlexPrivate|TestSucceeded'
+            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            return $true
+        }
+        else {
+            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            Write-Host
+            Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
+            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            If ($ProcessError) {
+                Write-Host '  Could not to get IP routes for this interface'
+            }
+            Write-Host
 
-#             $msg = ' Gateway connectivity to ' + $resolvedAddress + ':3306 FAILED'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryLog.AppendLine()
-#             [void]$summaryLog.AppendLine($msg)
-#             [void]$summaryRecommendedAction.AppendLine()
-#             [void]$summaryRecommendedAction.AppendLine($msg)
+            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine()
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
 
-#             $msg = ' Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
+            $msg = ' Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
 
-#             $msg = $SQLMI_GatewayTestFailed
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
+            $msg = $AzureMySQLFlex_VNetTestFailed
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
 
-#             TrackWarningAnonymously 'SQLMI|PrivateEndpoint|GatewayTestFailed'
-#             return $false
-#         }
-#     }
-#     Catch {
-#         Write-Host "Error at RunSqlMIVNetConnectivityTests" -Foreground Red
-#         Write-Host $_.Exception.Message -ForegroundColor Red
-#         TrackWarningAnonymously 'RunSqlMIVNetConnectivityTests|Exception'
-#         return $false
-#     }
-# }
+            TrackWarningAnonymously 'MySQL|FlexPrivate|TestFailed'
+            return $false
+        }
+    }
+    Catch {
+        Write-Host "Error at RunMySQLFlexVNetConnectivityTests" -Foreground Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
+        TrackWarningAnonymously 'RunMySQLFlexVNetConnectivityTests|Exception'
+        return $false
+    }
+}
 
 function PrintAverageConnectionTime($addressList, $port) {
     Write-Host ' Printing average connection times for 5 connection attempts:'
@@ -910,9 +911,9 @@ function PrintAverageConnectionTime($addressList, $port) {
         }
 
         $ilb = ''
-        # if ((IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($ipAddress -eq $resolvedAddress)) {
-        #     $ilb = ' [ilb]'
-        # }
+        if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+            $ilb = ' [ilb]'
+        }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
@@ -941,7 +942,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             TrackWarningAnonymously 'MySQL|PrivateLink'
         }
         elseif (!$hasPrivateLink -and $resolvedAddress ) {
-            Write-Host ' This connection seems to be using MySQL Flexible Public Connection, skipping Gateway connectivity tests' -ForegroundColor YellowDB
+            Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQL|MeruPublic'
         }
         else {
@@ -1189,16 +1190,16 @@ function RunConnectivityPolicyTests($port) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
-                # if (IsManagedInstance $Server ) {
-                #     [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
-                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
-                #     TrackWarningAnonymously ('Advanced|SQLMI|RCA|Port' + $networkingErrorPort)
-                # }
-                # else {
-                #     [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
-                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
-                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
-                # }
+                if (IsMySQLFlexPublic $resolvedAddress ) {
+                    [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
+                    [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
+                    TrackWarningAnonymously ('Advanced|SQLMI|RCA|Port' + $networkingErrorPort)
+                }
+                else {
+                    [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
+                    [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
+                    TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
+                }
             }
         }
         Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
@@ -1391,7 +1392,7 @@ try {
 
         $Server = $Server.Trim()
 
-#         if ( (IsManagedInstancePublicEndpoint $Server) -and !($Server -match ',3342')) {
+#         if ( (IsManagedInstancePublicEndpoint $Server) -and !($Server -match ',3306')) {
 #             $msg = ' You seem to be trying to connect using SQL MI Public Endpoint but port 3342 was not specified'
 
 #             Write-Host $msg -Foreground Red
@@ -1406,7 +1407,7 @@ try {
 #             Write-Error '' -ErrorAction Stop
 #         }
 
-#         if ( (IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($Server -match ',3342')) {
+#         if ( (IsMySQLFlexPublic $resolvedAddress) -and !(IsManagedInstancePublicEndpoint $Server) -and ($Server -match ',3342')) {
 #             $msg = ' You seem to be trying to connect using SQLMI Private Endpoint but using Public Endpoint port number (3342)'
 
 #             Write-Host $msg -Foreground Red
@@ -1471,18 +1472,18 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-            # if (IsManagedInstancePublicEndpoint $Server) {
-            #     $msg = $DNSResolutionFailedSQLMIPublicEndpoint
-            #     Write-Host $msg -Foreground Red
-            #     [void]$summaryRecommendedAction.AppendLine($msg)
-            #     TrackWarningAnonymously 'DNSResolutionFailedSQLMIPublicEndpoint'
-            # }
-            # else {
-            #     $msg = $DNSResolutionFailed
-            #     Write-Host $msg -Foreground Red
-            #     [void]$summaryRecommendedAction.AppendLine($msg)
-            #     TrackWarningAnonymously 'DNSResolutionFailed'
-            # }
+            if (IsMySQLFlexPublic $resolvedAddress) {
+                $msg = $DNSResolutionFailedAzureMySQLFlexPublic
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg)
+                TrackWarningAnonymously 'DNSResolutionFailedAzureMySQLFlexPublic'
+            }
+            else {
+                $msg = $DNSResolutionFailed
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg)
+                TrackWarningAnonymously 'DNSResolutionFailed'
+            }
             Write-Error '' -ErrorAction Stop
         }
         $resolvedAddress = $dnsResult.AddressList[0].IPAddressToString
@@ -1490,20 +1491,15 @@ try {
 
         #Run connectivity tests
         Write-Host
-        # if (IsManagedInstance $Server) {
-        #     if (IsManagedInstancePublicEndpoint $Server) {
-        #         RunSqlMIPublicEndpointConnectivityTests $resolvedAddress
-        #         $dbPort = 3342
-        #     }
-        #     else {
-        #         if (!(RunSqlMIVNetConnectivityTests $resolvedAddress)) {
-        #             throw
-        #         }
-        #     }
-        # }
-        # else {
-        #     RunMySQLConnectivityTests $resolvedAddress
-        # }
+        if (IsMySQLFlexPublic $resolvedAddress) {
+            RunMySQLFlexPublicConnectivityTests $resolvedAddress
+        }
+        elseif (IsMySQLFlexVNet $resolvedAddress) {
+            RunMySQLFlexVNetConnectivityTests $resolvedAddress
+        }
+        else {
+            RunMySQLConnectivityTests $resolvedAddress
+        }
 
         RunMySQLConnectivityTests $resolvedAddress
 
@@ -1604,9 +1600,9 @@ try {
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
 
-            # if (IsManagedInstance $Server ) {
-            #     Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connect-application-instance#required-versions-of-drivers-and-tools' -ForegroundColor Yellow
-            # }
+            if (IsMySQLFlexPublic $resolvedAddress ) {
+                Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connect-application-instance#required-versions-of-drivers-and-tools' -ForegroundColor Yellow
+            }
 
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/azure-sql/database/connect-query-content-reference-guide' -ForegroundColor Yellow

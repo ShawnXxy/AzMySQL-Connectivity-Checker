@@ -13,8 +13,8 @@ if ($null -ne $parameters) {
 
 $Server = $Server.Trim()
 $Server = $Server.Replace('tcp:', '')
-$Server = $Server.Replace(',1433', '')
-$Server = $Server.Replace(',3342', '')
+$Server = $Server.Replace(',3306', '')
+# $Server = $Server.Replace(',3342', '')
 $Server = $Server.Replace(';', '')
 
 if ($null -eq $User -or '' -eq $User) {
@@ -107,6 +107,22 @@ if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTr
 #     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
 # }
 
+function IsMySQLFlexPublic([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and (!$hasPrivateLink))
+}
+
+function IsMySQLFlexVNet([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and ($hasPrivateLink))
+}
+
 function SendAnonymousUsageData {
     try {
         #Despite computername and username will be used to calculate a hash string, this will keep you anonymous but allow us to identify multiple runs from the same user
@@ -136,8 +152,8 @@ function SendAnonymousUsageData {
         Invoke-WebRequest -Uri 'https://dc.services.visualstudio.com/v2/track' -Method 'POST' -UseBasicParsing -body $body > $null
     }
     catch {
-        #Write-Output 'Error sending anonymous usage data:'
-        #Write-Output $_.Exception.Message
+        Write-Output 'Error sending anonymous usage data:'
+        Write-Output $_.Exception.Message
     }
 }
 
