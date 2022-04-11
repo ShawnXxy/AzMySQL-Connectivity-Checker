@@ -588,7 +588,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $gatewayPort, $Database, $User, $Password)
         $MySQLConnection.Open()
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
@@ -1220,7 +1220,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Try {
         Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=PreferredTrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $dbPort, $User, $Password)
         $MySQLConnection.Open()
 
