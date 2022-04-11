@@ -1,9 +1,8 @@
-# Azure SQL Connectivity Checker
+# Azure MySQL Connectivity Checker
 
 This PowerShell script will run some connectivity checks from this machine to the server and database.  
-- Supports Single, Elastic Pools, Managed Instance and SQL Data Warehouse (please provide FQDN, MI public endpoint is supported).
-- Supports Public Cloud (\*.database.windows.net), Azure China (\*.database.chinacloudapi.cn), Azure Germany (\*.database.cloudapi.de) and Azure Government (\*.database.usgovcloudapi.net).   
-- Also supports SQL on-demand (\*.ondemand.sql.azuresynapse.net or \*.ondemand.database.windows.net).  
+- Supports Single, Flexible (please provide FQDN).
+- Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
 **In order to run it you need to:**
 1. Open Windows PowerShell ISE (in Administrator mode if possible)
@@ -16,12 +15,11 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 ```powershell
 $parameters = @{
     # Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
-    # Supports Azure Synapse / Azure SQL Data Warehouse (*.sql.azuresynapse.net / *.database.windows.net)
-    # Supports Public Cloud (*.database.windows.net), Azure China (*.database.chinacloudapi.cn), Azure Germany (*.database.cloudapi.de) and Azure Government (*.database.usgovcloudapi.net)
-    Server = '.database.windows.net' # or any other supported FQDN
-    Database = ''  # Set the name of the database you wish to test, 'master' will be used by default if nothing is set
-    User = ''  # Set the login username you wish to use, 'AzSQLConnCheckerUser' will be used by default if nothing is set
-    Password = ''  # Set the login password you wish to use, 'AzSQLConnCheckerPassword' will be used by default if nothing is set
+    # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
+    Server = '.mysql.database.azure.com' # or any other supported FQDN
+    Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
+    User = ''  # Set the login username you wish to use, 'AzMySQLConnCheckerUser' will be used by default if nothing is set
+    Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 
     ## Optional parameters (default values will be used if omitted)
     SendAnonymousUsageData = $true  # Set as $true (default) or $false
@@ -34,13 +32,13 @@ $parameters = @{
 
 $ProgressPreference = "SilentlyContinue";
 if ("AzureKudu" -eq $env:DOTNET_CLI_TELEMETRY_PROFILE) {
-    $scriptFile = '/ReducedSQLConnectivityChecker.ps1'
+    $scriptFile = '/ReducedMySQLConnectivityChecker.ps1'
 } else {
-    $scriptFile = '/AzureSQLConnectivityChecker.ps1'
+    $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
 }
-$scriptUrlBase = 'https://raw.githubusercontent.com/Azure/SQL-Connectivity-Checker/master'
+$scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/xixia'
 cls
-Write-Host 'Trying to download the script file from GitHub (https://github.com/Azure/SQL-Connectivity-Checker), please wait...'
+Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/SQL-Connectivity-Checker), please wait...'
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
     Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
@@ -48,8 +46,8 @@ try {
 catch {
     Write-Host 'ERROR: The script file could not be downloaded:' -ForegroundColor Red
     $_.Exception
-    Write-Host 'Confirm this machine can access https://github.com/Azure/SQL-Connectivity-Checker/' -ForegroundColor Yellow
-    Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/Azure/SQL-Connectivity-Checker/' -ForegroundColor Yellow
+    Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/' -ForegroundColor Yellow
+    Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/' -ForegroundColor Yellow
 }
 #end
 ```
@@ -73,13 +71,12 @@ With the current release, PowerShell uses .NET 5.0 as its runtime. PowerShell ru
 
 ```powershell
 $parameters = @{
-    # Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
-    # Supports Azure Synapse / Azure SQL Data Warehouse (*.sql.azuresynapse.net / *.database.windows.net)
-    # Supports Public Cloud (*.database.windows.net), Azure China (*.database.chinacloudapi.cn), Azure Germany (*.database.cloudapi.de) and Azure Government (*.database.usgovcloudapi.net)
-    Server = '.database.windows.net' # or any other supported FQDN
-    Database = ''  # Set the name of the database you wish to test, 'master' will be used by default if nothing is set
-    User = ''  # Set the login username you wish to use, 'AzSQLConnCheckerUser' will be used by default if nothing is set
-    Password = ''  # Set the login password you wish to use, 'AzSQLConnCheckerPassword' will be used by default if nothing is set
+    # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
+    # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
+    Server = '.mysql.database.azure.com' # or any other supported FQDN
+    Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
+    User = ''  # Set the login username you wish to use, 'AzMySQLConnCheckerUser' will be used by default if nothing is set
+    Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 
     ## Optional parameters (default values will be used if omitted)
     SendAnonymousUsageData = $true  # Set as $true (default) or $false
@@ -92,13 +89,13 @@ $parameters = @{
 
 $ProgressPreference = "SilentlyContinue";
 if ("AzureKudu" -eq $env:DOTNET_CLI_TELEMETRY_PROFILE) {
-    $scriptFile = '/ReducedSQLConnectivityChecker.ps1'
+    $scriptFile = '/ReducedMySQLConnectivityChecker.ps1'
 } else {
-    $scriptFile = '/AzureSQLConnectivityChecker.ps1'
+    $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
 }
-$scriptUrlBase = 'https://raw.githubusercontent.com/Azure/SQL-Connectivity-Checker/master'
+$scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/xixia'
 cls
-Write-Host 'Trying to download the script file from GitHub (https://github.com/Azure/SQL-Connectivity-Checker), please wait...'
+Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/SQL-Connectivity-Checker), please wait...'
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
     Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
@@ -106,8 +103,8 @@ try {
 catch {
     Write-Host 'ERROR: The script file could not be downloaded:' -ForegroundColor Red
     $_.Exception
-    Write-Host 'Confirm this machine can access https://github.com/Azure/SQL-Connectivity-Checker/' -ForegroundColor Yellow
-    Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/Azure/SQL-Connectivity-Checker/' -ForegroundColor Yellow
+    Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/' -ForegroundColor Yellow
+    Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/' -ForegroundColor Yellow
 }
 #end
 ```
@@ -118,7 +115,7 @@ catch {
 **In order to run it from machines without Internet access you need to:**
 
 1. From a machine with Internet access
-    - Navigate to https://github.com/Azure/SQL-Connectivity-Checker
+    - Navigate to https://github.com/ShawnXxy/SQL-Connectivity-Checker
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 

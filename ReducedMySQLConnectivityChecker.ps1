@@ -18,11 +18,11 @@ $Server = $Server.Replace(',3342', '')
 $Server = $Server.Replace(';', '')
 
 if ($null -eq $User -or '' -eq $User) {
-    $User = 'AzSQLConnCheckerUser'
+    $User = 'AzMySQLConnCheckerUser'
 }
 
 if ($null -eq $Password -or '' -eq $Password) {
-    $Password = 'AzSQLConnCheckerPassword'
+    $Password = 'AzMySQLConnCheckerPassword'
 }
 
 if ($null -eq $Database -or '' -eq $Database) {
@@ -244,7 +244,7 @@ try {
         Remove-Item $path
     }
     
-    Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $path -UseBasicParsing
+    Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $path -UseBasicParsing
     
     $path = $env:TEMP + "/TDSClient.dll"
     $assembly = [System.IO.File]::ReadAllBytes($path)

@@ -16,12 +16,12 @@ using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
 # Parameter region for when script is run directly
-# Supports Single, Flexible (please provide FQDN, MI public endpoint is supported)
+# Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
 # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
 $Server = '.mysql.database.azure.com' # or any other supported FQDN
 $Database = 'information_schema'  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
-$User = ''  # Set the login username you wish to use, 'AzSQLConnCheckerUser' will be used by default if nothing is set
-$Password = ''  # Set the login password you wish to use, 'AzSQLConnCheckerPassword' will be used by default if nothing is set
+$User = ''  # Set the login username you wish to use, 'AzMySQLConnCheckerUser' will be used by default if nothing is set
+$Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 # In case you want to hide the password (like during a remote session), uncomment the 2 lines below (by removing leading #) and password will be asked during execution
 # $Credentials = Get-Credential -Message "Credentials to test connections to the database (optional)" -User $User
 # $Password = $Credentials.GetNetworkCredential().password
@@ -69,11 +69,11 @@ if ($null -ne $parameters) {
 }
 
 if ($null -eq $User -or '' -eq $User) {
-    $User = 'AzSQLConnCheckerUser'
+    $User = 'AzMySQLConnCheckerUser'
 }
 
 if ($null -eq $Password -or '' -eq $Password) {
-    $Password = 'AzSQLConnCheckerPassword'
+    $Password = 'AzMySQLConnCheckerPassword'
 }
 
 if ($null -eq $Database -or '' -eq $Database) {
@@ -187,16 +187,16 @@ $DNSResolutionFailedSQLMIPublicEndpoint = ' Please make sure the server name FQD
  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
  or a client-side networking issue that you will need to pursue with your local network administrator.'
 
-$SQLDB_InvalidGatewayIPAddress = ' In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
+$MySQL_InvalidGatewayIPAddress = ' In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
  In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
  or a client-side networking issue that you will need to pursue with your local network administrator.
  See the valid gateway addresses at https://docs.microsoft.com/azure/azure-sql/database/connectivity-architecture#gateway-ip-addresses
  See more about Private Endpoint at https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview'
 
-$SQLDB_GatewayTestFailed = ' Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+$MySQL_GatewayTestFailed = ' Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
  See more about connectivity architecture at https://docs.microsoft.com/azure/azure-sql/database/connectivity-architecture'
 
-$SQLDB_Redirect = " Servers in SQL Database and Azure Synapse support Redirect, Proxy or Default for the server's connection policy setting:
+$MySQL_Redirect = " Servers in SQL Database and Azure Synapse support Redirect, Proxy or Default for the server's connection policy setting:
 
  Default: This is the connection policy in effect on all servers after creation unless you explicitly alter the connection policy to either Proxy or Redirect.
   The default policy is Redirect for all client connections originating inside of Azure (for example, from an Azure Virtual Machine)
@@ -281,14 +281,14 @@ $ServerNameNotSpecified = ' The parameter $Server was not specified, please set 
 
 $followUpMessage = ' If this is a database engine error code you may see more about it at https://docs.microsoft.com/sql/relational-databases/errors-events/database-engine-events-and-errors'
 
-$SQLMI_PrivateEndpoint_Error40532 = " Error 40532 is usually related to one of the following scenarios:
-- The username (login) contains the '@' symbol (e.g., a login of the form 'user@mydomain.com').
-  You can't currently login with usernames containing these characters. We are working on removing this limitation.
-- Trying to connect using the IP address instead of the FQDN of your server.
-  Connecting to a managed instance using an IP address is not supported. A Managed Instance's host name maps to the load balancer in front of the Managed Instance's virtual cluster. As one virtual cluster can host multiple Managed Instances, a connection can't be routed to the proper Managed Instance without specifying its name.
-- The IP address associated with your managed instance changed but you DNS record still points to previous address.
-  The managed instance service doesn't claim static IP address support, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime.
-"
+# $SQLMI_PrivateEndpoint_Error40532 = " Error 40532 is usually related to one of the following scenarios:
+# - The username (login) contains the '@' symbol (e.g., a login of the form 'user@mydomain.com').
+#   You can't currently login with usernames containing these characters. We are working on removing this limitation.
+# - Trying to connect using the IP address instead of the FQDN of your server.
+#   Connecting to a managed instance using an IP address is not supported. A Managed Instance's host name maps to the load balancer in front of the Managed Instance's virtual cluster. As one virtual cluster can host multiple Managed Instances, a connection can't be routed to the proper Managed Instance without specifying its name.
+# - The IP address associated with your managed instance changed but you DNS record still points to previous address.
+#   The managed instance service doesn't claim static IP address support, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime.
+# "
 
 $SQLDB_Error40532 = ' Error 40532 is usually related to one of the following scenarios:
 
@@ -308,8 +308,8 @@ $SQLDB_Error40532 = ' Error 40532 is usually related to one of the following sce
     You can also consider removing the service endpoint from the subnet, but you will need to take into consideration the impact in all the services mentioned above.'
 
 $CannotDownloadAdvancedScript = ' Advanced connectivity policy tests script could not be downloaded!
- Confirm this machine can access https://github.com/Azure/SQL-Connectivity-Checker/
- or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/Azure/SQL-Connectivity-Checker/'
+ Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/
+ or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/'
 
 $DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure SQL Database and Azure Synapse Analytics doesn't have a static IP address.
 Logins for Azure SQL Database or Azure Synapse Analytics can land on any of the Gateways in a region.
@@ -635,7 +635,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 TrackWarningAnonymously ('TestConnectionToDatabase|Error10060 State' + $ex.State)
             }
             18456 {
-                if ($User -eq 'AzSQLConnCheckerUser') {
+                if ($User -eq 'AzMySQLConnCheckerUser') {
                     if ($Database -eq 'master') {
                         $msg = [string]::Format(" Dummy login attempt reached '{0}' database, login failed as expected.", $Database)
                         Write-Host ($msg)
@@ -948,7 +948,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = $SQLDB_InvalidGatewayIPAddress
+            $msg = $MySQL_InvalidGatewayIPAddress
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
@@ -973,7 +973,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             if ($testResult.TcpTestSucceeded) {
                 $hasGatewayTestSuccess = $true
                 Write-Host ' -> TCP test succeed' -ForegroundColor Green
-                TrackWarningAnonymously ('SQLDB|GatewayTestSucceeded|' + $gatewayAddress)
+                TrackWarningAnonymously ('MySQL|GatewayTestSucceeded|' + $gatewayAddress)
                 PrintAverageConnectionTime $gatewayAddress 3306
                 $msg = ' Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
                 [void]$summaryLog.AppendLine($msg)
@@ -1001,7 +1001,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
-                $msg = $SQLDB_GatewayTestFailed
+                $msg = $MySQL_GatewayTestFailed
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
@@ -1080,7 +1080,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                     }
 
                     [void]$summaryRecommendedAction.AppendLine($msg)
-                    $msg = $SQLDB_Redirect
+                    $msg = $MySQL_Redirect
                     Write-Host $msg -Foreground Red
                     [void]$summaryRecommendedAction.AppendLine($msg)
                 }
