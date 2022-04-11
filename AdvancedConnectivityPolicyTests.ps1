@@ -228,7 +228,7 @@ try {
         Copy-Item -Path $($LocalPath + '/netstandard2.0/TDSClient.dll') -Destination $TDSClientPath
     }
     else {
-        Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/SQL-Connectivity-Checker/tree/xixia/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
+        Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
     }
     $assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
     [System.Reflection.Assembly]::Load($assembly) | Out-Null

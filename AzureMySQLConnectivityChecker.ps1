@@ -588,7 +588,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;",
             $Server, $gatewayPort, $Database, $User, $Password)
         $MySQLConnection.Open()
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
@@ -1142,7 +1142,7 @@ function RunConnectivityPolicyTests($port) {
         else {
             try {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/tree/xixia' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
+                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/xixia/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
             }
             catch {
                 $msg = $CannotDownloadAdvancedScript
@@ -1220,7 +1220,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Try {
         Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;",
             $Server, $dbPort, $User, $Password)
         $MySQLConnection.Open()
 
