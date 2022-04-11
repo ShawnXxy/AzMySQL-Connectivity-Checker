@@ -928,8 +928,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
     #     TrackWarningAnonymously 'SQL on-demand'
     # }
     # else {
-        Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
-        TrackWarningAnonymously 'MySQL Single'
+        # Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
+        # TrackWarningAnonymously 'MySQL Single'
     # }
 
     $hasPrivateLink = HasPrivateLink $Server
@@ -937,11 +937,15 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
     if (!$gateway) {
         if ($hasPrivateLink) {
-            Write-Host ' This connection seems to be using Private Link, skipping Gateway connectivity tests' -ForegroundColor Yellow
+            Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQL|PrivateLink'
         }
+        elseif (!$hasPrivateLink -and $resolvedAddress ) {
+            Write-Host ' This connection seems to be using MySQL Flexible Public Connection, skipping Gateway connectivity tests' -ForegroundColor YellowDB
+            TrackWarningAnonymously 'MySQL|MeruPublic'
+        }
         else {
-            $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid gateway address'
+            $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid address'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine()
             [void]$summaryLog.AppendLine($msg)
@@ -958,6 +962,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
     }
     else {
+        Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
+        TrackWarningAnonymously 'MySQL Single'
         Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
         Write-Host $gateway.Region -ForegroundColor Yellow
 
