@@ -1142,7 +1142,7 @@ function RunConnectivityPolicyTests($port) {
         else {
             try {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/xixia/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
+                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
             }
             catch {
                 $msg = $CannotDownloadAdvancedScript
