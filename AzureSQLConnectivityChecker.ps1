@@ -910,14 +910,14 @@ function PrintAverageConnectionTime($addressList, $port) {
         }
 
         $ilb = ''
-        if ((IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($ipAddress -eq $resolvedAddress)) {
-            $ilb = ' [ilb]'
-        }
+        # if ((IsManagedInstance $Server) -and !(IsManagedInstancePublicEndpoint $Server) -and ($ipAddress -eq $resolvedAddress)) {
+        #     $ilb = ' [ilb]'
+        # }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
         Write-Host '   Failed connections:'$numFailed
-        Write-Host '   Average response time:'$avg' ms '$ilb
+        Write-Host '   Average response time:'$avg' ms '#$ilb
     }
 }
 
