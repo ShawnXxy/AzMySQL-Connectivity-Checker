@@ -159,7 +159,7 @@ $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "US Gov Virginia"; Gateways = ("13.72.48.140"); TRs = ('tr8', 'tr260'); Cluster = 'usgoveast1-a.worker.database.usgovcloudapi.net'; }
 )
 
-$TRPorts = 16000..16199
+$TRPorts = 16000..16020
 $summaryLog = New-Object -TypeName "System.Text.StringBuilder"
 $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
@@ -551,9 +551,9 @@ function ValidateDNS([String] $Server) {
 #     return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
 # }
 
-function IsSqlOnDemand([String] $Server) {
-    return [bool]($Server -match '-ondemand.')
-}
+# function IsSqlOnDemand([String] $Server) {
+#     return [bool]($Server -match '-ondemand.')
+# }
 
 # function IsManagedInstancePublicEndpoint([String] $Server) {
 #     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
@@ -923,14 +923,14 @@ function PrintAverageConnectionTime($addressList, $port) {
 
 function RunMySQLConnectivityTests($resolvedAddress) {
 
-    if (IsSqlOnDemand $Server) {
-        Write-Host 'Detected as SQL on-demand endpoint' -ForegroundColor Yellow
-        TrackWarningAnonymously 'SQL on-demand'
-    }
-    else {
+    # if (IsSqlOnDemand $Server) {
+    #     Write-Host 'Detected as SQL on-demand endpoint' -ForegroundColor Yellow
+    #     TrackWarningAnonymously 'SQL on-demand'
+    # }
+    # else {
         Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
         TrackWarningAnonymously 'MySQL Single'
-    }
+    # }
 
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
@@ -1047,12 +1047,12 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$redirectTestsResultMessage.AppendLine(' Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
                 [void]$redirectTestsResultMessage.AppendLine(' Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
 
-                if (IsSqlOnDemand $Server) {
-                    [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and SQL on-demand is a dynamic serverless environment.')
-                }
-                else {
+                # if (IsSqlOnDemand $Server) {
+                #     [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and SQL on-demand is a dynamic serverless environment.')
+                # }
+                # else {
                     [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
-                }
+                # }
                 $msg = $redirectTestsResultMessage.ToString()
                 Write-Host $msg -Foreground Yellow
                 [void]$summaryLog.AppendLine($msg)
@@ -1135,7 +1135,7 @@ function RunConnectivityPolicyTests($port) {
         else {
             try {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/Azure/SQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
+                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/xixia' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
             }
             catch {
                 $msg = $CannotDownloadAdvancedScript
