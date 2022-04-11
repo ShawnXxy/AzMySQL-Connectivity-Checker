@@ -588,7 +588,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $gatewayPort, $Database, $User, $Password)
         $MySQLConnection.Open()
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
@@ -1220,19 +1220,19 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Try {
         Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
+        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=PreferredTrustServerCertificate=False;Connection Timeout=30;Application Name=Azure-SQL-Connectivity-Checker;",
             $Server, $dbPort, $User, $Password)
         $MySQLConnection.Open()
 
-        $MySQLCommand = New-Object System.Data.SQLClient.SQLCommand
+        $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
         $MySQLCommand.Connection = $MySQLConnection
 
         $MySQLCommand.CommandText = "USE " + $Database + ";"
-        $masterDbResult = $MySQLCommand.ExecuteReader()
-        $masterDbResultDataTable = new-object 'System.Data.DataTable'
-        $masterDbResultDataTable.Load($masterDbResult)
+        $MySQLResult = $MySQLCommand.ExecuteReader()
+        $MySQLResultDataSet = new-object 'System.Data.DataSet'
+        $MySQLResultDataSet.Load($MySQLResult)
 
-        return $masterDbResultDataTable.Rows[0].C -ne 0
+        return $MySQLResultDataSet.Rows[0].C -ne 0
     }
     Catch {
         Write-Host $_.Exception.Message -ForegroundColor Yellow
