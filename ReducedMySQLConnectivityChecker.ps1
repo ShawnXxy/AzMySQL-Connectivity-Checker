@@ -99,14 +99,6 @@ if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTr
 
 # PowerShell Container Image Support End
 
-# function IsManagedInstance([String] $Server) {
-#     return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
-# }
-
-# function IsManagedInstancePublicEndpoint([String] $Server) {
-#     return [bool]((IsManagedInstance $Server) -and ($Server -match '.public.'))
-# }
-
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server

@@ -461,12 +461,9 @@ function ValidateDNS([String] $Server) {
             }
 
             if ($DNSfromHostsAddress) {
-                # if (IsMySQLFlexPublic $Server) {
-                #     $msg = $DNSResolutionDNSfromHostsFileMI
-                # }
-                # else {
-                #     $msg = $DNSResolutionDNSfromHostsFile
-                # }
+               
+                $msg = $DNSResolutionDNSfromHostsFile
+          
                 Write-Host
                 Write-Host $msg -ForegroundColor Red
                 [void]$summaryLog.AppendLine()
@@ -531,18 +528,6 @@ function ValidateDNS([String] $Server) {
     }
 }
 
-# function IsManagedInstance([String] $Server) {
-#     return [bool]((($Server.ToCharArray() | Where-Object { $_ -eq '.' } | Measure-Object).Count) -ge 4)
-# }
-
-# function IsSqlOnDemand([String] $Server) {
-#     return [bool]($Server -match '-ondemand.')
-# }
-
-# function IsManagedInstancePublicEndpoint([String] $Server) {
-#     return [bool]((IsMySQLFlexPublic$Server) -and ($Server -match '.public.'))
-# }
-
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
@@ -587,6 +572,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
+        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
         $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;",
             $Server, $gatewayPort, $Database, $User, $Password)
@@ -595,7 +581,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
         return $true
     }
-    catch [System.Data.SqlClient.SqlException] {
+    catch [MySql.Data.MySqlClient.MySqlException] {
         $ex = $_.Exception
         Switch ($_.Exception.Number) {
             121 {
@@ -924,15 +910,6 @@ function PrintAverageConnectionTime($addressList, $port) {
 
 function RunMySQLConnectivityTests($resolvedAddress) {
 
-    # if (IsSqlOnDemand $Server) {
-    #     Write-Host 'Detected as SQL on-demand endpoint' -ForegroundColor Yellow
-    #     TrackWarningAnonymously 'SQL on-demand'
-    # }
-    # else {
-        # Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
-        # TrackWarningAnonymously 'MySQL Single'
-    # }
-
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
@@ -1054,12 +1031,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$redirectTestsResultMessage.AppendLine(' Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
                 [void]$redirectTestsResultMessage.AppendLine(' Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
 
-                # if (IsSqlOnDemand $Server) {
-                #     [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and SQL on-demand is a dynamic serverless environment.')
-                # }
-                # else {
-                    [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
-                # }
+                [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
+
                 $msg = $redirectTestsResultMessage.ToString()
                 Write-Host $msg -Foreground Yellow
                 [void]$summaryLog.AppendLine($msg)
@@ -1219,6 +1192,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
+        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
         $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;",
             $Server, $dbPort, $User, $Password)
