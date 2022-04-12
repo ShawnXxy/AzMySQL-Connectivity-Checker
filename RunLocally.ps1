@@ -1,4 +1,5 @@
 ﻿#Run locally parameters
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 $LocalPath = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
 $Path = Join-Path $LocalPath 'AzureMySQLConnectivityChecker.ps1'
 

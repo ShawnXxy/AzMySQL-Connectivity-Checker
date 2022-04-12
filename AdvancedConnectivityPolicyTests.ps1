@@ -5,6 +5,8 @@ using namespace System.Collections.Generic
 using namespace System.Diagnostics
 using namespace MySql.Data.MySqlClient
 
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
 # PowerShell Container Image Support Start
 
 if (!$(Get-Command 'Test-NetConnection' -errorAction SilentlyContinue)) {
@@ -187,6 +189,22 @@ function TrackWarningAnonymously ([String] $warningCode) {
     }
 }
 
+function IsMySQLFlexPublic([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and (!$hasPrivateLink))
+}
+
+function IsMySQLFlexVNet([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    return [bool]((!$gateway) -and ($hasPrivateLink))
+}
+
 $parameters = $args[0]
 $Server = $parameters['Server']
 $Port = $parameters['Port']
@@ -328,6 +346,7 @@ try {
         PrintAverageConnectionTime $resolvedAddress $port
     }
     else {
+        
         Write-Host ' Proxy connection policy detected!' -ForegroundColor Green
         TrackWarningAnonymously 'Advanced|Proxy|Detected'
     }

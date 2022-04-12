@@ -13,6 +13,7 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 3. Paste the following in the script window:
 
 ```powershell
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 $parameters = @{
     # Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
     # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -40,7 +41,6 @@ $scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Ch
 cls
 Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/SQL-Connectivity-Checker), please wait...'
 try {
-    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
     Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
     }

@@ -15,11 +15,13 @@ using namespace System.Diagnostics
 using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
 # Parameter region for when script is run directly
 # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
 # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
 $Server = '.mysql.database.azure.com' # or any other supported FQDN
-$Database = 'information_schema'  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
+$Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
 $User = ''  # Set the login username you wish to use, 'AzMySQLConnCheckerUser' will be used by default if nothing is set
 $Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 # In case you want to hide the password (like during a remote session), uncomment the 2 lines below (by removing leading #) and password will be asked during execution
@@ -573,9 +575,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;",
-            $Server, $gatewayPort, $Database, $User, $Password)
+        # $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
+        # $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;",
+        #     $Server, $gatewayPort, $Database, $User, $Password)
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         $MySQLConnection.Open()
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
@@ -904,7 +907,7 @@ function PrintAverageConnectionTime($addressList, $port) {
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
         Write-Host '   Failed connections:'$numFailed
-        Write-Host '   Average response time:'$avg' ms '#$ilb
+        Write-Host '   Average response time:'$avg' ms '$ilb
     }
 }
 
