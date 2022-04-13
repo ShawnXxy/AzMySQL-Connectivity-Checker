@@ -232,15 +232,11 @@ $AzureMySQLFlex_VNetTestFailed = " You can connect to Azure MySQL Flexible Serve
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
 "
 
-$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
  We strongly recommend you request assistance from your network administrator, some validations you may do together are:
-
  - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
-
  - You have allowed public endpoint traffic on the network security group, see https://docs.microsoft.com/azure/azure-sql/managed-instance/public-endpoint-configure#allow-public-endpoint-traffic-on-the-network-security-group
-
  - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.).
-
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
 
@@ -712,6 +708,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryRecommendedAction.AppendLine($msg)
 
             TrackWarningAnonymously 'MySQL|FlexPublic|TestFailed'
+            return $false
         }
     }
     Catch {
@@ -1099,43 +1096,52 @@ function RunConnectivityPolicyTests($port) {
 }
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
-    Write-Host
-    [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
-    Try {
-        Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
-        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;",
-            $Server, $dbPort, $User, $Password)
-        $MySQLConnection.Open()
 
-        $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
-        $MySQLCommand.Connection = $MySQLConnection
+    if (RunMySQLFlexPublicConnectivityTests $resolvedAddress) {
 
-        $MySQLCommand.CommandText = "USE " + $Database + ";"
-        $MySQLResult = $MySQLCommand.ExecuteReader()
-        $MySQLResultDataSet = new-object 'System.Data.DataSet'
-        $MySQLResultDataSet.Load($MySQLResult)
+        Write-Host
+        [void]$summaryLog.AppendLine()
+        Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
+        Try {
+            Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
+            [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+            $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
+            $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;",
+                $Server, $dbPort, $User, $Password)
+            $MySQLConnection.Open()
 
-        return $MySQLResultDataSet.Rows[0].C -ne 0
+            $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+            $MySQLCommand.Connection = $MySQLConnection
+
+            $MySQLCommand.CommandText = "USE " + $Database + ";"
+            $MySQLResult = $MySQLCommand.ExecuteReader()
+            $MySQLResultDataSet = new-object 'System.Data.DataSet'
+            $MySQLResultDataSet.Load($MySQLResult)
+
+            return $MySQLResultDataSet.Rows[0].C -ne 0
+        }
+        Catch {
+            Write-Host $_.Exception.Message -ForegroundColor Yellow
+            TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
+            return $false
+        }
     }
-    Catch {
-        Write-Host $_.Exception.Message -ForegroundColor Yellow
-        TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
+    else {
+        Write-Host "Skipping LookupDatabaseMySQL because RunMySQLFlexPublicConnectivityTests failed" -Foreground Yellow
         return $false
     }
 }
+
 
 function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Database, $User, $Password) {
     try {
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
         #Test information_schema database
-        $canConnectToMaster = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
+        $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToMaster) {
+            if ($canConnectToDefault) {
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
@@ -1278,39 +1284,6 @@ try {
 
         $Server = $Server.Trim()
 
-#         if ( (IsManagedInstancePublicEndpoint $Server) -and !($Server -match ',3306')) {
-#             $msg = ' You seem to be trying to connect using SQL MI Public Endpoint but port 3342 was not specified'
-
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryLog.AppendLine($msg)
-#             [void]$summaryRecommendedAction.AppendLine($msg)
-
-#             $msg = ' Note that the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net and that the port used for the connection is 3342.
-#  Please specify port 3342 by setting Server parameter like: <mi_name>.public.<dns_zone>.database.windows.net,3342'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
-#             TrackWarningAnonymously 'ManagedInstancePublicEndpoint|WrongPort'
-#             Write-Error '' -ErrorAction Stop
-#         }
-
-#         if ( (IsMySQLFlexPublic $resolvedAddress) -and !(IsManagedInstancePublicEndpoint $Server) -and ($Server -match ',3342')) {
-#             $msg = ' You seem to be trying to connect using SQLMI Private Endpoint but using Public Endpoint port number (3342)'
-
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryLog.AppendLine($msg)
-#             [void]$summaryRecommendedAction.AppendLine($msg)
-
-#             $msg = ' The private endpoint host name comes in the format <mi_name>.<dns_zone>.database.windows.net and the port used for the connection is 3306.
-#  Please specify port 3306 by setting Server parameter like: <mi_name>.<dns_zone>.database.windows.net,3306 (or do not specify any port number).
-#  In case you are trying to use Public Endpoint, note that:
-#  - the public endpoint host name comes in the format <mi_name>.public.<dns_zone>.database.windows.net
-#  - the port used for the connection is 3342.'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine($msg)
-#             TrackWarningAnonymously 'ManagedInstancePrivateEndpoint|WrongPort'
-#             Write-Error '' -ErrorAction Stop
-#         }
-
         $Server = $Server.Replace('tcp:', '')
         $Server = $Server.Replace(',3306', '')
         # $Server = $Server.Replace(',3342', '')
@@ -1386,8 +1359,6 @@ try {
         else {
             RunMySQLConnectivityTests $resolvedAddress
         }
-
-        RunMySQLConnectivityTests $resolvedAddress
 
         Write-Host
         [void]$summaryLog.AppendLine()
