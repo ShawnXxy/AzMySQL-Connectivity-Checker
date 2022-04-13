@@ -190,29 +190,26 @@ $DNSResolutionGotMultipleAddresses = ' While testing DNS resolution from multipl
 $MySQL_InvalidGatewayIPAddress = ' In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
  In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
  or a client-side networking issue that you will need to pursue with your local network administrator.
- See the valid gateway addresses at https://docs.microsoft.com/azure/azure-sql/database/connectivity-architecture#gateway-ip-addresses
- See more about Private Endpoint at https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview'
+ See the valid gateway addresses at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses.'
 
 $MySQL_GatewayTestFailed = ' Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- See more about connectivity architecture at https://docs.microsoft.com/azure/azure-sql/database/connectivity-architecture'
+ See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture. '
 
-$MySQL_Redirect = " Servers in SQL Database and Azure Synapse support Redirect, Proxy or Default for the server's connection policy setting:
+$MySQL_Redirect = " Azure MySQL Single Server supports Redirect and Proxy for the server's connection policy setting:
 
- Default: This is the connection policy in effect on all servers after creation unless you explicitly alter the connection policy to either Proxy or Redirect.
-  The default policy is Redirect for all client connections originating inside of Azure (for example, from an Azure Virtual Machine)
-  and Proxy for all client connections originating outside (for example, connections from your local workstation).
+ Proxy: This is the default connection mode and applies in most scenarios.In this mode, all connections are proxied via the Azure MySQL Database gateways. 
+ For connections to use this mode, clients need to allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306. 
+ See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture.
 
- Redirect (recommended): Clients establish connections directly to the node hosting the database, leading to reduced latency and improved throughput.
-  For connections to use this mode, clients need to:
-  - Allow outbound communication from the client to all Azure SQL IP addresses in the region on ports in the range of 11000-11999.
-  - Allow outbound communication from the client to Azure SQL Database gateway IP addresses on port 3306.
-
- Proxy: In this mode, all connections are proxied via the Azure SQL Database gateways, leading to increased latency and reduced throughput.
-  For connections to use this mode, clients need to allow outbound communication from the client to Azure SQL Database gateway IP addresses on port 3306.
+ Redirect (applies for PHP only at current state): Clients establish connections directly to the node hosting the database, leading to reduced latency and improved throughput.
+ The node address and port number can be queried by [SHOW GLOBAL VARIALBES LIKE '%redir%'].
+ For connections to use this mode, clients need to:
+  - Allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.
+  - Allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306.
 
  If you are using Proxy, the Redirect Policy related tests would not be a problem.
  If you are using Redirect, failure to reach ports in the range of 11000-11999 is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- Please check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy"
+ Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. "
 
 $AzureMySQLFlex_VNetTestFailed = " You can connect to Azure MySQL Flexible Server via private address if you are connecting from one of the following:
  - machine inside the same virtual network
@@ -256,42 +253,8 @@ $AAD_login_microsoftonline_com = ' If you are using AAD Universal with MFA authe
 $AAD_secure_aadcdn_microsoftonline_p_com = ' If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
  This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$error18456RecommendedSolution = ' This error indicates that the login request was rejected, the most common reasons are:
- - Incorrect or empty password: Please ensure that you have provided the correct password.
- - Database does not exist: Please ensure that the connection string has the correct database name.
- - Insufficient permissions: The user does not have CONNECT permissions to the database. Please ensure that the user is granted the necessary permissions to login.
- - Connections rejected due to DoSGuard protection: DoSGuard actively tracks failed logins from IP addresses. If there are multiple failed logins from a specific IP address within a period of time, the IP address is blocked from accessing any resources in the service for a pre-defined time period even if the password and other permissions are correct.'
-
 $ServerNameNotSpecified = ' The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
  You can see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
-
-$followUpMessage = ' If this is a database engine error code you may see more about it at https://docs.microsoft.com/sql/relational-databases/errors-events/database-engine-events-and-errors'
-
-$SQLMI_PrivateEndpoint_Error40532 = " Error 40532 is usually related to one of the following scenarios:
-- The username (login) contains the '@' symbol (e.g., a login of the form 'user@mydomain.com').
-  You can't currently login with usernames containing these characters. We are working on removing this limitation.
-- Trying to connect using the IP address instead of the FQDN of your server.
-  Connecting to a managed instance using an IP address is not supported. A Managed Instance's host name maps to the load balancer in front of the Managed Instance's virtual cluster. As one virtual cluster can host multiple Managed Instances, a connection can't be routed to the proper Managed Instance without specifying its name.
-- The IP address associated with your managed instance changed but you DNS record still points to previous address.
-  The managed instance service doesn't claim static IP address support, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime.
-"
-
-$SQLDB_Error40532 = ' Error 40532 is usually related to one of the following scenarios:
-
-  - The username (login) contains the "@" symbol (e.g., a login of the form "user@mydomain.com").
-    If the {servername} value shown in the error is "mydomain.com" then you are encountering this scenario.
-    See how to handle this at https://techcommunity.microsoft.com/t5/azure-database-support-blog/providing-the-server-name-explicitly-in-user-names-for-azure-sql/ba-p/368942
-
-  - The subnet where you are trying to connect from has Microsoft.Sql service endpoint enabled
-    Turning on virtual network service endpoints to Microsoft.Sql in the subnet enables the endpoints for Azure SQL Database, Azure Synapse Analytics, Azure Database for PostgreSQL server, Azure Database for MySQL server and Azure Database for MariaDB. Attempts to connect from subnet might fail if virtual network rules are not set.
-
-    This issue is usually originated by one of the following:
-    - Aiming to connect to SQL Database using service endpoints, Microsoft.Sql was enabled in the subnet but the virtual network rule for the originating subnet in the Firewalls and virtual networks settings on the server was not added.
-    - Aiming to connect to other database service (like Azure Database for MySQL as an example), Azure SQL Database was also impacted.
-
-    To fix this issue create a virtual network rule in your server in SQL Database, for the originating subnet in the Firewalls and virtual networks.
-    See how to at https://docs.microsoft.com/azure/azure-sql/database/vnet-service-endpoint-rule-overview#use-the-portal-to-create-a-virtual-network-rule
-    You can also consider removing the service endpoint from the subnet, but you will need to take into consideration the impact in all the services mentioned above.'
 
 $CannotDownloadAdvancedScript = ' Advanced connectivity policy tests script could not be downloaded!
  Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/
@@ -568,170 +531,116 @@ function FilterTranscript() {
     }
 }
 
-
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
     Write-Host
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
     Try {
         [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-        # $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-        # $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog={2};Persist Security Info=False;User ID='{3}';Password='{4}';sslmode=preferred;Connection Timeout=30;",
-        #     $Server, $gatewayPort, $Database, $User, $Password)
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         $MySQLConnection.Open()
+    
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
         return $true
-    }
-    catch [MySql.Data.MySqlClient.MySqlException] {
-        $ex = $_.Exception
-        Switch ($_.Exception.Number) {
-            121 {
-                $msg = ' Connection to database ' + $Database + ' failed due to "The semaphore timeout period has expired" error.'
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine('  "The semaphore timeout period has expired" is a network error, not a SQL timeout.')
-                [void]$summaryRecommendedAction.AppendLine('  This appears as a SQL error because Windows passes this to the SQL process, so it is often mistaken to be a SQL error, when it is a client operating system level error.')
-                [void]$summaryRecommendedAction.AppendLine('  This error can occur for a very wide variety of reasons, but are typically due to a network or driver-related issue.')
-
-                [void]$summaryRecommendedAction.AppendLine('  We suggest you:')
-                [void]$summaryRecommendedAction.AppendLine('  - Verify if you are using an updated version of the client driver or tool.')
-                [void]$summaryRecommendedAction.AppendLine('  - Verify if you can connect using a different client driver or tool.')
-                if (IsMySQLFlexPublic $resolvedAddress ) {
-                    [void]$summaryRecommendedAction.AppendLine( '  See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connect-application-instance#required-versions-of-drivers-and-tools')
-                }
-                [void]$summaryRecommendedAction.AppendLine('  - Check with your local network administrator for client-side networking issues.')
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error121 State' + $ex.State)
+    } catch [MySql.Data.MySqlClient.MySqlException] {
+        $erno = $_.Exception.Number
+        $erMsg = $_.Exception.Message
+        
+        if ($erno -eq '1042') {
+            
+            Write-Host ($erno) -ForegroundColor Red
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = ' Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine(' The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
+            [void]$summaryRecommendedAction.AppendLine(' We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is put in a STOP mode in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a ready state in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
+            [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|18456: ' + $erMsg)
+        } 
+        elseif ($erMsg -Match 'using password: NO' ) {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
             }
-            916 {
-                $msg = ' Connection to database ' + $Database + ' failed, the login does not have sufficient permissions to connect to the named database.'
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine(' See more details and how to fix this error at https://docs.microsoft.com/sql/relational-databases/errors-events/mssqlserver-916-database-engine-error')
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error916 State' + $ex.State)
-            }
-            10060 {
-                $msg = ' Connection to database ' + $Database + ' failed (error ' + $ex.Number + ', state ' + $ex.State + '): ' + $ex.Message
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine(' This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.')
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error10060 State' + $ex.State)
-            }
-            18456 {
-                if ($User -eq 'AzMySQLConnCheckerUser') {
-                    if ($Database -eq 'information_schema') {
-                        $msg = [string]::Format(" Dummy login attempt reached '{0}' database, login failed as expected.", $Database)
-                        Write-Host ($msg)
-                        [void]$summaryLog.AppendLine($msg)
-                    }
-                    else {
-                        $msg = [string]::Format(" Dummy login attempt on '{0}' database resulted in login failure.", $Database)
-                        Write-Host ($msg)
-                        [void]$summaryLog.AppendLine($msg)
-
-                        $msg = ' This was either expected due to dummy credentials being used, or database does not exist, which also results in login failed.'
-                        Write-Host ($msg)
-                        [void]$summaryLog.AppendLine($msg)
-                    }
-                }
-                else {
-                    [void]$summaryRecommendedAction.AppendLine()
-                    $msg = [string]::Format(" Login against database {0} failed for user '{1}'", $Database, $User)
-                    Write-Host ($msg) -ForegroundColor Red
-                    [void]$summaryLog.AppendLine($msg)
-                    [void]$summaryRecommendedAction.AppendLine($msg)
-
-                    $msg = $error18456RecommendedSolution
-                    Write-Host ($msg) -ForegroundColor Red
-                    [void]$summaryRecommendedAction.AppendLine($msg)
-                    TrackWarningAnonymously 'FailedLogin18456UserCreds'
-                }
-            }
-            40532 {
-                if (IsMySQLFlexPublic $resolvedAddress) {
-                    if ($gatewayPort -eq 3342) {
-                        $msg = ' You seem to be trying to connect to MI using Public Endpoint but Public Endpoint may be disabled'
-                        Write-Host ($msg) -ForegroundColor Red
-                        [void]$summaryLog.AppendLine($msg)
-                        [void]$summaryRecommendedAction.AppendLine($msg)
-
-                        $msg = ' Learn how to configure public endpoint at https://docs.microsoft.com/en-us/azure/sql-database/sql-database-managed-instance-public-endpoint-configure'
-                        Write-Host ($msg) -ForegroundColor Red
-                        [void]$summaryRecommendedAction.AppendLine($msg)
-                        TrackWarningAnonymously ('SQLMI|PublicEndpoint|Error40532 State' + $ex.State)
-                    }
-                    else {
-                        $msg = ' Connection to database ' + $Database + ' failed (error ' + $ex.Number + ', state ' + $ex.State + '): ' + $ex.Message
-                        Write-Host ($msg) -ForegroundColor Red
-                        [void]$summaryLog.AppendLine($msg)
-                        [void]$summaryRecommendedAction.AppendLine()
-                        [void]$summaryRecommendedAction.AppendLine($msg)
-                        [void]$summaryRecommendedAction.AppendLine($SQLMI_PrivateEndpoint_Error40532)
-                        TrackWarningAnonymously ('SQLMI|PrivateEndpoint|Error40532 State' + $ex.State)
-                    }
-                }
-                else {
-                    $msg = ' Connection to database ' + $Database + ' failed (error ' + $ex.Number + ', state ' + $ex.State + '): ' + $ex.Message
-                    Write-Host ($msg) -ForegroundColor Red
-                    [void]$summaryLog.AppendLine($msg)
-                    [void]$summaryRecommendedAction.AppendLine()
-                    [void]$summaryRecommendedAction.AppendLine($msg)
-                    [void]$summaryRecommendedAction.AppendLine($SQLDB_Error40532)
-                    TrackWarningAnonymously ('SQLDB|Error40532 State' + $ex.State)
-                }
-            }
-            40615 {
-                $msg = ' Connection to database ' + $Database + ' failed (error ' + $ex.Number + ', state ' + $ex.State + '): ' + $ex.Message
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine('  The client is trying to connect from an IP address that is not authorized to connect to the server. The server firewall has no IP address rule that allows a client to communicate from the given IP address to the database.')
-                [void]$summaryRecommendedAction.AppendLine('  Add the IP address as an IP rule, see how at https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure')
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error40615 State' + $ex.State)
-            }
-            47073 {
-                $msg = ' Connection to database ' + $Database + ' was denied since Deny Public Network Access is set to Yes.
- When Deny Public Network Access setting is set to Yes, only connections via private endpoints are allowed.
- When this setting is set to No (default), clients can connect using either public endpoints (IP-based firewall rules, VNET-based firewall rules) or private endpoints (using Private Link).
- See more at https://docs.microsoft.com/azure/azure-sql/database/connectivity-settings#deny-public-network-access'
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously ('TestConnectionToDatabase|47073 State' + $ex.State)
-            }
-            40914 {
-                $msg = ' Connection to database ' + $Database + ' failed, client is not allowed to access the server.'
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine('  The client is in a subnet that has virtual network server endpoints. But the server has no virtual network rule that grants to the subnet the right to communicate with the database.')
-                [void]$summaryRecommendedAction.AppendLine('  On the Firewall pane of the Azure portal, use the virtual network rules control to add a virtual network rule for the subnet.')
-                [void]$summaryRecommendedAction.AppendLine('  See how at https://docs.microsoft.com/en-us/azure/azure-sql/database/vnet-service-endpoint-rule-overview#use-the-portal-to-create-a-virtual-network-rule')
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error40914 State' + $ex.State)
-            }
-            default {
-                $msg = ' Connection to database ' + $Database + ' failed (error ' + $ex.Number + ', state ' + $ex.State + '): ' + $ex.Message
-                Write-Host ($msg) -ForegroundColor Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($followUpMessage)
-                TrackWarningAnonymously ('TestConnectionToDatabase|Error:' + $ex.Number + 'State:' + $ex.State)
-            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = ' Connection to database ' + $Database + ' failed due to that the password is missing.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|Password: ' + $erMsg)
         }
-        return $false
-    }
-    Catch {
+        elseif($erMsg -Match 'Access denied for user') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = ' Connection to database ' + $Database + ' failed due to that the password is wrong.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not correct. Please verify if the correct password is placed for a sucessful authentitication.')
+            [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+        }
+        elseif($erMsg -Match 'Unknown database') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = ' Connection to database ' + $Database + ' failed due to that the database does not exist.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine(' It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|1044: ' + $erMsg)
+        }
+        elseif($erMsg -Match 'too many connections') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = ' Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine(' It seems that the server hit "too many connections error".')
+            [void]$summaryRecommendedAction.AppendLine(' We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the number of the active connections reached the max allowed limit in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|1040: ' + $erMsg)
+        }
+        else {
+    
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+            TrackWarningAnonymously ('TestConnectionToDatabase|Error: ' + $erMsg)
+            return $false
+        }
+    } catch {
         Write-Host $_.Exception.Message -ForegroundColor Yellow
         TrackWarningAnonymously 'TestConnectionToDatabase|Exception'
         return $false
