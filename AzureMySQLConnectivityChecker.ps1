@@ -844,6 +844,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             [void]$summaryRecommendedAction.AppendLine($msg)
 
             TrackWarningAnonymously 'MySQL|InvalidGatewayIPAddressWarning'
+            return $false
         }
 
         RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -1097,7 +1098,7 @@ function RunConnectivityPolicyTests($port) {
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
 
-    if (RunMySQLFlexPublicConnectivityTests $resolvedAddress) {
+    if (TestConnectionToDatabase $Server, $dbPort, $Database, $User, $Password) {
 
         Write-Host
         [void]$summaryLog.AppendLine()
@@ -1127,7 +1128,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
         }
     }
     else {
-        Write-Host "Skipping LookupDatabaseMySQL because RunMySQLFlexPublicConnectivityTests failed" -Foreground Yellow
+        Write-Host "Skipping LookupDatabaseMySQL because TestConnectionToDatabase failed" -Foreground Yellow
         return $false
     }
 }
