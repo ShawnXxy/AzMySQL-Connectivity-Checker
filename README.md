@@ -15,7 +15,7 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 ```powershell
 [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 $parameters = @{
-    # Supports Single, Elastic Pools and Managed Instance (please provide FQDN, MI public endpoint is supported)
+    # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
     # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
     Server = '.mysql.database.azure.com' # or any other supported FQDN
     Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
