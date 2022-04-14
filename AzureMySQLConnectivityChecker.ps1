@@ -1128,7 +1128,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
         #Test information_schema database
-        $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
+        $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault) {
