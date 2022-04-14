@@ -543,8 +543,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
-            [void]$summaryRecommendedAction.AppendLine(' We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is put in a STOP mode in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a ready state in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
@@ -565,7 +565,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
+            [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|Password: ' + $erMsg)
             return $false
@@ -581,7 +581,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
+            [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
             # [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
@@ -598,7 +598,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
+            [void]$summaryRecommendedAction.AppendLine('It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1044: ' + $erMsg)
             return $false
@@ -614,8 +614,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' It seems that the server hit "too many connections error".')
-            [void]$summaryRecommendedAction.AppendLine(' We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the number of the active connections reached the max allowed limit in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
