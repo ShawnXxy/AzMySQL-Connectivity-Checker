@@ -323,7 +323,7 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
     Try {
         $dnsResultIpAddress = $null
         if ($errorVariable -and $errorVariable[0].Exception.Message -notmatch 'DNS record does not exist' -and $errorVariable[0].Exception.Message -notmatch 'DNS name does not exist') {
-            $msg = ' Error getting DNS record in ' + $dnsSource + ' (' + $errorVariable[0].Exception.Message.Replace(" : " + $Server, "") + ')'
+            $msg = 'Error getting DNS record in ' + $dnsSource + ' (' + $errorVariable[0].Exception.Message.Replace(" : " + $Server, "") + ')'
             Write-Host $msg
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously $msg
@@ -331,12 +331,12 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
         else {
             if ($dnsResult -and $dnsResult.IPAddress -and !([string]::IsNullOrEmpty($dnsResult.IPAddress))) {
                 $dnsResultIpAddress = $dnsResult.IPAddress
-                $msg = ' Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
+                $msg = 'Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
                 Write-Host $msg
                 [void]$summaryLog.AppendLine($msg)
             }
             else {
-                Write-Host ' Could not find DNS record in' $dnsSource
+                Write-Host 'Could not find DNS record in' $dnsSource
             }
         }
         return $dnsResultIpAddress
@@ -514,6 +514,8 @@ function FilterTranscript() {
     }
 }
 
+# For MySQL connection protocol, it is expected that a true will be returned with exception thrown because no database is required when establishing a connections.
+# In other words, connections can be successfully made without a database name. And if specifying a database, the exception could be thrown against database but connections can still be built
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
     [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
@@ -527,7 +529,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
-        return $true
+        #return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
@@ -1128,10 +1130,10 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
         #Test information_schema database
-        $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
+        $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault -notmatch 'False') {
+            if ($canConnectToDefault) {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host $canConnectToDefault -Foreground Red
@@ -1370,12 +1372,12 @@ try {
         $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
         if ($portOpen) {
             Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = ' Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
+            $msg = 'Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
             [void]$summaryLog.AppendLine($msg)
         }
         else {
             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = ' Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
+            $msg = 'Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1393,12 +1395,12 @@ try {
         $portOpen = $tcpClient.ConnectAsync("login.microsoftonline.com", 443).Wait(10000)
         if ($portOpen) {
             Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = ' Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
+            $msg = 'Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
             [void]$summaryLog.AppendLine($msg)
         }
         else {
             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = ' Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
+            $msg = 'Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1414,12 +1416,12 @@ try {
         $portOpen = $tcpClient.ConnectAsync("secure.aadcdn.microsoftonline-p.com", 443).Wait(10000)
         if ($portOpen) {
             Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = ' Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
+            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
             [void]$summaryLog.AppendLine($msg)
         }
         else {
             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = ' Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
+            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 

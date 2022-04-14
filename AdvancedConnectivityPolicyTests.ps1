@@ -331,10 +331,10 @@ try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($server)
         }
         catch {
-            $msg = ' ERROR: Name resolution (DNS) of ' + $server + ' failed'
+            $msg = 'ERROR: Name resolution (DNS) of ' + $server + ' failed'
             Write-Host $msg -Foreground Red
 
-            $Advanced_DNSResolutionFailed = ' Please make sure the name ' + $server + ' can be resolved (DNS)
+            $Advanced_DNSResolutionFailed = 'Please make sure the name ' + $server + ' can be resolved (DNS)
  Failure to resolve specific domain names is usually a client-side networking issue that you will need to pursue with your local network administrator.'
             Write-Host $Advanced_DNSResolutionFailed -Foreground Red
             TrackWarningAnonymously 'Advanced|Redirect|DNSResolutionFailedForRedirect'
@@ -347,7 +347,7 @@ try {
     }
     else {
         
-        Write-Host ' Proxy connection policy detected!' -ForegroundColor Green
+        Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
         TrackWarningAnonymously 'Advanced|Proxy|Detected'
     }
 }
