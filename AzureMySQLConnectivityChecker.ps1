@@ -884,7 +884,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host ' -> TCP test succeed' -ForegroundColor Green
                 TrackWarningAnonymously ('MySQL|GatewayTestSucceeded|' + $gatewayAddress)
                 PrintAverageConnectionTime $gatewayAddress 3306
-                $msg = ' Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
+                $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
                 [void]$summaryLog.AppendLine($msg)
             }
             else {
@@ -900,7 +900,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                     tracert -h 10 $Server
                 }
 
-                $msg = ' Gateway connectivity to ' + $gatewayAddress + ':3306 FAILED'
+                $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 FAILED'
                 Write-Host $msg -Foreground Red
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine()
@@ -933,7 +933,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 }
 
                 foreach ($port in $TRPorts) {
-                    Write-Host ' Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
+                    Write-Host 'Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
                     $tcpClient = New-Object System.Net.Sockets.TcpClient
                     $portOpen = $tcpClient.ConnectAsync($addr, $port).Wait(6000)
                     if ($portOpen) {
@@ -953,10 +953,10 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$redirectTestsResultMessage.AppendLine()
                 $redirectTestsResultMessage.ToString()
 
-                [void]$redirectTestsResultMessage.AppendLine(' Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
-                [void]$redirectTestsResultMessage.AppendLine(' Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
+                [void]$redirectTestsResultMessage.AppendLine('Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
+                [void]$redirectTestsResultMessage.AppendLine('Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
 
-                [void]$redirectTestsResultMessage.Append(' Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
+                [void]$redirectTestsResultMessage.Append('Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
 
                 $msg = $redirectTestsResultMessage.ToString()
                 Write-Host $msg -Foreground Yellow
@@ -973,7 +973,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 else {
 
                     if ($redirectSucceeded / $redirectTests -eq 0.0 ) {
-                        $msg = ' Based on the result the Redirect Policy will NOT work from this machine'
+                        $msg = 'Based on the result the Redirect Policy will NOT work from this machine'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
                         [void]$summaryLog.AppendLine()
