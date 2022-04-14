@@ -1131,7 +1131,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault) {
+            if ($canConnectToDefault -Match 'False') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host $canConnectToDefault -Foreground Red
