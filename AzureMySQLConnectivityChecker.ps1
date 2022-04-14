@@ -481,7 +481,13 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-    return [bool]((!$gateway) -and (!$hasPrivateLink))
+    # return [bool]((!$gateway) -and (!$hasPrivateLink))
+    if (!$gateway -and (!$hasPrivateLink)) {
+        return $true
+    }
+    else {
+        return $false
+    }
 }
 
 # If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
@@ -492,7 +498,13 @@ function IsMySQLVNet([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-    return [bool]((!$gateway) -and ($hasPrivateLink))
+    # return [bool]((!$gateway) -and ($hasPrivateLink))
+    if (!$gateway -and $hasPrivateLink) {
+        return $true
+    }
+    else {
+        return $false
+    }
 }
 
 function HasPrivateLink([String] $Server) {
