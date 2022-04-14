@@ -5,7 +5,7 @@ using namespace System.Collections.Generic
 using namespace System.Diagnostics
 using namespace MySql.Data.MySqlClient
 
-[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # PowerShell Container Image Support Start
 
@@ -197,7 +197,7 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     return [bool]((!$gateway) -and (!$hasPrivateLink))
 }
 
-function IsMySQLFlexVNet([String] $resolvedAddress) {
+function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }

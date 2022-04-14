@@ -58,7 +58,7 @@ catch {
    Results are displayed in the output window. If the user has permissions to create folders, a folder with the resulting log file will be created, along with a ZIP file (`AllFiles.zip`). When running on Windows, the folder opens automatically after the script completes.
 
 6. Examine the output for any issues detected, and recommended steps to resolve the issue.
-
+<!-- 
 ## Run from Linux
 
 With the current release, PowerShell uses .NET 5.0 as its runtime. PowerShell runs on Windows, macOS, and Linux platforms.  
@@ -193,7 +193,7 @@ The following command is used to delete the container running this image when yo
 ```
 docker container rm sqlconncheckerpowershellinstance
 ```
-
+ -->
 
 # Contributing
 

@@ -687,7 +687,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP test succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = ' TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
+            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL|FlexPublic|TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -1136,7 +1136,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
             if ($canConnectToDefault -Match 'True') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
-                Write-Host $canConnectToDefault -Foreground Red
+                Write-Host $canConnectToDefault -Foreground Yellow
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password

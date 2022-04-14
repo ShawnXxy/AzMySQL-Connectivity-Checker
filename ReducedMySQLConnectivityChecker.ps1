@@ -1,4 +1,4 @@
-[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region when Invoke-Command -ScriptBlock is used
 $parameters = $args[0]
@@ -109,7 +109,7 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     return [bool]((!$gateway) -and (!$hasPrivateLink))
 }
 
-function IsMySQLFlexVNet([String] $resolvedAddress) {
+function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
