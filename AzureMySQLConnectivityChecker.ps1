@@ -522,7 +522,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
     [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
+    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait):", $Database)) -ForegroundColor Green
 
     Try {
         
@@ -1128,6 +1128,10 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault) {
+                $msg = ' Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
+                Write-Host $msg -Foreground Green
+                [void]$summaryRecommendedAction.AppendLine($msg)
+
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
@@ -1156,6 +1160,13 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
             }
             else {
                 #Test database from parameter anyway
+                $msg = ' Default database information_schema cannot be reached. There could be a connectivity issue or lacking of permission to the database. Please refer to other checks below.'
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg)
+
+                $msg = ' Start to checking connecitivity to custom database: ' + $Database 
+                Write-Host $msg -Foreground Yellow
+
                 if ($customDatabaseNameWasSet) {
                     TestConnectionToDatabase $Server $dbPort $Database $User $Password | Out-Null
                 }
