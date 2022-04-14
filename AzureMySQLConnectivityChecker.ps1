@@ -520,7 +520,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
     [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait):", $Database)) -ForegroundColor Green
+    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait):", $Database)) -ForegroundColor White
 
     Try {
         
@@ -1099,7 +1099,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
     [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
+    # Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
     Try {
         Write-Host 'Checking if' $Database 'exists:' -ForegroundColor White
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
