@@ -574,7 +574,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             if ($erno -ne '0') {
                 Write-Host ($erno) -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ($erMsg) -ForegroundColor Red
     
             $msg = ' Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
@@ -685,7 +685,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP test succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 succeed'
+            $msg = ' TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL|FlexPublic|TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -1128,7 +1128,8 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
         #Test information_schema database
-        $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
+        # $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
+        $canConnectToDefault = $false
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault -eq $true) {
