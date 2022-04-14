@@ -224,7 +224,8 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 "
 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = "If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
-We strongly recommend you performing some validations you may do :
+
+We strongly recommend you performing some validations you may do as below :
     - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
     - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
@@ -1154,7 +1155,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
             if ($canConnectToDefault -Match 'True') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
-                Write-Host $canConnectToDefault -Foreground Yellow
+                Write-Host "Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
