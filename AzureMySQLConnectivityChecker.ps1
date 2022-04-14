@@ -167,88 +167,84 @@ $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
 
 # Error Messages
-$DNSResolutionFailed = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
- Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
- or a client-side networking issue that you will need to pursue with your local network administrator.'
+$DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
+Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
+or a client-side networking issue that you will need to pursue with your local network administrator.'
 
-$DNSResolutionGotMultipleAddresses = ' While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
- To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
- The Gateway used is not static, configuring a single specific address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
- Having DNS resolution switching between a couple of Gateway addresses is expected.
- If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
- Please review the DNS results.'
+$DNSResolutionGotMultipleAddresses = 'While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
+To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
+The Gateway used is not static, configuring a single specific address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
+Having DNS resolution switching between a couple of Gateway addresses is expected.
+If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
+Please review the DNS results.'
 
 # $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
 #  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 #  or a client-side networking issue that you will need to pursue with your local network administrator.'
 
-$MySQL_InvalidGatewayIPAddress = ' In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
- In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
- or a client-side networking issue that you will need to pursue with your local network administrator.
- See the valid gateway addresses at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses.'
+$MySQL_InvalidGatewayIPAddress = 'In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
+In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
+or a client-side networking issue that you will need to pursue with your local network administrator.
+See the valid gateway addresses at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses.'
 
-$MySQL_GatewayTestFailed = ' Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture. '
+$MySQL_GatewayTestFailed = 'Failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture. '
 
-$MySQL_Redirect = " Azure MySQL Single Server supports Redirect and Proxy for the server's connection policy setting:
+$MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the server's connection policy setting:
 
- Proxy: This is the default connection mode and applies in most scenarios.In this mode, all connections are proxied via the Azure MySQL Database gateways. 
- For connections to use this mode, clients need to allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306. 
- See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture.
+    Proxy: This is the default connection mode and applies in most scenarios.In this mode, all connections are proxied via the Azure MySQL Database gateways. 
+    For connections to use this mode, clients need to allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306. 
+    See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture.
 
- Redirect (applies for PHP only at current state): Clients establish connections directly to the node hosting the database, leading to reduced latency and improved throughput.
- The node address and port number can be queried by [SHOW GLOBAL VARIALBES LIKE '%redir%'].
- For connections to use this mode, clients need to:
-  - Allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.
-  - Allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306.
+    Redirect (applies for PHP only at current state): Clients establish connections directly to the node hosting the database, leading to reduced latency and improved throughput.
+    The node address and port number can be queried by [SHOW GLOBAL VARIALBES LIKE '%redir%'].
+    For connections to use this mode, clients need to:
+    - Allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.
+    - Allow outbound communication from the client to Azure MySQL gateway IP addresses on port 3306.
 
- If you are using Proxy, the Redirect Policy related tests would not be a problem.
- If you are using Redirect, failure to reach ports in the range of 11000-11999 is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. "
+    If you are using Proxy, the Redirect Policy related tests would not be a problem.
+    If you are using Redirect, failure to reach ports in the range of 11000-11999 is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+    Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
+   "
 
-$AzureMySQLFlex_VNetTestFailed = " You can connect to Azure MySQL Flexible Server via private address if you are connecting from one of the following:
- - machine inside the same virtual network
- - machine in a peered virtual network
- - machine that is network connected by VPN or Azure ExpressRoute
+$AzureMySQLFlex_VNetTestFailed = "You can connect to Azure MySQL Flexible Server via private address if you are connecting from one of the following:
+    - machine inside the same virtual network
+    - machine in a peered virtual network
+    - machine that is network connected by VPN or Azure ExpressRoute
 
- Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- We strongly recommend you request assistance from your network administrator, some validations you may do together are:
-
- - The host name is valid and port used for the connection is 3306, format is tcp:<servername>.mysql.database.azure.com,3306
-
- - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
-
- - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
-
- - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
-
- - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
-
+Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+We strongly recommend you request assistance from your network administrator, some validations you may do together are:
+    - The host name is valid and port used for the connection is 3306, format is tcp:<servername>.mysql.database.azure.com,3306
+    - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
+    - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
+    - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
+    - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
+
 "
 
-$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
- We strongly recommend you performing some validations you may do :
- - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
- - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
+$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = "If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
+We strongly recommend you performing some validations you may do :
+    - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
+    - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
 
-$AAD_login_windows_net = ' If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
- This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
+$AAD_login_windows_net = 'If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
+This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$AAD_login_microsoftonline_com = ' If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to login.microsoftonline.com:443
- This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
+$AAD_login_microsoftonline_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to login.microsoftonline.com:443
+This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$AAD_secure_aadcdn_microsoftonline_p_com = ' If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
- This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
+$AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
+This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$ServerNameNotSpecified = ' The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
- You can see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
+$ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
+You can see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
 
-$CannotDownloadAdvancedScript = ' Advanced connectivity policy tests script could not be downloaded!
- Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/
- or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/'
+$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
+Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/
+or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/'
 
 $DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure SQL Database and Azure Synapse Analytics doesn't have a static IP address.
 Logins for Azure SQL Database or Azure Synapse Analytics can land on any of the Gateways in a region.
@@ -554,6 +550,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|18456: ' + $erMsg)
+            return $false
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
@@ -569,6 +566,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|Password: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
@@ -585,6 +583,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
@@ -600,6 +599,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine(' It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1044: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
@@ -619,6 +619,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1040: ' + $erMsg)
+            return $false
         }
         else {
     
@@ -1360,7 +1361,7 @@ try {
         Write-Host
         [void]$summaryLog.AppendLine()
         Write-Host 'Test endpoints for AAD Password and Integrated Authentication:' -ForegroundColor Green
-        Write-Host ' Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
+        Write-Host 'Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
         $tcpClient = New-Object System.Net.Sockets.TcpClient
         $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
         if ($portOpen) {
