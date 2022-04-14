@@ -529,7 +529,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     
         Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
-        #return $true
+        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
+        return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
@@ -576,7 +577,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             if ($erno -ne '0') {
                 Write-Host ($erno) -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Red
+            Write-Host ($erMsg) -ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
@@ -584,7 +585,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-            # [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
             return $false
@@ -1133,7 +1133,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault) {
+            if ($canConnectToDefault -notmatch 'False') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host $canConnectToDefault -Foreground Red
