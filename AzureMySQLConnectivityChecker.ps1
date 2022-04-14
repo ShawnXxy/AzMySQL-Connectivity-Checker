@@ -172,16 +172,11 @@ $DNSResolutionFailed = ' Please make sure the server name FQDN is correct and th
  or a client-side networking issue that you will need to pursue with your local network administrator.'
 
 $DNSResolutionGotMultipleAddresses = ' While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
- To connect to SQL Database or Azure Synapse, you need to allow network traffic to and from all Gateways for the region.
+ To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
  The Gateway used is not static, configuring a single specific address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
  Having DNS resolution switching between a couple of Gateway addresses is expected.
  If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
  Please review the DNS results.'
-
-# $DNSResolutionGotMultipleAddressesMI = ' While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
-#  SQL Managed Instance IP address may change, see more at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/frequently-asked-questions-faq#connectivity
-#  Configuring a specific IP address (like in hosts file) may lead to total lack of connectivity or intermittent connectivity issues (now or in the future).
-#  Please review the DNS results.'
 
 # $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
 #  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
@@ -467,16 +462,9 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 TrackWarningAnonymously $msg
 
-                # if (IsMySQLFlexPublic $resolvedAddress) {
-                #     $msg = $DNSResolutionGotMultipleAddressesMI
-                #     Write-Host $msg -Foreground Red
-                #     [void]$summaryRecommendedAction.AppendLine($msg)
-                # }
-                # else {
-                #     $msg = $DNSResolutionGotMultipleAddresses
-                #     Write-Host $msg -Foreground Red
-                #     [void]$summaryRecommendedAction.AppendLine($msg)
-                # }
+                $msg = $DNSResolutionGotMultipleAddresses
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg)
             }
         }
         else {
@@ -489,6 +477,7 @@ function ValidateDNS([String] $Server) {
     }
 }
 
+# MySQL Flexible Server will not be resolved to a GW or private link 
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
@@ -497,7 +486,10 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     return [bool]((!$gateway) -and (!$hasPrivateLink))
 }
 
-function IsMySQLFlexVNet([String] $resolvedAddress) {
+# If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
+#   -- a Single Server configured with privatelink and making connections from a client in the same vnet
+#   -- a Flexible Server configured with VNet Intergrated and making connections from a client in the same vnet
+function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
@@ -528,11 +520,13 @@ function FilterTranscript() {
 }
 
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
+    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
+
     Try {
-        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+        
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         $MySQLConnection.Open()
     
@@ -718,14 +712,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     }
 }
 
-function RunMySQLFlexVNetConnectivityTests($resolvedAddress) {
+function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-        Write-Host 'Detected as Azure MySQL FLexible Server VNET Integrated' -ForegroundColor Yellow
+        Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
         $hasPrivateLink = HasPrivateLink $Server
-        if ($hasPrivateLink) {
-            Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
-            TrackWarningAnonymously 'MySQL|FlexPrivate'
-        }
+        # if ($hasPrivateLink) {
+        #     Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
+        #     TrackWarningAnonymously 'MySQL|FlexPrivate'
+        # }
         Write-Host
         Write-Host 'Connectivity tests (please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
@@ -733,7 +727,7 @@ function RunMySQLFlexVNetConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP test succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            TrackWarningAnonymously 'MySQL|FlexPrivate|TestSucceeded'
+            TrackWarningAnonymously 'MySQL|Private|TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             return $true
         }
@@ -762,14 +756,14 @@ function RunMySQLFlexVNetConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL|FlexPrivate|TestFailed'
+            TrackWarningAnonymously 'MySQL|Private|TestFailed'
             return $false
         }
     }
     Catch {
-        Write-Host "Error at RunMySQLFlexVNetConnectivityTests" -Foreground Red
+        Write-Host "Error at RunMySQLVNetConnectivityTests" -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunMySQLFlexVNetConnectivityTests|Exception'
+        TrackWarningAnonymously 'RunMySQLVNetConnectivityTests|Exception'
         return $false
     }
 }
@@ -827,10 +821,10 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQL|PrivateLink'
         }
-        elseif (!$hasPrivateLink -and $resolvedAddress ) {
-            Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
-            TrackWarningAnonymously 'MySQL|MeruPublic'
-        }
+        # elseif (!$hasPrivateLink -and $resolvedAddress ) {
+        #     Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
+        #     TrackWarningAnonymously 'MySQL|MeruPublic'
+        # }
         else {
             $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid address'
             Write-Host $msg -Foreground Red
@@ -1097,38 +1091,30 @@ function RunConnectivityPolicyTests($port) {
 }
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
+    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+    Write-Host
+    [void]$summaryLog.AppendLine()
+    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
+    Try {
+        Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
+        $MySQLConnection.Open()
 
-    if (TestConnectionToDatabase $Server, $dbPort, $Database, $User, $Password) {
+        $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
+        $MySQLCommand.Connection = $MySQLConnection
 
-        Write-Host
-        [void]$summaryLog.AppendLine()
-        Write-Host ([string]::Format("Testing connecting to {0} database (please wait):", $Database)) -ForegroundColor Green
-        Try {
-            Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
-            [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-            $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]::new()
-            $MySQLConnection.ConnectionString = [string]::Format("Server=tcp:{0},{1};Initial Catalog='information_schema';Persist Security Info=False;User ID='{2}';Password='{3}';pooling=false;sslmode=Preferred;Connection Timeout=30;",
-                $Server, $dbPort, $User, $Password)
-            $MySQLConnection.Open()
-
-            $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
-            $MySQLCommand.Connection = $MySQLConnection
-
-            $MySQLCommand.CommandText = "USE " + $Database + ";"
-            $MySQLResult = $MySQLCommand.ExecuteReader()
-            $MySQLResultDataSet = new-object 'System.Data.DataSet'
-            $MySQLResultDataSet.Load($MySQLResult)
-
-            return $MySQLResultDataSet.Rows[0].C -ne 0
+        $MySQLCommand.CommandText = "USE " + $Database + ";"
+        $MySQLResult = $MySQLCommand.ExecuteReader()
+        while ($MySQLResult.Read()) { 
+            $MySQLResult.GetString(0) 
         }
-        Catch {
-            Write-Host $_.Exception.Message -ForegroundColor Yellow
-            TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
-            return $false
-        }
+
+        return $MySQLResult.C -ne 0
+        
     }
-    else {
-        Write-Host "Skipping LookupDatabaseMySQL because TestConnectionToDatabase failed" -Foreground Yellow
+    Catch {
+        Write-Host $_.Exception.Message -ForegroundColor Yellow
+        TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
         return $false
     }
 }
@@ -1354,8 +1340,8 @@ try {
         if (IsMySQLFlexPublic $resolvedAddress) {
             RunMySQLFlexPublicConnectivityTests $resolvedAddress
         }
-        elseif (IsMySQLFlexVNet $resolvedAddress) {
-            RunMySQLFlexVNetConnectivityTests $resolvedAddress
+        elseif (IsMySQLVNet $resolvedAddress) {
+            RunMySQLVNetConnectivityTests $resolvedAddress
         }
         else {
             RunMySQLConnectivityTests $resolvedAddress
