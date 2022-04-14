@@ -560,7 +560,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = ' Connection to database ' + $Database + ' failed due to that the password is missing.'
+            $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
@@ -576,7 +576,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Red
     
-            $msg = ' Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
+            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
@@ -593,7 +593,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = ' Connection to database ' + $Database + ' failed due to that the database does not exist.'
+            $msg = 'Connection to database ' + $Database + ' failed due to that the database does not exist.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
@@ -609,7 +609,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = ' Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
+            $msg = 'Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
@@ -1128,7 +1128,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
 
         #Test information_schema database
-        $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
+        $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault -notmatch 'False') {
