@@ -227,11 +227,10 @@ $AzureMySQLFlex_VNetTestFailed = " You can connect to Azure MySQL Flexible Serve
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
 "
 
-$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
- We strongly recommend you request assistance from your network administrator, some validations you may do together are:
+$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = " If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
+ We strongly recommend you performing some validations you may do :
  - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
- - You have allowed public endpoint traffic on the network security group, see https://docs.microsoft.com/azure/azure-sql/managed-instance/public-endpoint-configure#allow-public-endpoint-traffic-on-the-network-security-group
- - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.).
+ - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
 
@@ -1067,16 +1066,16 @@ function RunConnectivityPolicyTests($port) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
-                if (IsMySQLFlexPublic $resolvedAddress ) {
-                    [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
-                    [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
-                    TrackWarningAnonymously ('Advanced|SQLMI|RCA|Port' + $networkingErrorPort)
-                }
-                else {
-                    [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
-                    [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
-                    TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
-                }
+                # if (IsMySQLFlexPublic $resolvedAddress ) {
+                #     [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
+                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
+                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
+                # }
+                # else {
+                #     [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
+                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
+                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
+                # }
             }
         }
         Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
@@ -1445,7 +1444,7 @@ try {
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
 
             if (IsMySQLFlexPublic $resolvedAddress ) {
-                Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connect-application-instance#required-versions-of-drivers-and-tools' -ForegroundColor Yellow
+                Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/mysql/concepts-compatibility' -ForegroundColor Yellow
             }
 
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
