@@ -1099,7 +1099,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
     Try {
-        Write-Host ' Checking if' $Database 'exists:' -ForegroundColor White
+        Write-Host 'Checking if' $Database 'exists:' -ForegroundColor White
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         $MySQLConnection.Open()
 
@@ -1131,8 +1131,8 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $canConnectToDefault = [bool](TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password)
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault) {
-                $msg = ' Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
+            if ($canConnectToDefault -eq $true) {
+                $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
@@ -1149,14 +1149,14 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     }
                 }
                 else {
-                    $msg = ' ERROR: ' + $Database + ' was not found in MySQL!'
+                    $msg = ' ERROR: ' + $Database + 'was not found in MySQL!'
                     Write-Host $msg -Foreground Red
                     [void]$summaryLog.AppendLine()
                     [void]$summaryLog.AppendLine($msg)
                     [void]$summaryRecommendedAction.AppendLine()
                     [void]$summaryRecommendedAction.AppendLine($msg)
 
-                    $msg = ' Please confirm the database name is correct and/or look at the operation logs to see if the database has been dropped by another user.'
+                    $msg = 'Please confirm the database name is correct and/or look at the operation logs to see if the database has been dropped by another user.'
                     Write-Host $msg -Foreground Red
                     [void]$summaryRecommendedAction.AppendLine($msg)
                     TrackWarningAnonymously 'DatabaseNotFoundInMySQL'
@@ -1311,7 +1311,7 @@ try {
 
         if ($canWriteFiles -and $CollectNetworkTrace) {
             if (!$CustomerRunningInElevatedMode) {
-                Write-Host ' Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
+                Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
             }
             else {
