@@ -228,7 +228,7 @@ try {
     
     if (!$Server -or $Server.Length -eq 0) {
         Write-Output 'The $Server parameter is empty'
-        Write-Output 'Please see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
+        Write-Output 'Please see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
         Write-Output ''
         throw
     }
@@ -254,7 +254,7 @@ try {
         Remove-Item $path
     }
     
-    Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/SQL-Connectivity-Checker/raw/xixia/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $path -UseBasicParsing
+    Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/xixia/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $path -UseBasicParsing
     
     $path = $env:TEMP + "/TDSClient.dll"
     $assembly = [System.IO.File]::ReadAllBytes($path)

@@ -240,14 +240,14 @@ $AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with 
 This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
 $ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
-You can see more details about how to use this tool at https://github.com/ShawnXxy/SQL-Connectivity-Checker'
+You can see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
 
 $CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
-Confirm this machine can access https://github.com/ShawnXxy/SQL-Connectivity-Checker/
-or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/SQL-Connectivity-Checker/'
+Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
+or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/'
 
-$DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure SQL Database and Azure Synapse Analytics doesn't have a static IP address.
-Logins for Azure SQL Database or Azure Synapse Analytics can land on any of the Gateways in a region.
+$DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure MySQL doesn't have a static IP address.
+Logins for Azure MySQL can land on any of the Gateways in a region.
 For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
 
 # $DNSResolutionDNSfromHostsFileMI = "We detected a configuration via hosts file, note that Managed instance doesn't have a static IP address.
@@ -1042,7 +1042,7 @@ function RunConnectivityPolicyTests($port) {
         else {
             try {
                 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/SQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
+                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
             }
             catch {
                 $msg = $CannotDownloadAdvancedScript
@@ -1487,7 +1487,7 @@ try {
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/azure-sql/database/connect-query-content-reference-guide' -ForegroundColor Yellow
             Write-Host
-            Write-Host 'If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/SQL-Connectivity-Checker/issues' -ForegroundColor Green
+            Write-Host 'If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues' -ForegroundColor Green
 
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
