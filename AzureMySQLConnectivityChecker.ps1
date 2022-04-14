@@ -551,6 +551,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|18456: ' + $erMsg)
+            return $false
             
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
@@ -567,6 +568,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|Password: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
@@ -574,15 +576,16 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = ' Connection to database ' + $Database + ' failed due to that the password is wrong.'
+            $msg = ' Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine(' It seems that the password is not correct. Please verify if the correct password is placed for a sucessful authentitication.')
-            [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
+            [void]$summaryRecommendedAction.AppendLine(' It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
+            # [void]$summaryRecommendedAction.AppendLine(' You can try to reset the pasword in Portal to see if it could be mitigated.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
@@ -598,6 +601,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine(' It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1044: ' + $erMsg)
+            return $false
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
@@ -617,6 +621,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1040: ' + $erMsg)
+            return $false
         }
         else {
     
@@ -625,6 +630,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
             TrackWarningAnonymously ('TestConnectionToDatabase|Error: ' + $erMsg)
+            return $false
         }
         return $false
     } catch {
