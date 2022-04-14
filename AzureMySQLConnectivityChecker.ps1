@@ -538,7 +538,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host ($erno) -ForegroundColor Red
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = ' Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
+            $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
@@ -1131,7 +1131,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault -Match 'False') {
+            if ($canConnectToDefault -notmatch 'False') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host $canConnectToDefault -Foreground Red
@@ -1150,7 +1150,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     }
                 }
                 else {
-                    $msg = ' ERROR: ' + $Database + 'was not found in MySQL!'
+                    $msg = 'ERROR: ' + $Database + ' was not found in MySQL!'
                     Write-Host $msg -Foreground Red
                     [void]$summaryLog.AppendLine()
                     [void]$summaryLog.AppendLine($msg)
