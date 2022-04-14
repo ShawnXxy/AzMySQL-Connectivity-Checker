@@ -15,7 +15,7 @@ using namespace System.Diagnostics
 using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
-[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region for when script is run directly
 # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
@@ -517,10 +517,10 @@ function FilterTranscript() {
 # For MySQL connection protocol, it is expected that a true will be returned with exception thrown because no database is required when establishing a connections.
 # In other words, connections can be successfully made without a database name. And if specifying a database, the exception could be thrown against database but connections can still be built
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
-    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
-    [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait):", $Database)) -ForegroundColor White
+    # [void]$summaryLog.AppendLine()
+    Write-Host ([string]::Format("Testing connection to database - {0} (please wait):", $Database)) -ForegroundColor White
 
     Try {
         
@@ -1096,7 +1096,7 @@ function RunConnectivityPolicyTests($port) {
 }
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
-    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
     Write-Host
     [void]$summaryLog.AppendLine()
     # Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
@@ -1170,6 +1170,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 $msg = 'Default database information_schema cannot be reached. There could be a connectivity issue or lacking of permission to the database. Please refer to other checks below.'
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine()
 
                 $msg = 'Start to check connecitivity to custom database: ' + $Database 
                 Write-Host $msg -Foreground Yellow
