@@ -421,6 +421,7 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine()
             }
 
             if (!$DNSfromCustomerServerAddress) {
@@ -431,6 +432,7 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
 
@@ -442,6 +444,7 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
             }
 
@@ -952,6 +955,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                     $msg = ' Based on the result it is likely the Redirect Policy will work from this machine'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg)
+                    [void]$summaryLog.AppendLine()
                 }
                 else {
 
@@ -959,12 +963,14 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                         $msg = ' Based on the result the Redirect Policy will NOT work from this machine'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
+                        [void]$summaryLog.AppendLine()
                         TrackWarningAnonymously 'MySQL|Redirect|AllTestsFailed'
                     }
                     else {
                         $msg = ' Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
+                        [void]$summaryLog.AppendLine()
                         TrackWarningAnonymously ('MySQL|Redirect|MoreThanHalfFailed|' + $redirectSucceeded + '/' + $redirectTests)
                     }
 
