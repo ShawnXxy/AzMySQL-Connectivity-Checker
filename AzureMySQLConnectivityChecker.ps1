@@ -527,9 +527,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format(" The connection attempt succeeded", $Database))
-        [void]$summaryLog.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection attempt to {0} database succeeded", $Database))
+        Write-Host ([string]::Format("The connection attempt succeeded", $Database))
+        [void]$summaryLog.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
@@ -1133,7 +1133,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $canConnectToDefault = TestConnectionToDatabase $Server $dbPort 'information_schema' $User $Password
 
         if ($customDatabaseNameWasSet) {
-            if ($canConnectToDefault -notmatch 'False') {
+            if ($canConnectToDefault -Match 'True') {
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host $canConnectToDefault -Foreground Red
@@ -1142,7 +1142,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
-                    $msg = '  ' + $Database + ' was found in MySQL'
+                    $msg = $Database + ' was found in MySQL'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg)
 
