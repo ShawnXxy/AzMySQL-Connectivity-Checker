@@ -292,7 +292,7 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         );
         process {
             try {
-                Write-Host " Trying to resolve DNS for" $Name
+                Write-Host "Trying to resolve DNS for" $Name
                 return @{ IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
             }
             catch {
@@ -467,7 +467,7 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            Write-Host ' DNS resolution:' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
+            Write-Host 'DNS resolution:' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
         }
     }
     Catch {
@@ -965,7 +965,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 TrackWarningAnonymously ('MySQL|Redirect|' + $gateway.Region + '|' + $redirectSucceeded + '/' + $redirectTests)
 
                 if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
-                    $msg = ' Based on the result it is likely the Redirect Policy will work from this machine'
+                    $msg = 'Based on the result it is likely the Redirect Policy will work from this machine'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg)
                     [void]$summaryLog.AppendLine()
@@ -980,7 +980,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                         TrackWarningAnonymously 'MySQL|Redirect|AllTestsFailed'
                     }
                     else {
-                        $msg = ' Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
+                        $msg = 'Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
                         [void]$summaryLog.AppendLine()
@@ -1477,7 +1477,7 @@ try {
         Write-Host 'RECOMMENDED ACTION(S):' -ForegroundColor Yellow
         Write-Host '######################################################' -ForegroundColor Green
         if ($summaryRecommendedAction.Length -eq 0) {
-            Write-Host ' We could not detect any issue while using SqlClient driver, we suggest you:' -ForegroundColor Green
+            Write-Host 'We could not detect any issue while using SqlClient driver, we suggest you:' -ForegroundColor Green
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
 

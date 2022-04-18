@@ -5,12 +5,13 @@ This PowerShell script will run some connectivity checks from this machine to th
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
 **In order to run it you need to:**
-1. Open Windows PowerShell ISE (in Administrator mode if possible)
+1. Ensure MySQL .Net Connector is installed. Please refer to https://dev.mysql.com/downloads/connector/net/8.0.html
+2. Open Windows PowerShell ISE (in Administrator mode if possible)
 In order for a network trace to be collected along with the tests ('CollectNetworkTrace' parameter), PowerShell must be run as an administrator.
 
-2. Open a New Script window
+3. Open a New Script window
 
-3. Paste the following in the script window:
+4. Paste the following in the script window:
 
 ```powershell
 [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
@@ -52,12 +53,12 @@ catch {
 }
 #end
 ```
-4. Set the parameters on the script. You must set the server name and database name. User and password are optional, but best practices.
+5. Set the parameters on the script. You must set the server name and database name. User and password are optional, but best practices.
 
-5. Run it.  
+6. Run it.  
    Results are displayed in the output window. If the user has permissions to create folders, a folder with the resulting log file will be created, along with a ZIP file (`AllFiles.zip`). When running on Windows, the folder opens automatically after the script completes.
 
-6. Examine the output for any issues detected, and recommended steps to resolve the issue.
+7. Examine the output for any issues detected, and recommended steps to resolve the issue.
 <!-- 
 ## Run from Linux
 
