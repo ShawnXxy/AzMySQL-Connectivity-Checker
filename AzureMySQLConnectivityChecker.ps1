@@ -161,7 +161,7 @@ $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "US Gov Virginia"; Gateways = ("13.72.48.140"); TRs = ('tr8', 'tr260'); Cluster = 'usgoveast1-a.worker.database.usgovcloudapi.net'; }
 )
 
-$TRPorts = 16000..16020
+$TRPorts = 16000..16005 # this real range would be from 16000 to 16499. For testing purpose, only list 5.
 $summaryLog = New-Object -TypeName "System.Text.StringBuilder"
 $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
