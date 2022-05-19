@@ -569,7 +569,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|18456: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase|unavailble: ' + $erMsg)
             return $false
             
         } 
@@ -603,6 +603,22 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+            return $false
+        }
+        elseif($erMsg -Match 'Invalid Username') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to that the format of username is wrong. The Username should be in <username@hostname> format.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('It seems that the  format of username used for a Single Server is wrong. The Username should be in <username@hostname> format. Please verify if the correct username/password is placed for a sucessful authentitication.')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|username: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'Unknown database') {
