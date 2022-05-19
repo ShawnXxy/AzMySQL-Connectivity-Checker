@@ -347,8 +347,13 @@ try {
     }
     else {
         
-        Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
-        TrackWarningAnonymously 'Advanced|Proxy|Detected'
+        $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+        if ($gateway -ne $null) {
+            Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
+            TrackWarningAnonymously 'Advanced|Proxy|Detected' 
+        }
+        
     }
 }
 catch {
