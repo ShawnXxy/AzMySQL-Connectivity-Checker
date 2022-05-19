@@ -106,7 +106,13 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-    return [bool]((!$gateway) -and (!$hasPrivateLink))
+    # return [bool]((!$gateway) -and (!$hasPrivateLink))
+    if (!$gateway -and (!$hasPrivateLink)) {
+        return $true
+    }
+    else {
+        return $false
+    }
 }
 
 function IsMySQLVNet([String] $resolvedAddress) {
@@ -114,7 +120,13 @@ function IsMySQLVNet([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-    return [bool]((!$gateway) -and ($hasPrivateLink))
+    # return [bool]((!$gateway) -and ($hasPrivateLink))
+    if (!$gateway -and $hasPrivateLink) {
+        return $true
+    }
+    else {
+        return $false
+    }
 }
 
 function SendAnonymousUsageData {
