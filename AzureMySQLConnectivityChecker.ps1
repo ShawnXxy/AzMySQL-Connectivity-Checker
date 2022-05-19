@@ -611,12 +611,12 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-            $msg = 'Connection to database ' + $Database + ' failed due to that the format of username is wrong. The Username should be in <username@hostname> format.'
+            $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that the  format of username used for a Single Server is wrong. The Username should be in <username@hostname> format. Please verify if the correct username/password is placed for a sucessful authentitication.')
+            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|username: ' + $erMsg)
             return $false
