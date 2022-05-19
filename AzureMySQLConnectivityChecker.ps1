@@ -736,7 +736,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
         Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
-        $hasPrivateLink = HasPrivateLink $Server
+        # $hasPrivateLink = HasPrivateLink $Server
         # if ($hasPrivateLink) {
         #     Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
         #     TrackWarningAnonymously 'MySQL|FlexPrivate'
