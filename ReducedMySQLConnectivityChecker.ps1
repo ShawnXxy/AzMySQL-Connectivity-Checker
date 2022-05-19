@@ -134,7 +134,7 @@ function SendAnonymousUsageData {
         $body = New-Object PSObject `
         | Add-Member -PassThru NoteProperty name 'Microsoft.ApplicationInsights.Event' `
         | Add-Member -PassThru NoteProperty time $([System.dateTime]::UtcNow.ToString('o')) `
-        | Add-Member -PassThru NoteProperty iKey "a75c333b-14cb-4906-aab1-036b31f0ce8a" `
+        | Add-Member -PassThru NoteProperty iKey "c65afb3b-f428-49d2-a3de-cf2ecc803cc3" `
         | Add-Member -PassThru NoteProperty tags (New-Object PSObject | Add-Member -PassThru NoteProperty 'ai.user.id' $StringBuilderHash.ToString()) `
         | Add-Member -PassThru NoteProperty data (New-Object PSObject `
             | Add-Member -PassThru NoteProperty baseType 'EventData' `
