@@ -334,8 +334,7 @@ try {
             $msg = 'ERROR: Name resolution (DNS) of ' + $server + ' failed'
             Write-Host $msg -Foreground Red
 
-            $Advanced_DNSResolutionFailed = 'Please make sure the name ' + $server + ' can be resolved (DNS)
- Failure to resolve specific domain names is usually a client-side networking issue that you will need to pursue with your local network administrator.'
+            $Advanced_DNSResolutionFailed = 'Please make sure the name ' + $server + ' can be resolved (DNS). Failure to resolve specific domain names is usually a client-side networking issue that you will need to pursue with your local network administrator.'
             Write-Host $Advanced_DNSResolutionFailed -Foreground Red
             TrackWarningAnonymously 'Advanced|Redirect|DNSResolutionFailedForRedirect'
             return
@@ -346,9 +345,12 @@ try {
         PrintAverageConnectionTime $resolvedAddress $port
     }
     else {
+        $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+        if ($gateway) {
+            Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
+            TrackWarningAnonymously 'Advanced|Proxy|Detected'
+        }
         
-        Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
-        TrackWarningAnonymously 'Advanced|Proxy|Detected'
     }
 }
 catch {
