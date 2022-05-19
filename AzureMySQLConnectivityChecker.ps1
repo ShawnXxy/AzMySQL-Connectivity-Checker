@@ -569,7 +569,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|18456: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase|unavailble: ' + $erMsg)
             return $false
             
         } 
@@ -603,6 +603,22 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+            return $false
+        }
+        elseif($erMsg -Match 'Invalid Username') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase|username: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'Unknown database') {
