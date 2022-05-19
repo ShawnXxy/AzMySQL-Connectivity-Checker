@@ -87,7 +87,7 @@ if ($null -eq $Local) {
 }
 
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'xixia'
+    $RepositoryBranch = 'master'
 }
 
 $CustomerRunningInElevatedMode = $false
@@ -1486,7 +1486,7 @@ try {
             }
 
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
-            Write-Host ' See more at https://docs.microsoft.com/en-us/azure/azure-sql/database/connect-query-content-reference-guide' -ForegroundColor Yellow
+            Write-Host ' See more at https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string' -ForegroundColor Yellow
             Write-Host
             Write-Host 'If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues' -ForegroundColor Green
 
