@@ -1,6 +1,6 @@
 # Azure MySQL Connectivity Checker
 
-This PowerShell script will run some connectivity checks from this machine to the server and database.  
+Inspired by https://github.com/Azure/SQL-Connectivity-Checker, this PowerShell script will run some connectivity checks from this machine to the server and database.  
 - Supports Single, Flexible (please provide FQDN).
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
