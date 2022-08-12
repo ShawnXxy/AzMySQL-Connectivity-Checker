@@ -59,19 +59,33 @@ catch {
    Results are displayed in the output window. If the user has permissions to create folders, a folder with the resulting log file will be created, along with a ZIP file (`AllFiles.zip`). When running on Windows, the folder opens automatically after the script completes.
 
 7. Examine the output for any issues detected, and recommended steps to resolve the issue.
-<!-- 
+
 ## Run from Linux
 
 With the current release, PowerShell uses .NET 5.0 as its runtime. PowerShell runs on Windows, macOS, and Linux platforms.  
 
-1. In order to run this script on Linux you need to installing PowerShell on Linux (if you haven't before).
+In order to run this script on Linux you need to 
+1. Installing PowerShell on Linux (if you haven't before).
    See how to get the packages at https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux
 
-2. After the package is installed, run pwsh from a terminal.
+2. Installing Mono on Linux (if you haven't before).    
+   See how to get the packages at https://www.mono-project.com/download/stable/#download-lin-ubuntu
 
-3. Set the parameters on the following script then copy paste it to the terminal. You must set the server name and database name. User and password are optional, but best practices.
+3. Download MySQL .Net connector and save on Linux from https://dev.mysql.com/downloads/connector/net/
+    ![image](/rsc/mysql-net-connector.png)
+    Making sure the folder is unzipped.
+
+4. After the package is installed, run ***pwsh*** from a Linux terminal. In the openned PowerShell console, register mysqlclient library by running the following command:
+
+    ```powershell
+    sudo gacutil -i "{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll"  # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
+    
+    ```
+
+5. Set the parameters on the following script then copy paste it to the terminal. You must set the server name and database name. User and password are optional, but best practices.
 
 ```powershell
+[system.reflection.Assembly]::LoadFrom("{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll") # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
 $parameters = @{
     # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
     # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -141,7 +155,7 @@ If the user has the permissions to create folders, a folder with the resulting l
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
 
-## Running SQL Connectivity Checker in containerized environment
+<!-- ## Running SQL Connectivity Checker in containerized environment
 
 In order to troubleshoot your containerized application you'll have to temporarily deploy a Powershell Image which will allow you to execute this script and collect the results, you can see all the available Powershell Images [here](https://hub.docker.com/_/microsoft-powershell).
 
@@ -193,8 +207,8 @@ The following command is used to delete the container running this image when yo
 
 ```
 docker container rm sqlconncheckerpowershellinstance
-```
- -->
+``` -->
+
 
 # Contributing
 
