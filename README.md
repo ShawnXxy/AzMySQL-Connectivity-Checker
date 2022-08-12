@@ -135,7 +135,7 @@ catch {
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
-1. Copy the 'SQL-Connectivity-Checker-master.zip' file to the machine you need to run tests from.
+1. Copy the downloaded zip file to the machine you need to run tests from.
 
 1. Extract all the files into a folder.
 
