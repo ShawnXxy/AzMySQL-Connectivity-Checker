@@ -569,7 +569,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|unavailble: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $erMsg)
             return $false
             
         } 
@@ -586,7 +586,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|Password: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'Access denied for user') {
@@ -602,7 +602,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|1045: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'Invalid Username') {
@@ -618,7 +618,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|username: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | username: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'Unknown database') {
@@ -634,7 +634,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|1044: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | 1044: ' + $erMsg)
             return $false
         }
         elseif($erMsg -Match 'too many connections') {
@@ -654,7 +654,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
     
-            TrackWarningAnonymously ('TestConnectionToDatabase|1040: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
         else {
@@ -663,13 +663,13 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 Write-Host ($erno) -ForegroundColor Red
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
-            TrackWarningAnonymously ('TestConnectionToDatabase|Error: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | Error: ' + $erMsg)
             return $false
         }
         return $false
     } catch {
         Write-Host $_.Exception.Message -ForegroundColor Yellow
-        TrackWarningAnonymously 'TestConnectionToDatabase|Exception'
+        TrackWarningAnonymously 'TestConnectionToDatabase | Exception'
         return $false
     }
 }
@@ -721,7 +721,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
-            TrackWarningAnonymously 'MySQL|FlexPublic|TestSucceeded'
+            TrackWarningAnonymously 'MySQL | FlexPublic | TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
         else {
@@ -738,14 +738,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL|FlexPublic|TestFailed'
+            TrackWarningAnonymously 'MySQL | FlexPublic | TestFailed'
             return $false
         }
     }
     Catch {
         Write-Host "Error at RunMySQLFlexPublicConnectivityTests" -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests|Exception'
+        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests | Exception'
     }
 }
 
@@ -793,14 +793,14 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL|Private|TestFailed'
+            TrackWarningAnonymously 'MySQL | Private | TestFailed'
             return $false
         }
     }
     Catch {
         Write-Host "Error at RunMySQLVNetConnectivityTests" -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunMySQLVNetConnectivityTests|Exception'
+        TrackWarningAnonymously 'RunMySQLVNetConnectivityTests | Exception'
         return $false
     }
 }
@@ -856,7 +856,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
     if (!$gateway) {
         if ($hasPrivateLink) {
             Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
-            TrackWarningAnonymously 'MySQL|PrivateLink'
+            TrackWarningAnonymously 'MySQL | PrivateLink'
         }
         # elseif (!$hasPrivateLink -and $resolvedAddress ) {
         #     Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
@@ -874,7 +874,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL|InvalidGatewayIPAddressWarning'
+            TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
             return $false
         }
 
@@ -898,7 +898,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             if ($testResult.TcpTestSucceeded) {
                 $hasGatewayTestSuccess = $true
                 Write-Host ' -> TCP test succeed' -ForegroundColor Green
-                TrackWarningAnonymously ('MySQL|GatewayTestSucceeded|' + $gatewayAddress)
+                TrackWarningAnonymously ('MySQL |GatewayTestSucceeded | ' + $gatewayAddress)
                 PrintAverageConnectionTime $gatewayAddress 3306
                 $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
                 [void]$summaryLog.AppendLine($msg)
@@ -930,7 +930,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg)
 
-                TrackWarningAnonymously ('MySQL|GatewayTestFailed|' + $gatewayAddress)
+                TrackWarningAnonymously ('MySQL | GatewayTestFailed | ' + $gatewayAddress)
             }
         }
 
@@ -944,7 +944,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 $trDNS = Resolve-DnsName -Name $addr -ErrorAction SilentlyContinue
                 if ($null -eq $trDNS -or $null -eq $trDNS.IPAddress) {
                     Write-Host (' ' + $addr + ' DNS name could not be resolved, skipping tests on ' + $tr) -ForegroundColor Yellow
-                    TrackWarningAnonymously ('TR|DNS|' + $addr)
+                    TrackWarningAnonymously ('TR | DNS | ' + $addr)
                     continue
                 }
 
@@ -978,7 +978,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host $msg -Foreground Yellow
                 [void]$summaryLog.AppendLine($msg)
 
-                TrackWarningAnonymously ('MySQL|Redirect|' + $gateway.Region + '|' + $redirectSucceeded + '/' + $redirectTests)
+                TrackWarningAnonymously ('MySQL | Redirect | ' + $gateway.Region + ' | ' + $redirectSucceeded + '/' + $redirectTests)
 
                 if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
                     $msg = 'Based on the result it is likely the Redirect Policy will work from this machine'
@@ -993,14 +993,14 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
                         [void]$summaryLog.AppendLine()
-                        TrackWarningAnonymously 'MySQL|Redirect|AllTestsFailed'
+                        TrackWarningAnonymously 'MySQL | Redirect | AllTestsFailed'
                     }
                     else {
                         $msg = 'Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
                         Write-Host $msg -Foreground Red
                         [void]$summaryLog.AppendLine($msg)
                         [void]$summaryLog.AppendLine()
-                        TrackWarningAnonymously ('MySQL|Redirect|MoreThanHalfFailed|' + $redirectSucceeded + '/' + $redirectTests)
+                        TrackWarningAnonymously ('MySQL | Redirect | MoreThanHalfFailed | ' + $redirectSucceeded + '/' + $redirectTests)
                     }
 
                     [void]$summaryRecommendedAction.AppendLine($msg)
@@ -1031,7 +1031,7 @@ function RunConnectivityPolicyTests($port) {
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'Advanced|RestrictedExecutionPolicy'
+            TrackWarningAnonymously 'Advanced | RestrictedExecutionPolicy'
             return
         }
 
@@ -1068,12 +1068,12 @@ function RunConnectivityPolicyTests($port) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'Advanced|CannotDownloadScript'
+                TrackWarningAnonymously 'Advanced | CannotDownloadScript'
                 return
             }
         }
 
-        TrackWarningAnonymously 'Advanced|Invoked'
+        TrackWarningAnonymously 'Advanced | Invoked'
         $job = Start-Job -ArgumentList $jobParameters -FilePath ".\AdvancedConnectivityPolicyTests.ps1"
         Wait-Job $job | Out-Null
         Receive-Job -Job $job
@@ -1154,7 +1154,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     }
     Catch {
         Write-Host $_.Exception.Message -ForegroundColor Yellow
-        TrackWarningAnonymously 'LookupDatabaseMySQL|Exception'
+        TrackWarningAnonymously 'LookupDatabaseMySQL | Exception'
         return $false
     }
 }
@@ -1287,7 +1287,7 @@ try {
     }
 
     TrackWarningAnonymously 'v1.0'
-    TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + '|' + $PSVersionTable.Platform + '|' + $PSVersionTable.OS )
+    TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
         Write-Host '******************************************' -ForegroundColor Green
@@ -1421,7 +1421,7 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD|login.windows.net'
+            TrackWarningAnonymously 'AAD | login.windows.net'
         }
 
         Write-Host
@@ -1444,7 +1444,7 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD|login.microsoftonline.com'
+            TrackWarningAnonymously 'AAD | login.microsoftonline.com'
         }
 
         Write-Host ' Tested connectivity to secure.aadcdn.microsoftonline-p.com:443' -ForegroundColor White -NoNewline
@@ -1465,7 +1465,7 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD|secure.aadcdn.microsoftonline-p.com'
+            TrackWarningAnonymously 'AAD | secure.aadcdn.microsoftonline-p.com'
         }
 
         Write-Host

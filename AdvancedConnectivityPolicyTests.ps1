@@ -313,11 +313,11 @@ try {
                 Start-Sleep -Seconds $DelayBetweenConnections
             }
         }
-        TrackWarningAnonymously ('Advanced|TDSClient|ConnectAndDisconnect')
+        TrackWarningAnonymously ('Advanced | TDSClient | ConnectAndDisconnect')
     }
     catch {
         [TDSClient.TDS.Utilities.LoggingUtilities]::WriteLog('Failure: ' + $_.Exception.InnerException.Message)
-        TrackWarningAnonymously ('Advanced|TDSClient|Exception|' + $_.Exception.InnerException.Message)
+        TrackWarningAnonymously ('Advanced | TDSClient | Exception | ' + $_.Exception.InnerException.Message)
     }
     finally {
         $log.Close()
@@ -335,7 +335,7 @@ try {
         $port = $array[1]
 
         Write-Host 'Redirect connectivity policy has been detected, running additional tests:' -ForegroundColor Green
-        TrackWarningAnonymously 'Advanced|Redirect|Detected'
+        TrackWarningAnonymously 'Advanced | Redirect | Detected'
 
         ValidateDNS $server
 
@@ -348,7 +348,7 @@ try {
 
             $Advanced_DNSResolutionFailed = 'Please make sure the name ' + $server + ' can be resolved (DNS). Failure to resolve specific domain names is usually a client-side networking issue that you will need to pursue with your local network administrator.'
             Write-Host $Advanced_DNSResolutionFailed -Foreground Red
-            TrackWarningAnonymously 'Advanced|Redirect|DNSResolutionFailedForRedirect'
+            TrackWarningAnonymously 'Advanced | Redirect | DNSResolutionFailedForRedirect'
             return
         }
 
@@ -360,7 +360,7 @@ try {
         $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
         if ($gateway) {
             Write-Host 'Proxy connection policy detected!' -ForegroundColor Green
-            TrackWarningAnonymously 'Advanced|Proxy|Detected'
+            TrackWarningAnonymously 'Advanced | Proxy | Detected'
         }
         
     }
@@ -368,5 +368,5 @@ try {
 catch {
     Write-Host 'Running advanced connectivity policy tests failed!' -ForegroundColor Red
     Write-Host $_.Exception
-    TrackWarningAnonymously ('Advanced|Exception|' + $_.Exception.Message)
+    TrackWarningAnonymously ('Advanced | Exception | ' + $_.Exception.Message)
 }
