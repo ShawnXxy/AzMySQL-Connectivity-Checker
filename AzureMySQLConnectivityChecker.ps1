@@ -1,7 +1,7 @@
 ## Copyright (c) Microsoft Corporation.
 #Licensed under the MIT license.
 
-#Azure SQL Connectivity Checker
+#Azure MySQL Connectivity Checker
 
 #THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
@@ -1320,6 +1320,7 @@ try {
             Write-Host ' DelayBetweenConnections:' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
+        
         Write-Host
 
         $Server = $Server.Trim()
