@@ -7,6 +7,7 @@
 #FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 #WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 using namespace System
 using namespace System.Net
 using namespace System.net.Sockets
@@ -15,7 +16,7 @@ using namespace System.Diagnostics
 using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
-# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region for when script is run directly
 # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
@@ -541,6 +542,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Try {
         
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
+        Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
         Write-Host ([string]::Format("The connection attempt succeeded", $Database))
@@ -676,12 +678,14 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
 function PrintLocalNetworkConfiguration() {
     if (![System.Net.NetworkInformation.NetworkInterface]::GetIsNetworkAvailable()) {
-        Write-Host "There's no network connection available!" -ForegroundColor Red
+        Write-Host "There's no Network Interface available!" -ForegroundColor Red
         throw
     }
 
     $computerProperties = [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties()
     $networkInterfaces = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces()
+
+#Todo:add route table and IP config information
 
     Write-Host 'Interface information for '$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
 
@@ -1253,8 +1257,11 @@ function TrackWarningAnonymously ([String] $warningCode) {
     }
 }
 
-$ProgressPreference = "SilentlyContinue";
 
+#Checker Starts here
+#$ProgressPreference = "SilentlyContinue";
+
+#Find the empty folder
 if ([string]::IsNullOrEmpty($env:TEMP)) {
     $env:TEMP = '/tmp';
 }
@@ -1291,7 +1298,7 @@ try {
 
     try {
         Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '  Azure MySQL Connectivity Checker v1.0  ' -ForegroundColor Green
+        Write-Host '  Azure MySQL Connectivity Checker v1.0   ' -ForegroundColor Green
         Write-Host '******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'Parameters' -ForegroundColor Yellow
@@ -1386,6 +1393,8 @@ try {
             }
             Write-Error '' -ErrorAction Stop
         }
+
+
         $resolvedAddress = $dnsResult.AddressList[0].IPAddressToString
         $dbPort = 3306
 
@@ -1401,73 +1410,74 @@ try {
             RunMySQLConnectivityTests $resolvedAddress
         }
 
-        Write-Host
-        [void]$summaryLog.AppendLine()
-        Write-Host 'Test endpoints for AAD Password and Integrated Authentication:' -ForegroundColor Green
-        Write-Host 'Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
-        $tcpClient = New-Object System.Net.Sockets.TcpClient
-        $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
-        if ($portOpen) {
-            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = 'Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
-            [void]$summaryLog.AppendLine($msg)
-        }
-        else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = 'Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
+#   Remove AAD part as MySQL Flex does not support AAD and Signle is using different solutions for AAD connection 
+#        Write-Host
+#         [void]$summaryLog.AppendLine()
+#         Write-Host 'Test endpoints for AAD Password and Integrated Authentication:' -ForegroundColor Green
+#         Write-Host 'Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
+#         $tcpClient = New-Object System.Net.Sockets.TcpClient
+#         $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
+#         if ($portOpen) {
+#             Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+#             $msg = 'Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
+#             [void]$summaryLog.AppendLine($msg)
+#         }
+#         else {
+#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+#             $msg = 'Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryLog.AppendLine($msg)
+# 
+#             $msg = $AAD_login_windows_net
+#             Write-Host $msg -Foreground Red
+#             [void]$summaryRecommendedAction.AppendLine()
+#             [void]$summaryRecommendedAction.AppendLine($msg)
+#             TrackWarningAnonymously 'AAD | login.windows.net'
+#         }
 
-            $msg = $AAD_login_windows_net
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD | login.windows.net'
-        }
-
-        Write-Host
-        Write-Host 'Test endpoints for Universal with MFA authentication:' -ForegroundColor Green
-        Write-Host ' Tested connectivity to login.microsoftonline.com:443' -ForegroundColor White -NoNewline
-        $tcpClient = New-Object System.Net.Sockets.TcpClient
-        $portOpen = $tcpClient.ConnectAsync("login.microsoftonline.com", 443).Wait(10000)
-        if ($portOpen) {
-            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = 'Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
-            [void]$summaryLog.AppendLine($msg)
-        }
-        else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = 'Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-
-            $msg = $AAD_login_microsoftonline_com
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD | login.microsoftonline.com'
-        }
-
-        Write-Host ' Tested connectivity to secure.aadcdn.microsoftonline-p.com:443' -ForegroundColor White -NoNewline
-        $tcpClient = New-Object System.Net.Sockets.TcpClient
-        $portOpen = $tcpClient.ConnectAsync("secure.aadcdn.microsoftonline-p.com", 443).Wait(10000)
-        if ($portOpen) {
-            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
-            [void]$summaryLog.AppendLine($msg)
-        }
-        else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-
-            $msg = $AAD_secure_aadcdn_microsoftonline_p_com
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'AAD | secure.aadcdn.microsoftonline-p.com'
-        }
+#        Write-Host
+#        Write-Host 'Test endpoints for Universal with MFA authentication:' -ForegroundColor Green
+#        Write-Host ' Tested connectivity to login.microsoftonline.com:443' -ForegroundColor White -NoNewline
+#        $tcpClient = New-Object System.Net.Sockets.TcpClient
+#        $portOpen = $tcpClient.ConnectAsync("login.microsoftonline.com", 443).Wait(10000)
+#        if ($portOpen) {
+#            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+#            $msg = 'Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
+#            [void]$summaryLog.AppendLine($msg)
+#        }
+#        else {
+#            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+#            $msg = 'Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
+#            Write-Host $msg -Foreground Red
+#            [void]$summaryLog.AppendLine($msg)
+# 
+#            $msg = $AAD_login_microsoftonline_com
+#            Write-Host $msg -Foreground Red
+#            [void]$summaryRecommendedAction.AppendLine()
+#            [void]$summaryRecommendedAction.AppendLine($msg)
+#            TrackWarningAnonymously 'AAD | login.microsoftonline.com'
+#        }
+# 
+#        Write-Host ' Tested connectivity to secure.aadcdn.microsoftonline-p.com:443' -ForegroundColor White -NoNewline
+#        $tcpClient = New-Object System.Net.Sockets.TcpClient
+#        $portOpen = $tcpClient.ConnectAsync("secure.aadcdn.microsoftonline-p.com", 443).Wait(10000)
+#        if ($portOpen) {
+#            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+#            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
+#            [void]$summaryLog.AppendLine($msg)
+#        }
+#        else {
+#            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+#            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
+#            Write-Host $msg -Foreground Red
+#            [void]$summaryLog.AppendLine($msg)
+# 
+#            $msg = $AAD_secure_aadcdn_microsoftonline_p_com
+#            Write-Host $msg -Foreground Red
+#            [void]$summaryRecommendedAction.AppendLine()
+#            [void]$summaryRecommendedAction.AppendLine($msg)
+#            TrackWarningAnonymously 'AAD | secure.aadcdn.microsoftonline-p.com'
+#        }
 
         Write-Host
         Write-Host 'All tests are now done!' -ForegroundColor Green
