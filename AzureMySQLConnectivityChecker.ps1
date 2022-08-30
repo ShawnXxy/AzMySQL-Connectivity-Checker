@@ -554,7 +554,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
         
-        if ($erno -eq '1042') {
+        if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
             Write-Host ($erno) -ForegroundColor Red
             Write-Host ($erMsg) -ForegroundColor Yellow
@@ -1516,7 +1516,7 @@ try {
         Write-Host 'RECOMMENDED ACTION(S):' -ForegroundColor Yellow
         Write-Host '######################################################' -ForegroundColor Green
         if ($summaryRecommendedAction.Length -eq 0) {
-            Write-Host 'We could not detect any issue while using SqlClient driver, we suggest you:' -ForegroundColor Green
+            Write-Host 'We could not detect any issue while using MySQL driver, we suggest you:' -ForegroundColor Green
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
 
