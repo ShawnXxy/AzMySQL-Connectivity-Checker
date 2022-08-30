@@ -1154,7 +1154,7 @@ function RunConnectivityPolicyTests($port) {
 }
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
-    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
     Write-Host
     [void]$summaryLog.AppendLine()
     # Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green

@@ -1,5 +1,3 @@
-# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-
 # Parameter region when Invoke-Command -ScriptBlock is used
 $parameters = $args[0]
 if ($null -ne $parameters) {
