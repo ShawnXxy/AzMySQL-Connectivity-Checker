@@ -684,6 +684,27 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
             
         } 
+        elseif ($erMsg -Match 'access token') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting via a AAD account but the token used is not valid.')
+            [void]$summaryRecommendedAction.AppendLine('Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if token is expired and try to regenerate a new token if needed.')
+                
+            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
+            return $false
+            
+        } 
         else {
     
             if ($erno -ne '0') {
