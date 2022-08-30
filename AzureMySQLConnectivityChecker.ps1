@@ -227,7 +227,7 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = "If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
 We strongly recommend you performing some validations you may do as below :
-    - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
+    - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
     - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
@@ -434,6 +434,9 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the connection string is correct.')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server and you are connecting from a public or unlinked VNET!')
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
@@ -753,7 +756,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
+            $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
@@ -787,7 +790,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP test succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            TrackWarningAnonymously 'MySQL|Private|TestSucceeded'
+            TrackWarningAnonymously 'MySQL | Private | TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             return $true
         }
@@ -1390,7 +1393,7 @@ try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
         }
         catch {
-            $msg = ' ERROR: Name resolution (DNS) of ' + $Server + ' failed'
+            $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
