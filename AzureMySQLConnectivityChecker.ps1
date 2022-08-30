@@ -15,7 +15,7 @@ using namespace System.Diagnostics
 using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
-# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region for when script is run directly
 # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
@@ -103,6 +103,8 @@ else {
     }
 }
 
+# Gateway IPs can be founded at https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses
+# Some of the IPs are added and updated after checking SFE
 $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "Australia Central"; Gateways = ("20.36.105.0"); TRs = ('tr136'); Cluster = 'australiacentral1-a.worker.database.windows.net'; }
     New-Object PSObject -Property @{Region = "Australia Central2"; Gateways = ("20.36.113.0"); TRs = ('tr50', 'tr51'); Cluster = 'australiacentral2-a.worker.database.windows.net'; }
@@ -477,6 +479,7 @@ function ValidateDNS([String] $Server) {
 }
 
 # MySQL Flexible Server will not be resolved to a GW or private link 
+# So if a FQDN provided cannot be resolved to a GW or private link, it is considered as a Flexible Server
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
@@ -533,7 +536,7 @@ function FilterTranscript() {
 # For MySQL connection protocol, it is expected that a true will be returned with exception thrown because no database is required when establishing a connections.
 # In other words, connections can be successfully made without a database name. And if specifying a database, the exception could be thrown against database but connections can still be built
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
-    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
     Write-Host
     # [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connection to database - {0} (please wait):", $Database)) -ForegroundColor White
@@ -564,9 +567,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is put in a STOP mode in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a ready state in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is put in a STOP mode in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a ready state in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a high CPU or Memory usage!')
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $erMsg)
@@ -650,13 +653,34 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the number of the active connections reached the max allowed limit in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the number of the active connections reached the max allowed limit in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
+        elseif ($erno -eq '9009') {
+            
+            Write-Host ($erno) -ForegroundColor Red
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
+            [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.')
+            [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers')
+            [void]$summaryRecommendedAction.AppendLine('Feel free to submit a support ticket if you have any questions.')
+                
+            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
+            return $false
+            
+        } 
         else {
     
             if ($erno -ne '0') {
