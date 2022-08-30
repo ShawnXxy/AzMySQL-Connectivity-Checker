@@ -662,9 +662,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
-        elseif ($erno -eq '9009') {
-            
-            Write-Host ($erno) -ForegroundColor Red
+        elseif ($erMsg -Match 'Basic tier') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
