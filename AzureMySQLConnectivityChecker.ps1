@@ -606,7 +606,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-    
+            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
             return $false
         }
