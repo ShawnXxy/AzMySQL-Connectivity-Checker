@@ -701,7 +701,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if token is expired and try to regenerate a new token if needed.')
                 
-            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $erMsg)
             return $false
             
         } 
