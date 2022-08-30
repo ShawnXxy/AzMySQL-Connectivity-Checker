@@ -64,7 +64,7 @@ catch {
 
 With the current release, PowerShell uses .NET 5.0 as its runtime. PowerShell runs on Windows, macOS, and Linux platforms.  
 
-In order to run this script on Linux you need to 
+In order to run this script on Linux you need to (you can skip 1 ~ 3 steps if you have the needed packages installed):
 1. Installing PowerShell on Linux (if you haven't before).
    See how to get the packages at https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux
 
