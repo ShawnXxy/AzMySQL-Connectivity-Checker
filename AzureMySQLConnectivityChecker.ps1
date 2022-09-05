@@ -227,13 +227,22 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 "
 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
-"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
+#"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
-We strongly recommend you performing some validations you may do as below :
-    - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
-    - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
+#We strongly recommend you performing some validations you may do as below :
+#   - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
+##    - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
+#See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
+#"
+"TCP Connection To the MySQL Flexible Server on 3306 port fails.
+To resolve the issue, check on the following tips:
+            - Please check the portal to see whether the server is in Stop status, and if it is, start it.
+            - Please check the Server firewall rule setting and ensure the client IP address has been added.
+            - Please check your local firewall setting and ensure that the connection has been allowed to the MySQL Flexible Server.
+            Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
+
 #Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
 #$AAD_login_windows_net = 'If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
 #This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
@@ -809,13 +818,6 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($msg)
 
             $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
-
-            $msg = 'Usually the problem happpens because of the reasons below:
-            - Please check the portal to see whether the server is not in stop status, and if it is, start it.
-            - Please check the server firewall rule setting and ensure the client IP address has been added.
-            - Please check your local firewall setting and ensure that the connection has been allowed to the server on '+$resolvedAddress + ' 3306 port'
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
