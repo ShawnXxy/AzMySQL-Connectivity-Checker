@@ -226,7 +226,8 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 
 "
 
-$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = "If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
+$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
+"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
 We strongly recommend you performing some validations you may do as below :
     - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
@@ -786,15 +787,15 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        $msg = 'Detected as MySQL Flexible Server using Public Endpoint'
+        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint'
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
 
-        Write-Host 'Public Endpoint connectivity test:' -ForegroundColor Green
+        Write-Host 'MySQL Flexible Public Endpoint connectivity test:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            Write-Host ' -> TCP Connection Test Succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
@@ -802,8 +803,8 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
         else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host ' -> TCP Connection Test FAILED' -ForegroundColor Red
+            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1440,9 +1441,9 @@ try {
             }
             else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
- # ToRemove                  $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
- # ToRemove                  Invoke-Expression $startNetworkTrace
- # ToRemove                  $netWorkTraceStarted = $true
+                $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
+                Invoke-Expression $startNetworkTrace
+                $netWorkTraceStarted = $true
             }
         }
 
@@ -1470,7 +1471,6 @@ try {
             }
             Write-Error '' -ErrorAction Stop
         }
-
 
         $resolvedAddress = $dnsResult.AddressList[0].IPAddressToString
         $dbPort = 3306
