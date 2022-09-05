@@ -1441,7 +1441,6 @@ try {
 
         $Server = $Server.Replace('tcp:', '')
         $Server = $Server.Replace(',3306', '')
-        # $Server = $Server.Replace(',3342', '')
         $Server = $Server.Replace(';', '')
 
         if (!$Server -or $Server.Length -eq 0 -or $Server -eq '.mysql.database.azure.com') {
@@ -1463,6 +1462,7 @@ try {
         #Print local network configuration
         PrintLocalNetworkConfiguration
 
+        #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
             if (!$CustomerRunningInElevatedMode) {
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
