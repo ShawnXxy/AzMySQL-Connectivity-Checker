@@ -1379,20 +1379,20 @@ try {
         Start-Transcript -Path $file
         Write-Host '..TranscriptStart..'
 
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-       
-        $MySQLDllPath = Join-Path ((Get-Location).Path) "MySql.Data.dll"
-        if ($Local) {
-            Copy-Item -Path $($LocalPath + '/netstandard2.0/TDSClient.dll') -Destination $MySQLDllPath
-            Write-Host 'Local'$Local
-            Write-Host 'LocalPath'$LocalPath
-            Write-Host 'MySQLDllPath'$MySQLDllPath
-        }
-         else {
-            Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
-        }
-        #$assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
-       # [System.Reflection.Assembly]::Load($assembly) | Out-Null
+ #       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
+ #      
+ #       $MySQLDllPath = Join-Path ((Get-Location).Path) "MySql.Data.dll"
+ #       if ($Local) {
+ #           Copy-Item -Path $($LocalPath + '/netstandard2.0/TDSClient.dll') -Destination $MySQLDllPath
+ #           Write-Host 'Local'$Local
+ #           Write-Host 'LocalPath'$LocalPath
+ #           Write-Host 'MySQLDllPath'$MySQLDllPath
+ #       }
+ #        else {
+ #           Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
+ #       }
+ #       #$assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
+ #      # [System.Reflection.Assembly]::Load($assembly) | Out-Null
 
 
 
