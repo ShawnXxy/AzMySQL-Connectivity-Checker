@@ -164,7 +164,7 @@ $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "US Gov Virginia"; Gateways = ("13.72.48.140"); TRs = ('tr8', 'tr260'); Cluster = 'usgoveast1-a.worker.database.usgovcloudapi.net'; }
 )
 
-$TRPorts = 16000..16005 # this real range would be from 16000 to 16499. For testing purpose, only list 5.
+$TRPorts = 16000..16005 # Sample Tenant Ring Port for Testing Redirect Conneciton Mode.The real range would be from 16000 to 16499.
 $summaryLog = New-Object -TypeName "System.Text.StringBuilder"
 $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
@@ -233,15 +233,17 @@ We strongly recommend you performing some validations you may do as below :
     - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
+#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
+#$AAD_login_windows_net = 'If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
+#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$AAD_login_windows_net = 'If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
-This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
+#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
+#$AAD_login_microsoftonline_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to login.microsoftonline.com:443
+#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$AAD_login_microsoftonline_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to login.microsoftonline.com:443
-This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
-
-$AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
-This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
+#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
+#$AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
+#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
 $ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
 You can see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
@@ -668,26 +670,17 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
-<<<<<<< Updated upstream
         elseif ($erMsg -Match 'Basic tier') {
-=======
-        elseif($erMsg -Match 'Timeout expired.') {
->>>>>>> Stashed changes
             if ($erno -ne '0') {
                 Write-Host ($erno) -ForegroundColor Red
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
-<<<<<<< Updated upstream
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
-=======
-            $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
->>>>>>> Stashed changes
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
-<<<<<<< Updated upstream
             [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
             [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
@@ -699,6 +692,25 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
             
         } 
+        elseif($erMsg -Match 'Timeout expired.') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please check the portal to see whether the server is not in stop status, and if it is, start it.')
+            [void]$summaryRecommendedAction.AppendLine('    - Please check the server firewall rule setting and ensure the client IP address has been added.')
+            
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $erMsg)
+            return $false
+        }
         elseif ($erMsg -Match 'access token') {
             if ($erno -ne '0') {
                 Write-Host ($erno) -ForegroundColor Red
@@ -720,17 +732,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
             
         } 
-=======
-            [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please check the portal to see whether the server is not in stop status, and if it is, start it.')
-            [void]$summaryRecommendedAction.AppendLine('    - Please check the server firewall rule setting and ensure the client IP address has been added.')
-            
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $erMsg)
-            return $false
-        }
->>>>>>> Stashed changes
         else {
     
             if ($erno -ne '0') {
