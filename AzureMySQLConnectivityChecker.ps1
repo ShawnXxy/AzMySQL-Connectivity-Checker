@@ -554,6 +554,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         Write-Host ([string]::Format("The connection attempt succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
         [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
+        $MySQLConnection.Close()
+  ## Consider to Add connection to testdb in case of server firewall blocking
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
@@ -666,17 +668,26 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
+<<<<<<< Updated upstream
         elseif ($erMsg -Match 'Basic tier') {
+=======
+        elseif($erMsg -Match 'Timeout expired.') {
+>>>>>>> Stashed changes
             if ($erno -ne '0') {
                 Write-Host ($erno) -ForegroundColor Red
             }
             Write-Host ($erMsg) -ForegroundColor Yellow
     
+<<<<<<< Updated upstream
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
+=======
+            $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
+>>>>>>> Stashed changes
     
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
+<<<<<<< Updated upstream
             [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
             [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
@@ -709,6 +720,17 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
             
         } 
+=======
+            [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please check the portal to see whether the server is not in stop status, and if it is, start it.')
+            [void]$summaryRecommendedAction.AppendLine('    - Please check the server firewall rule setting and ensure the client IP address has been added.')
+            
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $erMsg)
+            return $false
+        }
+>>>>>>> Stashed changes
         else {
     
             if ($erno -ne '0') {
@@ -763,7 +785,7 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        $msg = 'Detected as MySQL FLexible Server using Public Endpoint'
+        $msg = 'Detected as MySQL Flexible Server using Public Endpoint'
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
 
@@ -775,7 +797,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
-            TrackWarningAnonymously 'MySQL | FlexPublic | TestSucceeded'
+            TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
         else {
@@ -788,11 +810,18 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
+            $msg = 'Usually the problem happpens because of the reasons below:
+            - Please check the portal to see whether the server is not in stop status, and if it is, start it.
+            - Please check the server firewall rule setting and ensure the client IP address has been added.
+            - Please check your local firewall setting and ensure that the connection has been allowed to the server on '+$resolvedAddress + ' 3306 port'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+
             $msg = $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL | FlexPublic | TestFailed'
+            TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
             return $false
         }
     }
@@ -1410,9 +1439,9 @@ try {
             }
             else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
-                $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
-                Invoke-Expression $startNetworkTrace
-                $netWorkTraceStarted = $true
+ # ToRemove                  $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
+ # ToRemove                  Invoke-Expression $startNetworkTrace
+ # ToRemove                  $netWorkTraceStarted = $true
             }
         }
 
@@ -1534,10 +1563,10 @@ try {
     }
     finally {
         if ($netWorkTraceStarted) {
-            Write-Host 'Stopping network trace.... please wait, this may take a few minutes' -ForegroundColor Yellow
-            $stopNetworkTrace = "netsh trace stop"
-            Invoke-Expression $stopNetworkTrace
-            $netWorkTraceStarted = $false
+ # ToRemove              Write-Host 'Stopping network trace.... please wait, this may take a few minutes' -ForegroundColor Yellow
+  # ToRemove             $stopNetworkTrace = "netsh trace stop"
+  # ToRemove             Invoke-Expression $stopNetworkTrace
+  # ToRemove             $netWorkTraceStarted = $false
         }
 
         Write-Host
