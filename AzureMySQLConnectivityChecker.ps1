@@ -1394,8 +1394,8 @@ try {
          else {
             Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/MySQL-Connectivity-Checker/raw/master/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
-        #$assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
-       # [System.Reflection.Assembly]::Load($assembly) | Out-Null
+       $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
+       [System.Reflection.Assembly]::Load($assembly) | Out-Null
 
 
 
