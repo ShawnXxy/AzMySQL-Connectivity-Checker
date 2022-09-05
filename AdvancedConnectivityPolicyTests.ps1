@@ -5,8 +5,6 @@ using namespace System.Collections.Generic
 using namespace System.Diagnostics
 using namespace MySql.Data.MySqlClient
 
-# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
-
 # PowerShell Container Image Support Start
 
 if (!$(Get-Command 'Test-NetConnection' -errorAction SilentlyContinue)) {

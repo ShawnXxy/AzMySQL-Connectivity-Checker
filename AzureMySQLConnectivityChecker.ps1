@@ -16,7 +16,7 @@ using namespace System.Diagnostics
 using namespace Microsoft.Azure.PowerShell.Cmdlets.MySql
 using namespace MySql.Data.MySqlClient
 
-[System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+# [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region for when script is run directly
 # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
@@ -104,6 +104,8 @@ else {
     }
 }
 
+# Gateway IPs can be founded at https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses
+# Some of the IPs are added and updated after checking SFE
 $MySQLSterlingGateways = @(
     New-Object PSObject -Property @{Region = "Australia Central"; Gateways = ("20.36.105.0"); TRs = ('tr136'); Cluster = 'australiacentral1-a.worker.database.windows.net'; }
     New-Object PSObject -Property @{Region = "Australia Central2"; Gateways = ("20.36.113.0"); TRs = ('tr50', 'tr51'); Cluster = 'australiacentral2-a.worker.database.windows.net'; }
@@ -227,7 +229,7 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = "If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
 We strongly recommend you performing some validations you may do as below :
-    - You have Public Endpoint enabled, see https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
+    - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
     - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 "
@@ -434,6 +436,9 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the connection string is correct.')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server and you are connecting from a public or unlinked VNET!')
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
@@ -478,6 +483,7 @@ function ValidateDNS([String] $Server) {
 }
 
 # MySQL Flexible Server will not be resolved to a GW or private link 
+# So if a FQDN provided cannot be resolved to a GW or private link, it is considered as a Flexible Server
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
@@ -534,7 +540,7 @@ function FilterTranscript() {
 # For MySQL connection protocol, it is expected that a true will be returned with exception thrown because no database is required when establishing a connections.
 # In other words, connections can be successfully made without a database name. And if specifying a database, the exception could be thrown against database but connections can still be built
 function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Password) {
-    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
     Write-Host
     # [void]$summaryLog.AppendLine()
     Write-Host ([string]::Format("Testing connection to database - {0} (please wait):", $Database)) -ForegroundColor White
@@ -554,7 +560,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
         
-        if ($erno -eq '1042') {
+        if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
             Write-Host ($erno) -ForegroundColor Red
             Write-Host ($erMsg) -ForegroundColor Yellow
@@ -566,9 +572,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is put in a STOP mode in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a ready state in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the server is in a high CPU or Memory usage!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is put in a STOP mode in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a ready state in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a high CPU or Memory usage!')
             [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $erMsg)
@@ -603,7 +609,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-    
+            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
             return $false
         }
@@ -652,13 +659,56 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please Verify if the number of the active connections reached the max allowed limit in Portal!')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the number of the active connections reached the max allowed limit in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
     
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
             return $false
         }
+        elseif ($erMsg -Match 'Basic tier') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
+            [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.')
+            [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers')
+            [void]$summaryRecommendedAction.AppendLine('Feel free to submit a support ticket if you have any questions.')
+                
+            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
+            return $false
+            
+        } 
+        elseif ($erMsg -Match 'access token') {
+            if ($erno -ne '0') {
+                Write-Host ($erno) -ForegroundColor Red
+            }
+            Write-Host ($erMsg) -ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting via a AAD account but the token used is not valid.')
+            [void]$summaryRecommendedAction.AppendLine('Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication')
+            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+            [void]$summaryRecommendedAction.AppendLine('    - Please verify if token is expired and try to regenerate a new token if needed.')
+                
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $erMsg)
+            return $false
+            
+        } 
         else {
     
             if ($erno -ne '0') {
@@ -734,7 +784,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
+            $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
@@ -768,7 +818,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP test succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            TrackWarningAnonymously 'MySQL|Private|TestSucceeded'
+            TrackWarningAnonymously 'MySQL | Private | TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             return $true
         }
@@ -1135,7 +1185,7 @@ function RunConnectivityPolicyTests($port) {
 }
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
-    # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+
     Write-Host
     [void]$summaryLog.AppendLine()
     # Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
@@ -1257,11 +1307,8 @@ function TrackWarningAnonymously ([String] $warningCode) {
     }
 }
 
+$ProgressPreference = "SilentlyContinue";
 
-#Checker Starts here
-#$ProgressPreference = "SilentlyContinue";
-
-#Find the empty folder
 if ([string]::IsNullOrEmpty($env:TEMP)) {
     $env:TEMP = '/tmp';
 }
@@ -1375,7 +1422,7 @@ try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
         }
         catch {
-            $msg = ' ERROR: Name resolution (DNS) of ' + $Server + ' failed'
+            $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1410,74 +1457,73 @@ try {
             RunMySQLConnectivityTests $resolvedAddress
         }
 
-#   Remove AAD part as MySQL Flex does not support AAD and Signle is using different solutions for AAD connection 
-#        Write-Host
-#         [void]$summaryLog.AppendLine()
-#         Write-Host 'Test endpoints for AAD Password and Integrated Authentication:' -ForegroundColor Green
-#         Write-Host 'Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
-#         $tcpClient = New-Object System.Net.Sockets.TcpClient
-#         $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
-#         if ($portOpen) {
-#             Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-#             $msg = 'Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
-#             [void]$summaryLog.AppendLine($msg)
-#         }
-#         else {
-#             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-#             $msg = 'Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryLog.AppendLine($msg)
-# 
-#             $msg = $AAD_login_windows_net
-#             Write-Host $msg -Foreground Red
-#             [void]$summaryRecommendedAction.AppendLine()
-#             [void]$summaryRecommendedAction.AppendLine($msg)
-#             TrackWarningAnonymously 'AAD | login.windows.net'
-#         }
+        Write-Host
+        [void]$summaryLog.AppendLine()
+        Write-Host 'Test endpoints for AAD Password and Integrated Authentication:' -ForegroundColor Green
+        Write-Host 'Tested connectivity to login.windows.net:443' -ForegroundColor White -NoNewline
+        $tcpClient = New-Object System.Net.Sockets.TcpClient
+        $portOpen = $tcpClient.ConnectAsync("login.windows.net", 443).Wait(10000)
+        if ($portOpen) {
+            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+            $msg = 'Connectivity to login.windows.net:443 succeed (used for AAD Password and Integrated Authentication)'
+            [void]$summaryLog.AppendLine($msg)
+        }
+        else {
+            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            $msg = 'Connectivity to login.windows.net:443 FAILED (used for AAD Password and AAD Integrated Authentication)'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine($msg)
 
-#        Write-Host
-#        Write-Host 'Test endpoints for Universal with MFA authentication:' -ForegroundColor Green
-#        Write-Host ' Tested connectivity to login.microsoftonline.com:443' -ForegroundColor White -NoNewline
-#        $tcpClient = New-Object System.Net.Sockets.TcpClient
-#        $portOpen = $tcpClient.ConnectAsync("login.microsoftonline.com", 443).Wait(10000)
-#        if ($portOpen) {
-#            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-#            $msg = 'Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
-#            [void]$summaryLog.AppendLine($msg)
-#        }
-#        else {
-#            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-#            $msg = 'Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
-#            Write-Host $msg -Foreground Red
-#            [void]$summaryLog.AppendLine($msg)
-# 
-#            $msg = $AAD_login_microsoftonline_com
-#            Write-Host $msg -Foreground Red
-#            [void]$summaryRecommendedAction.AppendLine()
-#            [void]$summaryRecommendedAction.AppendLine($msg)
-#            TrackWarningAnonymously 'AAD | login.microsoftonline.com'
-#        }
-# 
-#        Write-Host ' Tested connectivity to secure.aadcdn.microsoftonline-p.com:443' -ForegroundColor White -NoNewline
-#        $tcpClient = New-Object System.Net.Sockets.TcpClient
-#        $portOpen = $tcpClient.ConnectAsync("secure.aadcdn.microsoftonline-p.com", 443).Wait(10000)
-#        if ($portOpen) {
-#            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-#            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
-#            [void]$summaryLog.AppendLine($msg)
-#        }
-#        else {
-#            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-#            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
-#            Write-Host $msg -Foreground Red
-#            [void]$summaryLog.AppendLine($msg)
-# 
-#            $msg = $AAD_secure_aadcdn_microsoftonline_p_com
-#            Write-Host $msg -Foreground Red
-#            [void]$summaryRecommendedAction.AppendLine()
-#            [void]$summaryRecommendedAction.AppendLine($msg)
-#            TrackWarningAnonymously 'AAD | secure.aadcdn.microsoftonline-p.com'
-#        }
+            $msg = $AAD_login_windows_net
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            TrackWarningAnonymously 'AAD | login.windows.net'
+        }
+
+        Write-Host
+        Write-Host 'Test endpoints for Universal with MFA authentication:' -ForegroundColor Green
+        Write-Host ' Tested connectivity to login.microsoftonline.com:443' -ForegroundColor White -NoNewline
+        $tcpClient = New-Object System.Net.Sockets.TcpClient
+        $portOpen = $tcpClient.ConnectAsync("login.microsoftonline.com", 443).Wait(10000)
+        if ($portOpen) {
+            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+            $msg = 'Connectivity to login.microsoftonline.com:443 succeed (used for AAD Universal with MFA authentication)'
+            [void]$summaryLog.AppendLine($msg)
+        }
+        else {
+            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            $msg = 'Connectivity to login.microsoftonline.com:443 FAILED (used for AAD Universal with MFA authentication)'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine($msg)
+
+            $msg = $AAD_login_microsoftonline_com
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            TrackWarningAnonymously 'AAD | login.microsoftonline.com'
+        }
+
+        Write-Host ' Tested connectivity to secure.aadcdn.microsoftonline-p.com:443' -ForegroundColor White -NoNewline
+        $tcpClient = New-Object System.Net.Sockets.TcpClient
+        $portOpen = $tcpClient.ConnectAsync("secure.aadcdn.microsoftonline-p.com", 443).Wait(10000)
+        if ($portOpen) {
+            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 succeed (used for AAD Universal with MFA authentication)'
+            [void]$summaryLog.AppendLine($msg)
+        }
+        else {
+            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            $msg = 'Connectivity to secure.aadcdn.microsoftonline-p.com:443 FAILED (used for AAD Universal with MFA authentication)'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine($msg)
+
+            $msg = $AAD_secure_aadcdn_microsoftonline_p_com
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            TrackWarningAnonymously 'AAD | secure.aadcdn.microsoftonline-p.com'
+        }
 
         Write-Host
         Write-Host 'All tests are now done!' -ForegroundColor Green
@@ -1504,7 +1550,7 @@ try {
         Write-Host 'RECOMMENDED ACTION(S):' -ForegroundColor Yellow
         Write-Host '######################################################' -ForegroundColor Green
         if ($summaryRecommendedAction.Length -eq 0) {
-            Write-Host 'We could not detect any issue while using SqlClient driver, we suggest you:' -ForegroundColor Green
+            Write-Host 'We could not detect any issue while using MySQL driver, we suggest you:' -ForegroundColor Green
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
 
