@@ -1217,7 +1217,7 @@ function RunConnectivityPolicyTests($port) {
                 # }
             }
         }
-        Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
+ #       Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
     }
     catch {
         $msg = ' ERROR running Advanced Connectivity Tests: ' + $_.Exception.Message
