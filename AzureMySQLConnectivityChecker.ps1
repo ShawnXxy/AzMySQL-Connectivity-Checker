@@ -415,11 +415,11 @@ function ValidateDNS([String] $Server) {
 
             Try {
                 $DNSfromOpenDNSError = $null
-                $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
-                $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
-                if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
-                    $DNSlist.Add($DNSfromOpenDNSAddress);
-                }
+ #ToRemove               $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
+#ToRemove               $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
+ #ToRemove               if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
+ #ToRemove                   $DNSlist.Add($DNSfromOpenDNSAddress);
+ #ToRemove               }
             }
             Catch {
                 Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
