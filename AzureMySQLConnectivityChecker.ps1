@@ -1315,9 +1315,9 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         }
 
         #Advanced Connectivity Tests. Looks like it is only for SQL database with advanced protocole.
-        if ($RunAdvancedConnectivityPolicyTests) {
-            RunConnectivityPolicyTests $dbPort
-        }
+        #if ($RunAdvancedConnectivityPolicyTests) {
+         #   RunConnectivityPolicyTests $dbPort
+        #}
     }
     catch {
         $msg = ' ERROR at RunConnectionToDatabaseTestsAndAdvancedTests: ' + $_.Exception.Message
