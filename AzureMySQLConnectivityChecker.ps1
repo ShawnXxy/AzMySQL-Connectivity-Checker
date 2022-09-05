@@ -1388,17 +1388,14 @@ try {
             Write-Host $LocalPath  -Foreground Green
             Write-Host 'MySQLDllPath' -Foreground Green
             Write-Host $MySQLDllPath  -Foreground Green
- #       if ($Local) {
- #           Copy-Item -Path $($LocalPath + '/netstandard2.0/TDSClient.dll') -Destination $MySQLDllPath
- #           Write-Host 'Local'$Local
- #           Write-Host 'LocalPath'$LocalPath
- #           Write-Host 'MySQLDllPath'$MySQLDllPath
- #       }
- #        else {
- #           Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
- #       }
- #       #$assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
- #      # [System.Reflection.Assembly]::Load($assembly) | Out-Null
+        if ($Local) {
+            Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
+        }
+         else {
+            Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+        }
+        #$assembly = [System.IO.File]::ReadAllBytes($TDSClientPath)
+       # [System.Reflection.Assembly]::Load($assembly) | Out-Null
 
 
 
