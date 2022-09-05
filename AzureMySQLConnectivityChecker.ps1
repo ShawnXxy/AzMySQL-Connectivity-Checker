@@ -53,7 +53,7 @@ if ($null -ne $parameters) {
     if ($null -ne $parameters['CollectNetworkTrace']) {
         $CollectNetworkTrace = $parameters['CollectNetworkTrace']
     }
-    $EncryptionProtocol = $parameters['EncryptionProtocol']
+#    $EncryptionProtocol = $parameters['EncryptionProtocol']
     if ($null -ne $parameters['Local']) {
         $Local = $parameters['Local']
     }
@@ -1139,7 +1139,7 @@ function RunConnectivityPolicyTests($port) {
             Port                    = $port
             User                    = $User
             Password                = $Password
-            EncryptionProtocol      = $EncryptionProtocol
+            #EncryptionProtocol      = $EncryptionProtocol
             RepositoryBranch        = $RepositoryBranch
             Local                   = $Local
             LocalPath               = $LocalPath
@@ -1422,10 +1422,10 @@ try {
             Write-Host ' CollectNetworkTrace:' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
-        if ($null -ne $EncryptionProtocol) {
-            Write-Host ' EncryptionProtocol:' $EncryptionProtocol -ForegroundColor Yellow
-            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
-        }
+#        if ($null -ne $EncryptionProtocol) {
+#            Write-Host ' EncryptionProtocol:' $EncryptionProtocol -ForegroundColor Yellow
+#            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
+#        }
         if ($null -ne $ConnectionAttempts) {
             Write-Host ' ConnectionAttempts:' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
