@@ -1387,6 +1387,7 @@ try {
         }
         Write-Host 'Local'+$Local
         Write-Host 'LocalPath'+$LocalPath
+        Write-Host 'MySQLDllPath'+$MySQLDllPath
         else {
             Invoke-WebRequest -Uri $('https://github.com/Azure/SQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/TDSClient.dll') -OutFile $TDSClientPath -UseBasicParsing
         }
