@@ -788,7 +788,7 @@ function PrintLocalNetworkConfiguration() {
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 
-#        Write-Host ' Interface name: ' $networkInterface.Name
+        Write-Host ' Interface name: ' $networkInterface.Name
 #        Write-Host ' Interface description: ' $networkInterface.Description
 #        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
 #        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
