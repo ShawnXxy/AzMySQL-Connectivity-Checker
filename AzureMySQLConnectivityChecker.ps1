@@ -1382,12 +1382,7 @@ try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
       
         $MySQLDllPath = Join-Path ((Get-Location).Path) "MySql.Data.dll"
-           Write-Host 'Local'  -Foreground Green
-           Write-Host $Local  -Foreground Green
-            Write-Host 'LocalPath'   -Foreground Green
-            Write-Host $LocalPath  -Foreground Green
-            Write-Host 'MySQLDllPath' -Foreground Green
-            Write-Host $MySQLDllPath  -Foreground Green
+
         if ($Local) {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
@@ -1405,7 +1400,7 @@ try {
         Write-Host Warning: Cannot write log file -ForegroundColor Yellow
     }
 
-    TrackWarningAnonymously 'v1.0'
+    TrackWarningAnonymously 'MySQL Connectivity Checker v1.0'
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
