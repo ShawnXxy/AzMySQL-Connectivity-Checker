@@ -31,7 +31,7 @@ $Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPas
 
 # Optional parameters (default values will be used if omitted)
 $SendAnonymousUsageData = $true  # Set as $true (default) or $false
-$RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false#Set as $true (default) or $false, this will download library needed for running advanced connectivity policy tests
+#$RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false#Set as $true (default) or $false, this will download library needed for running advanced connectivity policy tests
 $ConnectionAttempts = 1
 $DelayBetweenConnections = 1
 $CollectNetworkTrace = $true  # Set as $true (default) or $false
@@ -47,9 +47,9 @@ if ($null -ne $parameters) {
     if ($null -ne $parameters['SendAnonymousUsageData']) {
         $SendAnonymousUsageData = $parameters['SendAnonymousUsageData']
     }
-    if ($null -ne $parameters['RunAdvancedConnectivityPolicyTests']) {
-        $RunAdvancedConnectivityPolicyTests = $parameters['RunAdvancedConnectivityPolicyTests']
-    }
+#    if ($null -ne $parameters['RunAdvancedConnectivityPolicyTests']) {
+#        $RunAdvancedConnectivityPolicyTests = $parameters['RunAdvancedConnectivityPolicyTests']
+#    }
     if ($null -ne $parameters['CollectNetworkTrace']) {
         $CollectNetworkTrace = $parameters['CollectNetworkTrace']
     }
@@ -1400,7 +1400,7 @@ try {
         Write-Host Warning: Cannot write log file -ForegroundColor Yellow
     }
 
-    TrackWarningAnonymously 'MySQL Connectivity Checker v1.0'
+    TrackWarningAnonymously 'Azure MySQL Connectivity Checker v1.0'
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
@@ -1414,10 +1414,10 @@ try {
         if ($null -ne $Database) {
             Write-Host ' Database:' $Database -ForegroundColor Yellow
         }
-        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
-            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
-            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
-        }
+#        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
+#            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
+#            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
+#        }
         if ($null -ne $CollectNetworkTrace) {
             Write-Host ' CollectNetworkTrace:' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
