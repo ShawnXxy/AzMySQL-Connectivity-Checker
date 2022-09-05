@@ -558,7 +558,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     Write-Host ([string]::Format("Testing connection to database - {0} (please wait):", $Database)) -ForegroundColor White
 
     Try {
-        
+      
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
         Write-Host $MySQLConnection
         $MySQLConnection.Open()
@@ -826,9 +826,10 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-            $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+# Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
+#            $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
+#            Write-Host $msg -Foreground Red
+#            [void]$summaryRecommendedAction.AppendLine($msg)
 
             $msg = $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
             Write-Host $msg -Foreground Red
@@ -1312,7 +1313,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
             }
         }
 
-        #Advanced Connectivity Tests
+        #Advanced Connectivity Tests. Looks like it is only for SQL database with advanced protocole.
         if ($RunAdvancedConnectivityPolicyTests) {
             RunConnectivityPolicyTests $dbPort
         }
