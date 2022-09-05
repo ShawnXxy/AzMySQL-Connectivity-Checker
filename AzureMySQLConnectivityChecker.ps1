@@ -1382,9 +1382,12 @@ try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
       
         $MySQLDllPath = Join-Path ((Get-Location).Path) "MySql.Data.dll"
-          Write-Host 'Local' $Local
-            Write-Host 'LocalPath' $LocalPath
-            Write-Host 'MySQLDllPath' $MySQLDllPath
+           Write-Host 'Local' 
+           Write-Host $Local
+            Write-Host 'LocalPath' 
+            Write-Host $LocalPath
+            Write-Host 'MySQLDllPath'
+            Write-Host $MySQLDllPath
  #       if ($Local) {
  #           Copy-Item -Path $($LocalPath + '/netstandard2.0/TDSClient.dll') -Destination $MySQLDllPath
  #           Write-Host 'Local'$Local
