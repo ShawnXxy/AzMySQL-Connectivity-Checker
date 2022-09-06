@@ -1415,10 +1415,15 @@ try {
         if ($null -ne $Database) {
             Write-Host ' Database:   ' $Database -ForegroundColor Yellow
         }
+        if ($null -ne $Database) {
+            Write-Host ' User:   ' $Database -ForegroundColor Yellow
+        }
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
 #            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
 #        }
+
+        Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
             Write-Host ' CollectNetworkTrace:   ' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
@@ -1439,7 +1444,6 @@ try {
         Write-Host
 
         $Server = $Server.Trim()
-
         $Server = $Server.Replace('tcp:', '')
         $Server = $Server.Replace(',3306', '')
         $Server = $Server.Replace(';', '')
