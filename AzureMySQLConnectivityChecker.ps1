@@ -620,7 +620,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 Write-Host ' Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host ' Error Message?:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
