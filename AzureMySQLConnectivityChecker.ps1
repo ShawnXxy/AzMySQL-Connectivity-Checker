@@ -455,7 +455,7 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
-
+ # Remove as Open Dns is not supported.
  #          if (!$DNSfromOpenDNSAddress) {
  #              Write-Host
  #              $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
