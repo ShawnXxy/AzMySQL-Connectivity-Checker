@@ -1405,22 +1405,22 @@ try {
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
-        Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '*  Azure MySQL Connectivity Checker v1.0 * ' -ForegroundColor Green
-        Write-Host '******************************************' -ForegroundColor Green
+        Write-Host '*******************************************' -ForegroundColor Green
+        Write-Host '*  Azure MySQL Connectivity Checker v1.0  * ' -ForegroundColor Green
+        Write-Host '*******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
-        Write-Host ' Server:' $Server -ForegroundColor Yellow
+        Write-Host ' Server:   ' $Server -ForegroundColor Yellow
 
         if ($null -ne $Database) {
-            Write-Host ' Database:' $Database -ForegroundColor Yellow
+            Write-Host ' Database:   ' $Database -ForegroundColor Yellow
         }
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
 #            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
 #        }
         if ($null -ne $CollectNetworkTrace) {
-            Write-Host ' CollectNetworkTrace:' $CollectNetworkTrace -ForegroundColor Yellow
+            Write-Host ' CollectNetworkTrace:   ' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
 #        if ($null -ne $EncryptionProtocol) {
@@ -1428,11 +1428,11 @@ try {
 #            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
 #        }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host ' TCP Connection Attempts:' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host ' TCP Connection Attempts:   ' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host ' Delay Between TCP Connections:' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host ' Delay Between TCP Connections:  ' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
