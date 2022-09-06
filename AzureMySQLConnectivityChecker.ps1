@@ -812,20 +812,21 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
 
-        Write-Host 'MySQL Flexible Public Endpoint connectivity test:' -ForegroundColor Green
+        Write-Host ' MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
+        Write-Host '  Verify Connectivity to' + $Server +'the on 3306 port:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP Connection Test Succeed' -ForegroundColor Green
+            Write-Host '   -> TCP Connection Test Succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = 'TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
+            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
         else {
-            Write-Host ' -> TCP Connection Test FAILED' -ForegroundColor Red
-            $msg = 'TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
+            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
