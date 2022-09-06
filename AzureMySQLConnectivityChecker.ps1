@@ -1366,10 +1366,10 @@ try {
         Set-Location -Path $env:TEMP
         If (!(Test-Path $logsFolderName)) {
             New-Item $logsFolderName -ItemType directory | Out-Null
-            Write-Host 'The folder' $logsFolderName 'was created'
+            Write-Host 'The folder' $logsFolderName 'was created and all logs will be sent to this folder.'
         }
         else {
-            Write-Host 'The folder' $logsFolderName 'already exists'
+            Write-Host 'The folder' $logsFolderName 'already exists and all logs will be sent to this folder.'
         }
         Set-Location $logsFolderName
         $outFolderName = [System.DateTime]::Now.ToString('yyyyMMddTHHmmss')
@@ -1406,7 +1406,7 @@ try {
 
     try {
         Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '  Azure MySQL Connectivity Checker v1.0   ' -ForegroundColor Green
+        Write-Host '*  Azure MySQL Connectivity Checker v1.0 * ' -ForegroundColor Green
         Write-Host '******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
@@ -1428,11 +1428,11 @@ try {
 #            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
 #        }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host 'TCP Connection Attempts:' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host ' TCP Connection Attempts:' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host 'Delay Between TCP Connections:' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host ' Delay Between TCP Connections:' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
