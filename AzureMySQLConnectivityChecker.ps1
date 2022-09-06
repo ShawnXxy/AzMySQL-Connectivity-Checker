@@ -772,7 +772,7 @@ function PrintLocalNetworkConfiguration() {
 
 #Todo:add route table and IP config information
 
-    Write-Host 'Interface information for '$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
+    Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
 
     foreach ($networkInterface in $networkInterfaces) {
         if ($networkInterface.NetworkInterfaceType -eq 'Loopback') {
@@ -781,27 +781,27 @@ function PrintLocalNetworkConfiguration() {
 
         $properties = $networkInterface.GetIPProperties()
         
-        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
-		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
-		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
-		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
+#        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+#		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
+#		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
+#		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
+#		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 
         Write-Host ' Interface name: ' $networkInterface.Name
-#        Write-Host ' Interface description: ' $networkInterface.Description
-#        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
-#        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
-#
-#        Write-Host ' Unicast address list:'
-#        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
-#
-#        Write-Host ' DNS server address list:'
-#        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
-#
-#        Write-Host
+        Write-Host ' Interface description: ' $networkInterface.Description
+        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
+        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
+
+        Write-Host ' Unicast address list:'
+        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
+
+        Write-Host ' DNS server address list:'
+        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
+
+        Write-Host
     }
 }
 
