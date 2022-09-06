@@ -564,7 +564,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection test to {0} database succeeded", $Database)
+        Write-Host ([string]::Format("The connection test to {0} database succeeded", $Database))
         [void]$summaryLog.AppendLine([string]::Format("The connection test to {0} database succeeded", $Database))
         [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection test to {0} database succeeded", $Database))
         $MySQLConnection.Close()
