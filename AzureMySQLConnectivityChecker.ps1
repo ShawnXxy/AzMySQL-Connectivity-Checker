@@ -1424,9 +1424,9 @@ try {
 
     try {
         Write-Host
-        Write-Host '*******************************************' -ForegroundColor Green
-        Write-Host '*  Azure MySQL Connectivity Checker v1.0  * ' -ForegroundColor Green
-        Write-Host '*******************************************' -ForegroundColor Green
+        Write-Host '*********************************************' -ForegroundColor Green
+        Write-Host '*   Azure MySQL Connectivity Checker v1.0   *' -ForegroundColor Green
+        Write-Host '*********************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
         Write-Host ' Server:    ' $Server -ForegroundColor Yellow
