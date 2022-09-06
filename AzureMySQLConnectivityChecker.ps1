@@ -87,6 +87,7 @@ if ($null -eq $Local) {
     $Local = $false
 }
 
+# Testing Purpose.
 if ($null -eq $RepositoryBranch) {
     $RepositoryBranch = 'Init'
 }
@@ -1408,7 +1409,7 @@ try {
         Write-Host '  Azure MySQL Connectivity Checker v1.0   ' -ForegroundColor Green
         Write-Host '******************************************' -ForegroundColor Green
         Write-Host
-        Write-Host 'MySQL Connection Information' -ForegroundColor Yellow
+        Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
         Write-Host ' Server:' $Server -ForegroundColor Yellow
 
         if ($null -ne $Database) {
@@ -1427,11 +1428,11 @@ try {
 #            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
 #        }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host ' ConnectionAttempts:' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host 'TCP Connection Attempts:' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host ' DelayBetweenConnections:' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host 'Delay Between TCP Connections:' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
