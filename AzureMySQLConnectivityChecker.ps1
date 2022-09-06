@@ -413,20 +413,20 @@ function ValidateDNS([String] $Server) {
                 Write-Host $_.Exception.Message -ForegroundColor Red
                 TrackWarningAnonymously 'Error at ValidateDNS from DNS server'
             }
-
-            Try {
-                $DNSfromOpenDNSError = $null
-               $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
-               $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
-               if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
-                   $DNSlist.Add($DNSfromOpenDNSAddress);
-               }
-            }
-            Catch {
-                Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
-                Write-Host $_.Exception.Message -ForegroundColor Red
-                TrackWarningAnonymously 'Error at ValidateDNS from Open DNS'
-            }
+# Open DNS is not working.
+#            Try {
+#                $DNSfromOpenDNSError = $null
+#                $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
+#                $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
+#                if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
+#                   $DNSlist.Add($DNSfromOpenDNSAddress);
+#               }
+#            }
+#            Catch {
+#                Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
+#                Write-Host $_.Exception.Message -ForegroundColor Red
+#                TrackWarningAnonymously 'Error at ValidateDNS from Open DNS'
+#            }
 
             if ($DNSfromHostsAddress) {
                
@@ -450,8 +450,8 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the connection string is correct.')
-                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server and you are connecting from a public or unlinked VNET!')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
