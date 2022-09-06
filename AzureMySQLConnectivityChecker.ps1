@@ -1412,13 +1412,13 @@ try {
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
         Write-Host ' Server:    ' $Server -ForegroundColor Yellow
-
+        if ($null -ne $User) {
+            Write-Host ' User:      ' $User -ForegroundColor Yellow
+        }
         if ($null -ne $Database) {
             Write-Host ' Database:  ' $Database -ForegroundColor Yellow
         }
-        if ($null -ne $Database) {
-            Write-Host ' User:      ' $User -ForegroundColor Yellow
-        }
+
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
 #            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
@@ -1426,7 +1426,7 @@ try {
         Write-Host
         Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
-            Write-Host ' CollectNetworkTrace:   ' $CollectNetworkTrace -ForegroundColor Yellow
+            Write-Host ' CollectNetworkTrace:    		' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
 #        if ($null -ne $EncryptionProtocol) {
@@ -1434,11 +1434,11 @@ try {
 #            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
 #        }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host ' TCP Connection Attempts:   ' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host ' TCP Connection Attempts:    	' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host ' Delay Between TCP Connections:  ' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host ' Delay Between TCP Connections: ' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
