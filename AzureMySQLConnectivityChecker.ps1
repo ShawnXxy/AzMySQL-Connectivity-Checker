@@ -556,7 +556,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
     Write-Host
     # [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing MySQL connection to server - {0}, database - {1} (please wait):", $Server,$Database) -ForegroundColor Yellow
+    Write-Host ([string]::Format("Testing MySQL connection to server - {0}, database - {1} (please wait):", $Server,$Database)) -ForegroundColor Yellow
 
     Try {
       
@@ -812,8 +812,9 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
 
-        Write-Host ' MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
-        Write-Host '  Verify Network Connectivity to '  $Server +' the on 3306 port:' -ForegroundColor Green
+        Write-Host
+        #Write-Host 'MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
+        Write-Host 'Verify Network Connectivity to '  $Server +' the on 3306 port:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
