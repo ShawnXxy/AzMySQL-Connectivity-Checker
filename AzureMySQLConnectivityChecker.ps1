@@ -1417,7 +1417,7 @@ try {
             Write-Host ' Database:  ' $Database -ForegroundColor Yellow
         }
         if ($null -ne $Database) {
-            Write-Host ' User:      ' $Database -ForegroundColor Yellow
+            Write-Host ' User:      ' $User -ForegroundColor Yellow
         }
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
