@@ -1405,24 +1405,25 @@ try {
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
+        Write-Host
         Write-Host '*******************************************' -ForegroundColor Green
         Write-Host '*  Azure MySQL Connectivity Checker v1.0  * ' -ForegroundColor Green
         Write-Host '*******************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
-        Write-Host ' Server:   ' $Server -ForegroundColor Yellow
+        Write-Host ' Server:    ' $Server -ForegroundColor Yellow
 
         if ($null -ne $Database) {
-            Write-Host ' Database:   ' $Database -ForegroundColor Yellow
+            Write-Host ' Database:  ' $Database -ForegroundColor Yellow
         }
         if ($null -ne $Database) {
-            Write-Host ' User:   ' $Database -ForegroundColor Yellow
+            Write-Host ' User:      ' $Database -ForegroundColor Yellow
         }
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
 #            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
 #        }
-
+        Write-Host
         Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
             Write-Host ' CollectNetworkTrace:   ' $CollectNetworkTrace -ForegroundColor Yellow
