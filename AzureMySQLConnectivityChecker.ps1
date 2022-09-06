@@ -599,9 +599,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' $erno -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message' $erMsg #-ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
