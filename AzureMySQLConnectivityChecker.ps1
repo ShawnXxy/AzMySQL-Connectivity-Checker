@@ -620,7 +620,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
                 Write-Host ' Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message?:' 
+            Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
@@ -636,9 +636,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Invalid Username') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
     
@@ -652,9 +654,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the database does not exist.'
     
@@ -668,9 +672,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
     
@@ -688,9 +694,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'Basic tier') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
     
@@ -710,9 +718,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
     
@@ -729,9 +739,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'access token') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
     
@@ -751,9 +763,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         else {
     
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
             TrackWarningAnonymously ('TestConnectionToDatabase | Error: ' + $erMsg)
             return $false
         }
