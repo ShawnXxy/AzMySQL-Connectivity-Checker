@@ -569,13 +569,13 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
         $MySQLConnection.Close()
 
-  ## Consider to Add connection to a test instance in case of server firewall blocking
+  ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
-        
+        Write-Host ([string]::Format(" The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
             Write-Host ($erno) -ForegroundColor Red
