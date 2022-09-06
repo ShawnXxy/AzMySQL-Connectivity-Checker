@@ -556,7 +556,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
     Write-Host
     # [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("  Testing MySQL connection to database - {0} (please wait):", $Database)) -ForegroundColor Green
+    Write-Host ([string]::Format("Testing MySQL connection to server - {0}, database - {1} (please wait):", $Server,$Database) -ForegroundColor Yellow
 
     Try {
       
@@ -564,9 +564,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("   The connection test to {0} database succeeded", $Database))
-        [void]$summaryLog.AppendLine([string]::Format("  The connection test to {0} database succeeded", $Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format("   The connection test to {0} database succeeded", $Database))
+        Write-Host ([string]::Format(" The connection test to {0} database succeeded", $Database))
+        [void]$summaryLog.AppendLine([string]::Format(" The connection test to {0} database succeeded", $Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection test to {0} database succeeded", $Database))
         $MySQLConnection.Close()
 
   ## Consider to Add connection to a test instance in case of server firewall blocking
