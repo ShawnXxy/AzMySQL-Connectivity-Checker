@@ -578,8 +578,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         Write-Host ([string]::Format(" The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
-            Write-Host ($erno) -ForegroundColor Red
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Code' $erno -ForegroundColor Red
+            Write-Host ' Error Message' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
     
@@ -599,9 +599,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
