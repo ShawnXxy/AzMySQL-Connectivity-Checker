@@ -578,8 +578,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         Write-Host ([string]::Format(" The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
-            Write-Host ' Error Code' $erno -ForegroundColor Red
-            Write-Host ' Error Message' $erMsg #-ForegroundColor Yellow
+            if ($erno -ne '0') {
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
+            }
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
     
@@ -599,8 +602,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -617,8 +619,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -636,8 +637,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Invalid Username') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -654,8 +654,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -672,8 +671,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -694,8 +692,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'Basic tier') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -718,8 +715,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -761,10 +757,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             
         } 
         else {
-    
-            if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
+                if ($erno -ne '0') {
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
