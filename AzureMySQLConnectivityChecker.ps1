@@ -416,11 +416,11 @@ function ValidateDNS([String] $Server) {
 
             Try {
                 $DNSfromOpenDNSError = $null
- #ToRemove               $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
-#ToRemove               $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
- #ToRemove               if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
- #ToRemove                   $DNSlist.Add($DNSfromOpenDNSAddress);
- #ToRemove               }
+               $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
+               $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
+               if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
+                   $DNSlist.Add($DNSfromOpenDNSAddress);
+               }
             }
             Catch {
                 Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
@@ -1468,9 +1468,12 @@ try {
         #Print local network configuration
         PrintLocalNetworkConfiguration
 
+        Write-Host
+
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
             if (!$CustomerRunningInElevatedMode) {
+                #Todo:This is incorrect for Linux. Need to Update#
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
             }
