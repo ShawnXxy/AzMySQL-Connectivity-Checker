@@ -556,7 +556,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
     Write-Host
     # [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing MySQL connection to server - {0}, database - {1} (please wait):", $Server,$Database)) -ForegroundColor Yellow
+    Write-Host ([string]::Format("Testing MySQL connection to server {0} and database {1} (please wait):", $Server,$Database)) -ForegroundColor Yellow
 
     Try {
       
@@ -564,9 +564,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format(" The connection test to {0} database succeeded", $Database))
-        [void]$summaryLog.AppendLine([string]::Format(" The connection test to {0} database succeeded", $Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection test to {0} database succeeded", $Database))
+        Write-Host ([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryLog.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
         $MySQLConnection.Close()
 
   ## Consider to Add connection to a test instance in case of server firewall blocking
@@ -814,11 +814,11 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
         Write-Host
         #Write-Host 'MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
-        Write-Host 'Verify Network Connectivity to '  $Server +' the on 3306 port:' -ForegroundColor Green
+        Write-Host 'Verify Network Connectivity to'  $Server 'the on 3306 port:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host '   -> TCP Connection Test Succeed.' -ForegroundColor Green
+            Write-Host '   -> TCP Connection Test Succeed.' #-ForegroundColor Green
             Write-Host .
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
