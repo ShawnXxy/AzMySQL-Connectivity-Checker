@@ -781,7 +781,7 @@ function PrintLocalNetworkConfiguration() {
 
         $properties = $networkInterface.GetIPProperties()
         
-#        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+#       [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
 #		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
 #		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
@@ -795,11 +795,12 @@ function PrintLocalNetworkConfiguration() {
         Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
         Write-Host ' Operational status: ' $networkInterface.OperationalStatus
 
-        Write-Host ' Unicast address list:'
-        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
+        #To Do: Write network config to a standalone file
+#        Write-Host ' Unicast address list:'
+#        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
 
-        Write-Host ' DNS server address list:'
-        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
+        #Write-Host ' DNS server address list:'
+        #Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
 
         Write-Host
     }
@@ -817,14 +818,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             Write-Host ' -> TCP Connection Test Succeed' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
+            $msg = 'TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
         else {
             Write-Host ' -> TCP Connection Test FAILED' -ForegroundColor Red
-            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            $msg = 'TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1003,7 +1004,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$summaryLog.AppendLine($msg)
             }
             else {
-                Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+                Write-Host ' -> TCP test Fails, which means there is network blocking or network package droping between the client and server.' -ForegroundColor Red
                 Write-Host
                 Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
                 Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
