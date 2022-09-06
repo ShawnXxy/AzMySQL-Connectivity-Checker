@@ -456,17 +456,17 @@ function ValidateDNS([String] $Server) {
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
 
-            if (!$DNSfromOpenDNSAddress) {
-                Write-Host
-                $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
-                Write-Host $msg -ForegroundColor Red
-                [void]$summaryLog.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
-            }
+ #          if (!$DNSfromOpenDNSAddress) {
+ #              Write-Host
+ #              $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
+ #              Write-Host $msg -ForegroundColor Red
+ #              [void]$summaryLog.AppendLine()
+ #              [void]$summaryRecommendedAction.AppendLine()
+ #              [void]$summaryLog.AppendLine($msg)
+ #              [void]$summaryRecommendedAction.AppendLine($msg)
+ #              [void]$summaryRecommendedAction.AppendLine()
+ #              TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
+ #          }
 
             $hasPrivateLink = HasPrivateLink $Server
 
