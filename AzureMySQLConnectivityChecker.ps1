@@ -87,8 +87,9 @@ if ($null -eq $Local) {
     $Local = $false
 }
 
+# Testing Purpose.
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'master'
+    $RepositoryBranch = 'Init'
 }
 
 $CustomerRunningInElevatedMode = $false
@@ -412,20 +413,20 @@ function ValidateDNS([String] $Server) {
                 Write-Host $_.Exception.Message -ForegroundColor Red
                 TrackWarningAnonymously 'Error at ValidateDNS from DNS server'
             }
-
-            Try {
-                $DNSfromOpenDNSError = $null
- #ToRemove               $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
-#ToRemove               $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
- #ToRemove               if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
- #ToRemove                   $DNSlist.Add($DNSfromOpenDNSAddress);
- #ToRemove               }
-            }
-            Catch {
-                Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
-                Write-Host $_.Exception.Message -ForegroundColor Red
-                TrackWarningAnonymously 'Error at ValidateDNS from Open DNS'
-            }
+# Open DNS is not working.
+#            Try {
+#                $DNSfromOpenDNSError = $null
+#                $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
+#                $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
+#                if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
+#                   $DNSlist.Add($DNSfromOpenDNSAddress);
+#               }
+#            }
+#            Catch {
+#                Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
+#                Write-Host $_.Exception.Message -ForegroundColor Red
+#                TrackWarningAnonymously 'Error at ValidateDNS from Open DNS'
+#            }
 
             if ($DNSfromHostsAddress) {
                
@@ -449,23 +450,23 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the connection string is correct.')
-                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server and you are connecting from a public or unlinked VNET!')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
+                [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
-
-            if (!$DNSfromOpenDNSAddress) {
-                Write-Host
-                $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
-                Write-Host $msg -ForegroundColor Red
-                [void]$summaryLog.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
-            }
+ # Remove as Open Dns is not supported.
+ #          if (!$DNSfromOpenDNSAddress) {
+ #              Write-Host
+ #              $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
+ #              Write-Host $msg -ForegroundColor Red
+ #              [void]$summaryLog.AppendLine()
+ #              [void]$summaryRecommendedAction.AppendLine()
+ #              [void]$summaryLog.AppendLine($msg)
+ #              [void]$summaryRecommendedAction.AppendLine($msg)
+ #              [void]$summaryRecommendedAction.AppendLine()
+ #              TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
+ #          }
 
             $hasPrivateLink = HasPrivateLink $Server
 
@@ -555,30 +556,34 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
     Write-Host
     # [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connection to database - {0} (please wait):", $Database)) -ForegroundColor White
+    Write-Host ([string]::Format("Testing MySQL connection to server {0} and database {1} (please wait):", $Server,$Database)) -ForegroundColor Yellow
 
     Try {
       
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
-        Write-Host $MySQLConnection
+        #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection attempt succeeded", $Database))
-        [void]$summaryLog.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection attempt to {0} database succeeded", $Database))
+        Write-Host ([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryLog.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
         $MySQLConnection.Close()
 
-  ## Consider to Add connection to a test instance in case of server firewall blocking
+  ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
+    ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
-        
+        Write-Host ([string]::Format(" The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
-            Write-Host ($erno) -ForegroundColor Red
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            if ($erno -ne '0') {
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
+            }
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
     
@@ -598,9 +603,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
@@ -614,9 +620,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
@@ -631,9 +638,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Invalid Username') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
     
@@ -647,9 +655,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the database does not exist.'
     
@@ -663,9 +672,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
     
@@ -683,9 +693,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'Basic tier') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
     
@@ -705,9 +716,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
     
@@ -724,9 +736,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'access token') {
             if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
     
@@ -744,11 +758,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             
         } 
         else {
-    
-            if ($erno -ne '0') {
-                Write-Host ($erno) -ForegroundColor Red
+                if ($erno -ne '0') {
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ($erMsg) -ForegroundColor Yellow
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
             TrackWarningAnonymously ('TestConnectionToDatabase | Error: ' + $erMsg)
             return $false
         }
@@ -771,7 +785,7 @@ function PrintLocalNetworkConfiguration() {
 
 #Todo:add route table and IP config information
 
-    Write-Host 'Interface information for '$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
+    Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
 
     foreach ($networkInterface in $networkInterfaces) {
         if ($networkInterface.NetworkInterfaceType -eq 'Loopback') {
@@ -780,27 +794,28 @@ function PrintLocalNetworkConfiguration() {
 
         $properties = $networkInterface.GetIPProperties()
         
-        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
-		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
-		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
-		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
+#       [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+#		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
+#		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
+#		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
+#		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 #		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 
         Write-Host ' Interface name: ' $networkInterface.Name
-#        Write-Host ' Interface description: ' $networkInterface.Description
-#        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
-#        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
-#
+        Write-Host ' Interface description: ' $networkInterface.Description
+        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
+        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
+
+        #To Do: Write network config to a standalone file
 #        Write-Host ' Unicast address list:'
 #        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
-#
-#        Write-Host ' DNS server address list:'
-#        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
-#
-#        Write-Host
+
+        #Write-Host ' DNS server address list:'
+        #Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
+
+        Write-Host
     }
 }
 
@@ -810,20 +825,25 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
 
-        Write-Host 'MySQL Flexible Public Endpoint connectivity test:' -ForegroundColor Green
+        Write-Host
+        #Write-Host 'MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
+        Write-Host 'Verify Network Connectivity to'  $Server 'the on 3306 port:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP Connection Test Succeed' -ForegroundColor Green
+            Write-Host '   -> TCP Connection Test Succeed.' #-ForegroundColor Green
+            Write-Host .
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 succeed'
+            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
+
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            
         }
         else {
-            Write-Host ' -> TCP Connection Test FAILED' -ForegroundColor Red
-            $msg = 'TCP Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
+            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -942,7 +962,7 @@ function PrintAverageConnectionTime($addressList, $port) {
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
         Write-Host '   Failed connections:'$numFailed
-        Write-Host '   Average response time:'$avg' ms '$ilb
+        Write-Host '   Average response time:'$avg' ms '  #$ilb
     }
 }
 
@@ -1002,7 +1022,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$summaryLog.AppendLine($msg)
             }
             else {
-                Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+                Write-Host ' -> TCP test Fails, which means there is network blocking or network package droping between the client and server.' -ForegroundColor Red
                 Write-Host
                 Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
                 Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
@@ -1365,10 +1385,10 @@ try {
         Set-Location -Path $env:TEMP
         If (!(Test-Path $logsFolderName)) {
             New-Item $logsFolderName -ItemType directory | Out-Null
-            Write-Host 'The folder' $logsFolderName 'was created'
+            Write-Host 'The folder' $logsFolderName 'was created and all logs will be sent to this folder.'
         }
         else {
-            Write-Host 'The folder' $logsFolderName 'already exists'
+            Write-Host 'The folder' $logsFolderName 'already exists and all logs will be sent to this folder.'
         }
         Set-Location $logsFolderName
         $outFolderName = [System.DateTime]::Now.ToString('yyyyMMddTHHmmss')
@@ -1387,7 +1407,7 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
          else {
-            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/MySQL-Connectivity-Checker/raw/master/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/MySQL-Connectivity-Checker/raw/Init/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
        $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
        [System.Reflection.Assembly]::Load($assembly) | Out-Null
@@ -1404,22 +1424,28 @@ try {
     TrackWarningAnonymously ('PowerShell ' + $PSVersionTable.PSVersion + ' | ' + $PSVersionTable.Platform + ' | ' + $PSVersionTable.OS )
 
     try {
-        Write-Host '******************************************' -ForegroundColor Green
-        Write-Host '  Azure MySQL Connectivity Checker v1.0   ' -ForegroundColor Green
-        Write-Host '******************************************' -ForegroundColor Green
         Write-Host
-        Write-Host 'MySQL Connection Information' -ForegroundColor Yellow
-        Write-Host ' Server:' $Server -ForegroundColor Yellow
-
-        if ($null -ne $Database) {
-            Write-Host ' Database:' $Database -ForegroundColor Yellow
+        Write-Host '*********************************************' -ForegroundColor Green
+        Write-Host '*   Azure MySQL Connectivity Checker v1.0   *' -ForegroundColor Green
+        Write-Host '*********************************************' -ForegroundColor Green
+        Write-Host
+        Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
+        Write-Host ' Server:    ' $Server -ForegroundColor Yellow
+        if ($null -ne $User) {
+            Write-Host ' User:      ' $User -ForegroundColor Yellow
         }
+        if ($null -ne $Database) {
+            Write-Host ' Database:  ' $Database -ForegroundColor Yellow
+        }
+
 #        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
 #            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
 #            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
 #        }
+        Write-Host
+        Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
-            Write-Host ' CollectNetworkTrace:' $CollectNetworkTrace -ForegroundColor Yellow
+            Write-Host ' CollectNetworkTrace:    		' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
 #        if ($null -ne $EncryptionProtocol) {
@@ -1427,18 +1453,17 @@ try {
 #            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
 #        }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host ' ConnectionAttempts:' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host ' TCP Connection Attempts:    	' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host ' DelayBetweenConnections:' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host ' Delay Between TCP Connections: ' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
         Write-Host
 
         $Server = $Server.Trim()
-
         $Server = $Server.Replace('tcp:', '')
         $Server = $Server.Replace(',3306', '')
         $Server = $Server.Replace(';', '')
@@ -1462,9 +1487,12 @@ try {
         #Print local network configuration
         PrintLocalNetworkConfiguration
 
+        Write-Host
+
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
             if (!$CustomerRunningInElevatedMode) {
+                #Todo:This is incorrect for Linux. Need to Update#
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
             }
