@@ -791,21 +791,17 @@ function PrintLocalNetworkConfiguration() {
 
         $properties = $networkInterface.GetIPProperties()
         
-        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
-		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
-		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
-		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
-		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+        # [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+		# [void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
+		# [void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
+		# [void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
+		# [void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
 
         Write-Host ' Interface name: ' $networkInterface.Name
         Write-Host ' Interface description: ' $networkInterface.Description
         Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
         Write-Host ' Operational status: ' $networkInterface.OperationalStatus
 
-        # To Do: Write network config to a standalone file
         Write-Host ' Unicast address list:'
         Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
 
