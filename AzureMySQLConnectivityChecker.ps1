@@ -570,6 +570,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         $MySQLConnection.Close()
 
   ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
+    ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
@@ -961,7 +962,7 @@ function PrintAverageConnectionTime($addressList, $port) {
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
         Write-Host '   Failed connections:'$numFailed
-        Write-Host '   Average response time:'$avg' ms '$ilb
+        Write-Host '   Average response time:'$avg' ms '  #$ilb
     }
 }
 
