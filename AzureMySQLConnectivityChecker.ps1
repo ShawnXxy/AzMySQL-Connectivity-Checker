@@ -232,7 +232,7 @@ $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed =
 
 #We strongly recommend you performing some validations you may do as below :
 #   - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
-##    - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
+#   - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
 #See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
 #"
 "TCP Connection To the MySQL Flexible Server on 3306 port fails.
@@ -266,10 +266,6 @@ or use a machine with Internet access to see how to run this from machines witho
 $DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure MySQL doesn't have a static IP address.
 Logins for Azure MySQL can land on any of the Gateways in a region.
 For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
-
-# $DNSResolutionDNSfromHostsFileMI = "We detected a configuration via hosts file, note that Managed instance doesn't have a static IP address.
-# The managed instance service doesn't claim static IP address support and reserves the right to change it without notice as a part of regular maintenance cycles.
-# For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
 
 # PowerShell Container Image Support Start
 
@@ -413,20 +409,7 @@ function ValidateDNS([String] $Server) {
                 Write-Host $_.Exception.Message -ForegroundColor Red
                 TrackWarningAnonymously 'Error at ValidateDNS from DNS server'
             }
-# Open DNS is not working.
-#            Try {
-#                $DNSfromOpenDNSError = $null
-#                $DNSfromOpenDNS = Resolve-DnsName -Name $Server -DnsOnly -Server 208.67.222.222 -ErrorAction SilentlyContinue -ErrorVariable DNSfromOpenDNSError
-#                $DNSfromOpenDNSAddress = PrintDNSResults $DNSfromOpenDNS 'Open DNS' $DNSfromOpenDNSError $Server
-#                if ($DNSfromOpenDNSAddress -and -1 -eq $DNSlist.IndexOf($DNSfromOpenDNSAddress)) {
-#                   $DNSlist.Add($DNSfromOpenDNSAddress);
-#               }
-#            }
-#            Catch {
-#                Write-Host "Error at ValidateDNS from Open DNS" -Foreground Red
-#                Write-Host $_.Exception.Message -ForegroundColor Red
-#                TrackWarningAnonymously 'Error at ValidateDNS from Open DNS'
-#            }
+
 
             if ($DNSfromHostsAddress) {
                
@@ -455,18 +438,7 @@ function ValidateDNS([String] $Server) {
                 [void]$summaryRecommendedAction.AppendLine()
                 TrackWarningAnonymously 'EmptyDNSfromCustomerServer'
             }
- # Remove as Open Dns is not supported.
- #          if (!$DNSfromOpenDNSAddress) {
- #              Write-Host
- #              $msg = ('DNS resolution using an external provider (OpenDNS) could not be verified, please verify if FQDN is valid and address is getting resolved properly.');
- #              Write-Host $msg -ForegroundColor Red
- #              [void]$summaryLog.AppendLine()
- #              [void]$summaryRecommendedAction.AppendLine()
- #              [void]$summaryLog.AppendLine($msg)
- #              [void]$summaryRecommendedAction.AppendLine($msg)
- #              [void]$summaryRecommendedAction.AppendLine()
- #              TrackWarningAnonymously 'EmptyDNSfromOpenDNS'
- #          }
+
 
             $hasPrivateLink = HasPrivateLink $Server
 
@@ -569,8 +541,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
         $MySQLConnection.Close()
 
-  ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
-    ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
+        ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
+
         return $true
 
     } catch [MySql.Data.MySqlClient.MySqlException] {
@@ -591,6 +563,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is put in a STOP mode in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a ready state in Portal!')
@@ -601,6 +574,26 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
             
         } 
+        elseif ($erMsg -Match 'is not allowed to connect to' ) {
+            if ($erno -ne '0') {
+                Write-Host ' Error Code:' $erno -ForegroundColor Red
+            }
+            Write-Host ' Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
+    
+            $msg = 'Connection to database ' + $Database + ' failed due to firewall block.'
+    
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine('It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal.')
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
+            [void]$summaryRecommendedAction.AppendLine('    - For Single Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal')
+            [void]$summaryRecommendedAction.AppendLine('    - For Flexible Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public') 
+    
+            TrackWarningAnonymously ('TestConnectionToDatabase | firewall: ' + $erMsg)
+            return $false
+        }
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
                 Write-Host ' Error Code:' $erno -ForegroundColor Red
@@ -683,6 +676,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if the number of the active connections reached the max allowed limit in Portal!')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
@@ -705,6 +699,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
             [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.')
             [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers')
@@ -726,6 +721,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please check the portal to see whether the server is not in stop status, and if it is, start it.')
             [void]$summaryRecommendedAction.AppendLine('    - Please check the server firewall rule setting and ensure the client IP address has been added.')
@@ -749,6 +745,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting via a AAD account but the token used is not valid.')
             [void]$summaryRecommendedAction.AppendLine('Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication')
+            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             [void]$summaryRecommendedAction.AppendLine('We suggest you:')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
             [void]$summaryRecommendedAction.AppendLine('    - Please verify if token is expired and try to regenerate a new token if needed.')
@@ -794,26 +791,26 @@ function PrintLocalNetworkConfiguration() {
 
         $properties = $networkInterface.GetIPProperties()
         
-#       [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-#		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
-#		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
-#		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
-#		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
-#		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-#		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-#		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+        [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+		[void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
+		[void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
+		[void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
+		[void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
+		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
+		[void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
 
         Write-Host ' Interface name: ' $networkInterface.Name
         Write-Host ' Interface description: ' $networkInterface.Description
         Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
         Write-Host ' Operational status: ' $networkInterface.OperationalStatus
 
-        #To Do: Write network config to a standalone file
-#        Write-Host ' Unicast address list:'
-#        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
+        # To Do: Write network config to a standalone file
+        Write-Host ' Unicast address list:'
+        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
 
-        #Write-Host ' DNS server address list:'
-        #Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
+        Write-Host ' DNS server address list:'
+        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
 
         Write-Host
     }
@@ -873,7 +870,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         # $hasPrivateLink = HasPrivateLink $Server
         # if ($hasPrivateLink) {
         #     Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
-        #     TrackWarningAnonymously 'MySQL|FlexPrivate'
+        #     TrackWarningAnonymously 'MySQL | FlexPrivate'
         # }
         Write-Host
         Write-Host 'Connectivity tests (please wait):' -ForegroundColor Green
@@ -1008,7 +1005,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         [void]$summaryLog.AppendLine()
         Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
         $hasGatewayTestSuccess = $false
-        foreach ($gatewayAddress in $gateway.Gateways) {
+        # foreach ($gatewayAddress in $gateway.Gateways) {
+            $gatewayAddress = $resolvedAddress
             Write-Host
             Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
             $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
@@ -1050,7 +1048,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
                 TrackWarningAnonymously ('MySQL | GatewayTestFailed | ' + $gatewayAddress)
             }
-        }
+        # }
 
         if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
             Write-Host
@@ -1225,16 +1223,7 @@ function RunConnectivityPolicyTests($port) {
                 [void]$summaryLog.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine($msg)
                 [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
-                # if (IsMySQLFlexPublic $resolvedAddress ) {
-                #     [void]$summaryRecommendedAction.AppendLine('Make sure firewalls and Network Security Groups (NSG) are open to allow access on ports 11000-11999')
-                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection types at https://docs.microsoft.com/en-us/azure/azure-sql/managed-instance/connection-types-overview')
-                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
-                # }
-                # else {
-                #     [void]$summaryRecommendedAction.AppendLine('Make sure you allow outbound communication from the client to all Azure MySQL IP addresses in the region on ports in the range of 16000-16499.')
-                #     [void]$summaryRecommendedAction.AppendLine('Check more about connection policies at https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-architecture#connection-policy')
-                #     TrackWarningAnonymously ('Advanced|MySQL|RCA|Port' + $networkingErrorPort)
-                # }
+              
             }
         }
  #       Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
@@ -1407,12 +1396,10 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
          else {
-            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/MySQL-Connectivity-Checker/raw/Init/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/MySQL-Connectivity-Checker/raw/master/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
        $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
        [System.Reflection.Assembly]::Load($assembly) | Out-Null
-
-
 
     }
     catch {

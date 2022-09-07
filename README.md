@@ -14,7 +14,7 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 4. Paste the following in the script window:
 
     ```powershell
-    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+    
     $parameters = @{
         # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
         # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -85,7 +85,7 @@ In order to run this script on Linux you need to (you can skip 1 ~ 3 steps if yo
 5. Set the parameters on the following script then copy paste it to the terminal. You must set the server name and database name. User and password are optional, but best practices.
 
     ```powershell
-    [system.reflection.Assembly]::LoadFrom("{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll") # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
+    
     $parameters = @{
         # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
         # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -155,59 +155,6 @@ If the user has the permissions to create folders, a folder with the resulting l
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
 
-<!-- ## Running SQL Connectivity Checker in containerized environment
-
-In order to troubleshoot your containerized application you'll have to temporarily deploy a Powershell Image which will allow you to execute this script and collect the results, you can see all the available Powershell Images [here](https://hub.docker.com/_/microsoft-powershell).
-
-Our suggestion would be to use a lightweight image for this purpose, such as `lts-alpine-3.10` image.
-
-### Kubernetes
-
-The following steps show the Kubernetes kubectl commands required to download the image and start an interactive PowerShell session.
-
-```
-kubectl run -it sqlconncheckerpowershellinstance --image=mcr.microsoft.com/powershell:lts-alpine-3.10
-```
-
-The following command is used to exit the current Powershell session.
-```
-exit
-```
-
-The following command is used to attach to an existing Powershell instance.
-```
-kubectl attach -it sqlconncheckerpowershellinstance
-```
-
-The following command is used to delete the pod running this image when you no longer need it.
-
-```
-kubectl delete pod sqlconncheckerpowershellinstance
-```
-
-### Docker
-
-The following steps show the Docker commands required to download the image and start an interactive PowerShell session.
-
-```
-docker run -it --name sqlconncheckerpowershellinstance --image=mcr.microsoft.com/powershell:lts-alpine-3.10
-```
-
-The following command is used to exit the current Powershell session.
-```
-exit
-```
-
-The following command is used to attach to an existing Powershell instance.
-```
-docker attach sqlconncheckerpowershellinstance
-```
-
-The following command is used to delete the container running this image when you no longer need it.
-
-```
-docker container rm sqlconncheckerpowershellinstance
-``` -->
 
 
 # Contributing
