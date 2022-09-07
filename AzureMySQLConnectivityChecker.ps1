@@ -87,9 +87,8 @@ if ($null -eq $Local) {
     $Local = $false
 }
 
-# Testing Purpose.
 if ($null -eq $RepositoryBranch) {
-    $RepositoryBranch = 'Init'
+    $RepositoryBranch = 'master'
 }
 
 $CustomerRunningInElevatedMode = $false
@@ -840,10 +839,10 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-# Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
-#            $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
-#            Write-Host $msg -Foreground Red
-#            [void]$summaryRecommendedAction.AppendLine($msg)
+           #Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
+        #    $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
+        #    Write-Host $msg -Foreground Red
+        #    [void]$summaryRecommendedAction.AppendLine($msg)
 
             $msg = $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
             Write-Host $msg -Foreground Red
@@ -1392,7 +1391,7 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
          else {
-            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/MySQL-Connectivity-Checker/raw/master/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
        $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
        [System.Reflection.Assembly]::Load($assembly) | Out-Null
