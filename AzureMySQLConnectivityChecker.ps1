@@ -466,7 +466,7 @@ function ValidateDNS([String] $Server) {
     }
 }
 
-# MySQL Flexible Server will not be resolved to a GW or private link 
+# MySQL Flexible Server with public will not be resolved to a GW or private link 
 # So if a FQDN provided cannot be resolved to a GW or private link, it is considered as a Flexible Server
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
@@ -500,7 +500,7 @@ function IsMySQLVNet([String] $resolvedAddress) {
 }
 
 function HasPrivateLink([String] $Server) {
-    [bool]((((Resolve-DnsName $Server) | Where-Object { $_.Name -Match ".privatelink." } | Measure-Object).Count) -gt 0)
+    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") -or ($_.Name -Match ".private.") } | Measure-Object).Count) -gt 0)
 }
 
 function SanitizeString([String] $param) {
@@ -1000,50 +1000,48 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         [void]$summaryLog.AppendLine()
         Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
         $hasGatewayTestSuccess = $false
-        # foreach ($gatewayAddress in $gateway.Gateways) {
-            $gatewayAddress = $resolvedAddress
+        $gatewayAddress = $resolvedAddress
+        Write-Host
+        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
+        $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
+
+        if ($testResult.TcpTestSucceeded) {
+            $hasGatewayTestSuccess = $true
+            Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            TrackWarningAnonymously ('MySQL | GatewayTestSucceeded | ' + $gatewayAddress)
+            PrintAverageConnectionTime $gatewayAddress 3306
+            $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
+            [void]$summaryLog.AppendLine($msg)
+        }
+        else {
+            Write-Host ' -> TCP test Fails, which means there is network blocking or network package droping between the client and server.' -ForegroundColor Red
             Write-Host
-            Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
-            $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
-
-            if ($testResult.TcpTestSucceeded) {
-                $hasGatewayTestSuccess = $true
-                Write-Host ' -> TCP test succeed' -ForegroundColor Green
-                TrackWarningAnonymously ('MySQL | GatewayTestSucceeded | ' + $gatewayAddress)
-                PrintAverageConnectionTime $gatewayAddress 3306
-                $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 succeed'
-                [void]$summaryLog.AppendLine($msg)
+            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            If ($ProcessError) {
+                Write-Host '  Could not to get IP routes for this interface'
             }
-            else {
-                Write-Host ' -> TCP test Fails, which means there is network blocking or network package droping between the client and server.' -ForegroundColor Red
-                Write-Host
-                Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
-                Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-                If ($ProcessError) {
-                    Write-Host '  Could not to get IP routes for this interface'
-                }
-                Write-Host
-                if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-                    tracert -h 10 $Server
-                }
-
-                $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 FAILED'
-                Write-Host $msg -Foreground Red
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-
-                $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-
-                $msg = $MySQL_GatewayTestFailed
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-
-                TrackWarningAnonymously ('MySQL | GatewayTestFailed | ' + $gatewayAddress)
+            Write-Host
+            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+                tracert -h 10 $Server
             }
-        # }
+
+            $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 FAILED'
+            Write-Host $msg -Foreground Red
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine()
+            [void]$summaryRecommendedAction.AppendLine($msg)
+
+            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+
+            $msg = $MySQL_GatewayTestFailed
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+
+            TrackWarningAnonymously ('MySQL | GatewayTestFailed | ' + $gatewayAddress)
+        }
 
         if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
             Write-Host

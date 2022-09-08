@@ -5,8 +5,7 @@ Inspired by https://github.com/Azure/SQL-Connectivity-Checker, this PowerShell s
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
 **In order to run it you need to:**
-1. Ensure MySQL .Net Connector is installed. Please refer to https://dev.mysql.com/downloads/connector/net/8.0.html
-2. Open Windows PowerShell ISE (in Administrator mode if possible)
+1. Open Windows PowerShell ISE (in Administrator mode if possible)
 In order for a network trace to be collected along with the tests ('CollectNetworkTrace' parameter), PowerShell must be run as an administrator.
 
 3. Open a New Script window
