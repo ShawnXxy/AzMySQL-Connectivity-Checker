@@ -304,7 +304,8 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         process {
             try {
                 Write-Host "Trying to resolve DNS for" $Name
-                return @{ IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
+                # return @{ IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
+                return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName}, @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
             }
             catch {
                 TrackWarningAnonymously ('Error at Resolve-DnsName override: ' + $_.Exception.Message)
@@ -535,9 +536,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
-        [void]$summaryLog.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format(" The connection to server {0} and database {1} succeeded", $Server,$Database))
+        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
         $MySQLConnection.Close()
 
         ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
@@ -547,13 +548,13 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     } catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
-        Write-Host ([string]::Format(" The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
+        Write-Host ([string]::Format("The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
@@ -575,9 +576,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif ($erMsg -Match 'is not allowed to connect to' ) {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to firewall block.'
@@ -595,7 +596,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'using password: NO' ) {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
@@ -612,9 +613,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
@@ -630,9 +631,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Invalid Username') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
@@ -647,9 +648,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the database does not exist.'
@@ -664,9 +665,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
@@ -686,9 +687,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'Basic tier') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
@@ -710,9 +711,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         elseif($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
@@ -731,10 +732,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         }
         elseif ($erMsg -Match 'access token') {
             if ($erno -ne '0') {
-                Write-Host ' Error Code' -ForegroundColor Red
+                Write-Host 'Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
@@ -755,9 +756,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         } 
         else {
                 if ($erno -ne '0') {
-                Write-Host ' Error Code:' $erno -ForegroundColor Red
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
-            Write-Host ' Error Message:' 
+            Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
             TrackWarningAnonymously ('TestConnectionToDatabase | Error: ' + $erMsg)
             return $false
