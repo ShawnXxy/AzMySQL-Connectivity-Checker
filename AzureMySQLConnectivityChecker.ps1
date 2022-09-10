@@ -215,8 +215,9 @@ $AzureMySQLFlex_VNetTestFailed = "You can connect to Azure MySQL Flexible Server
     - machine in a peered virtual network
     - machine that is network connected by VPN or Azure ExpressRoute
 
-Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
+Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked).
 We strongly recommend you request assistance from your network administrator, some validations you may do together are:
+    - The target Azure MySQL instance is in a ready state to accept connections.
     - The host name is valid and port used for the connection is 3306, format is tcp:<servername>.mysql.database.azure.com,3306
     - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
     - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
@@ -304,7 +305,7 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         process {
             try {
                 Write-Host "Trying to resolve DNS for" $Name
-                # return @{ IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
+                Import-Module DnsClient-PS
                 return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName}, @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
             }
             catch {
@@ -889,14 +890,14 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             }
             Write-Host
 
-            $msg = ' Connectivity to ' + $resolvedAddress + ':3306 FAILED'
+            $msg = 'Connectivity to ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine()
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
 
-            $msg = ' Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
+            $msg = 'Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
             Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
 
