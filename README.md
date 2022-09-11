@@ -116,7 +116,7 @@ In order to run this script on Linux you need to
 **In order to run it from machines without Internet access you need to:**
 
 1. From a machine with Internet access
-    - Navigate to https://github.com/ShawnXxy/SQL-Connectivity-Checker
+    - Navigate to https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
