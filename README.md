@@ -67,13 +67,9 @@ In order to run this script on Linux you need to
 1. Installing PowerShell on Linux (if you haven't before).
    See how to get the packages at https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux
 
-2. In Linux commandline, run ***pwsh*** from a Linux terminal. In the openned PowerShell console, install needed module by running the following command:
+2. In Linux commandline, run ***pwsh*** from a Linux terminal to start a powershell terminal. 
 
-    ```powershell
-    Install-Module -Name DnsClient-PS
-    ```
-
-3. Set the parameters on the following script then copy paste it to the terminal. You must set the server name and database name. User and password are optional, but best practices.
+3. Set the parameters on the following script then copy paste it to the powershell terminal started in above step#2. You must set the server name and database name. User and password are optional, but best practices.
     ```powershell
     $parameters = @{
         # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
