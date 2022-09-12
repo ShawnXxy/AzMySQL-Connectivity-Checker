@@ -291,7 +291,7 @@ if (!$(Get-Command 'Test-NetConnection' -errorAction SilentlyContinue)) {
             return $result
         }
     }
-}
+} 
 
 if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
     function Resolve-DnsName {
@@ -1479,7 +1479,7 @@ try {
             }
             else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
-                $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
+                $startNetworkTrace = "netsh trace start persistent=yes capture=yes report=yes tracefile=$traceFileName"
                 Invoke-Expression $startNetworkTrace
                 $netWorkTraceStarted = $true
             }
