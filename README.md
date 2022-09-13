@@ -5,16 +5,15 @@ Inspired by https://github.com/Azure/SQL-Connectivity-Checker, this PowerShell s
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
 **In order to run it you need to:**
-1. Ensure MySQL .Net Connector is installed. Please refer to https://dev.mysql.com/downloads/connector/net/8.0.html
-2. Open Windows PowerShell ISE (in Administrator mode if possible)
+1. Open Windows PowerShell ISE (in Administrator mode if possible)
 In order for a network trace to be collected along with the tests ('CollectNetworkTrace' parameter), PowerShell must be run as an administrator.
 
-3. Open a New Script window
+2. Open a New Script window
 
-4. Paste the following in the script window:
+3. Paste the following in the script window:
 
     ```powershell
-    [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+    
     $parameters = @{
         # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
         # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -53,39 +52,25 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
     }
     #end
     ```
-5. Set the parameters on the script. You must set the server name and database name. User and password are optional, but best practices.
+4. Set the parameters on the script. You must set the server name and database name. User and password are optional, but best practices.
 
-6. Run it.  
+5. Run it.  
    Results are displayed in the output window. If the user has permissions to create folders, a folder with the resulting log file will be created, along with a ZIP file (`AllFiles.zip`). When running on Windows, the folder opens automatically after the script completes.
 
-7. Examine the output for any issues detected, and recommended steps to resolve the issue.
+6. Examine the output for any issues detected, and recommended steps to resolve the issue.
 
 ## Run from Linux
 
 With the current release, PowerShell uses .NET 5.0 as its runtime. PowerShell runs on Windows, macOS, and Linux platforms.  
 
-In order to run this script on Linux you need to (you can skip 1 ~ 3 steps if you have the needed packages installed):
+In order to run this script on Linux you need to 
 1. Installing PowerShell on Linux (if you haven't before).
    See how to get the packages at https://docs.microsoft.com/powershell/scripting/install/installing-powershell-core-on-linux
 
-2. Installing Mono on Linux (if you haven't before).    
-   See how to get the packages at https://www.mono-project.com/download/stable/#download-lin-ubuntu
+2. In Linux commandline, run ***pwsh*** from a Linux terminal to start a powershell terminal. 
 
-3. Download MySQL .Net connector and save on Linux from https://dev.mysql.com/downloads/connector/net/
-    ![image](/rsc/mysql-net-connector.png)
-    Making sure the folder is unzipped.
-
-4. After the package is installed, run ***pwsh*** from a Linux terminal. In the openned PowerShell console, register mysqlclient library by running the following command:
-
+3. Set the parameters on the following script then copy paste it to the powershell terminal started in above step#2. You must set the server name and database name. User and password are optional, but best practices.
     ```powershell
-    sudo gacutil -i "{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll"  # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
-    
-    ```
-
-5. Set the parameters on the following script then copy paste it to the terminal. You must set the server name and database name. User and password are optional, but best practices.
-
-    ```powershell
-    [system.reflection.Assembly]::LoadFrom("{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll") # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
     $parameters = @{
         # Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
         # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
@@ -124,14 +109,14 @@ In order to run this script on Linux you need to (you can skip 1 ~ 3 steps if yo
     }
     #end
     ```
-5. Examine the output for any issues detected, and recommended steps to resolve the issue.
+4. Examine the output for any issues detected, and recommended steps to resolve the issue.
 
 ## How to run this from machines whithout Internet access
 
 **In order to run it from machines without Internet access you need to:**
 
 1. From a machine with Internet access
-    - Navigate to https://github.com/ShawnXxy/SQL-Connectivity-Checker
+    - Navigate to https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
@@ -155,59 +140,6 @@ If the user has the permissions to create folders, a folder with the resulting l
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
 
-<!-- ## Running SQL Connectivity Checker in containerized environment
-
-In order to troubleshoot your containerized application you'll have to temporarily deploy a Powershell Image which will allow you to execute this script and collect the results, you can see all the available Powershell Images [here](https://hub.docker.com/_/microsoft-powershell).
-
-Our suggestion would be to use a lightweight image for this purpose, such as `lts-alpine-3.10` image.
-
-### Kubernetes
-
-The following steps show the Kubernetes kubectl commands required to download the image and start an interactive PowerShell session.
-
-```
-kubectl run -it sqlconncheckerpowershellinstance --image=mcr.microsoft.com/powershell:lts-alpine-3.10
-```
-
-The following command is used to exit the current Powershell session.
-```
-exit
-```
-
-The following command is used to attach to an existing Powershell instance.
-```
-kubectl attach -it sqlconncheckerpowershellinstance
-```
-
-The following command is used to delete the pod running this image when you no longer need it.
-
-```
-kubectl delete pod sqlconncheckerpowershellinstance
-```
-
-### Docker
-
-The following steps show the Docker commands required to download the image and start an interactive PowerShell session.
-
-```
-docker run -it --name sqlconncheckerpowershellinstance --image=mcr.microsoft.com/powershell:lts-alpine-3.10
-```
-
-The following command is used to exit the current Powershell session.
-```
-exit
-```
-
-The following command is used to attach to an existing Powershell instance.
-```
-docker attach sqlconncheckerpowershellinstance
-```
-
-The following command is used to delete the container running this image when you no longer need it.
-
-```
-docker container rm sqlconncheckerpowershellinstance
-``` -->
 
 
 # Contributing
