@@ -1486,14 +1486,15 @@ try {
 
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
-            if (!$CustomerRunningInElevatedMode) {
+            
+            if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
+            {
+                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
+            }
+            elseif (!$CustomerRunningInElevatedMode) {
                 #Todo:This is incorrect for Linux. Need to Update#
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
-            }
-            elseif (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
-            {
-                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
             }
             else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
