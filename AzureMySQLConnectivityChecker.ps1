@@ -460,7 +460,8 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            Write-Host 'DNS resolution:' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
+            Write-Host 'Advanced DNS resolution check fails because this is not a Windows Environment or the PowerShell Version does not Meet the requirement. '
+            Write-Host 'We detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
         }
     }
     Catch {
