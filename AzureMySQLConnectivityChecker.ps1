@@ -259,9 +259,9 @@ See more about connectivity using Public Endpoint at https://docs.microsoft.com/
 $ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
 You can see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
 
-$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
-Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
-or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/'
+#$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
+#Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
+#or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/'
 
 $DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure MySQL doesn't have a static IP address.
 Logins for Azure MySQL can land on any of the Gateways in a region.
@@ -956,9 +956,9 @@ function PrintAverageConnectionTime($addressList, $port) {
             $avg = $sum / $numSuccessful
         }
 
-#        $ilb = ''
- #       if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
- #           $ilb = ' [ilb]'
+        $ilb = ''
+      if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+          $ilb = ' [ilb]'
         }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
@@ -1531,7 +1531,7 @@ try {
         if (IsMySQLFlexPublic $resolvedAddress) {
             RunMySQLFlexPublicConnectivityTests $resolvedAddress
         }
-        ## Verify Connection To MySQL Flexible/Single Private Endpoint
+        ## Verify Connection To MySQL Flexible/Single Private Connection
         elseif (IsMySQLVNet $resolvedAddress) {
             RunMySQLVNetConnectivityTests $resolvedAddress
         }
@@ -1544,7 +1544,7 @@ try {
         [void]$summaryLog.AppendLine()
 
         Write-Host
-        Write-Host 'All tests are now done!' -ForegroundColor Green
+        Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
     catch {
         Write-Host $_.Exception.Message -ForegroundColor Red
