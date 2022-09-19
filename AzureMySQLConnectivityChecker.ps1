@@ -504,6 +504,11 @@ function HasPrivateLink([String] $Server) {
     [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") -or ($_.Name -Match ".private.") } | Measure-Object).Count) -gt 0)
 }
 
+function IsSinglePrivateLink([String] $Server) {
+    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") } | Measure-Object).Count) -gt 0)
+}
+
+
 function SanitizeString([String] $param) {
     return ($param.Replace('\', '_').Replace('/', '_').Replace("[", "").Replace("]", "").Replace('.', '_').Replace(':', '_').Replace(',', '_'))
 }
@@ -862,7 +867,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-        Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
+        if (IsSinglePrivateLink $Server) {
+            Write-Host 'Detected as Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
+                   }
+           else{
+            Write-Host 'Detected as Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
+            }
+
+        #Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
         # $hasPrivateLink = HasPrivateLink $Server
         # if ($hasPrivateLink) {
         #     Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
