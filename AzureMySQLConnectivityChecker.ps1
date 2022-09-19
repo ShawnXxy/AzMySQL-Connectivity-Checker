@@ -1491,7 +1491,11 @@ try {
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
             }
-            else {
+            elseif ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) 
+            {
+                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
+            }
+            elseif {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
                 #$startNetworkTrace = "netsh trace start persistent=yes capture=yes report=yes tracefile=$traceFileName"
                 $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
