@@ -282,7 +282,7 @@ if (!$(Get-Command 'Test-NetConnection' -errorAction SilentlyContinue)) {
                 $client.Connect($HostName, $Port)
                 $result = @{TcpTestSucceeded = $true; InterfaceAlias = 'Unsupported' }
             }
-            catch {
+            catch { 
                 $result = @{TcpTestSucceeded = $false; InterfaceAlias = 'Unsupported' }
             }
 
@@ -304,7 +304,7 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         );
         process {
             try {
-                #Write-Host "Trying to resolve DNS for" $Name
+                ##Write-Host "Trying to resolve DNS for" $Name
                 return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName}, @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
             }
             catch {
@@ -867,12 +867,8 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-        if (IsSinglePrivateLink $Server) {
-            Write-Host 'Detected as Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
-                   }
-           else{
-            Write-Host 'Detected as Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
-            }
+
+        Write-Host 'Detected as Azure MySQL Single Server using Private Link or Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
 
         #Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
         # $hasPrivateLink = HasPrivateLink $Server
@@ -881,11 +877,11 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         #     TrackWarningAnonymously 'MySQL | FlexPrivate'
         # }
         Write-Host
-        Write-Host 'Connectivity tests (please wait):' -ForegroundColor Green
+        Write-Host 'Connectivity tests start(please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            Write-Host ' -> TCP Test succeeds, which normally indicates no firewall blocking.' -ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
             TrackWarningAnonymously 'MySQL | Private | TestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -899,6 +895,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             If ($ProcessError) {
                 Write-Host '  Could not to get IP routes for this interface'
             }
+            
             Write-Host
 
             $msg = 'Connectivity to ' + $resolvedAddress + ':3306 FAILED'
@@ -959,9 +956,9 @@ function PrintAverageConnectionTime($addressList, $port) {
             $avg = $sum / $numSuccessful
         }
 
-        $ilb = ''
-        if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
-            $ilb = ' [ilb]'
+#        $ilb = ''
+ #       if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+ #           $ilb = ' [ilb]'
         }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
@@ -1139,109 +1136,110 @@ function RunMySQLConnectivityTests($resolvedAddress) {
     }
 }
 
-function RunConnectivityPolicyTests($port) {
-    try {
-        Write-Host
-        Write-Host 'Advanced connectivity policy tests (please wait):' -ForegroundColor Green
-
-        if ($(Get-ExecutionPolicy) -eq 'Restricted') {
-            $msg = ' Advanced connectivity policy tests cannot be run because of current execution policy (Restricted)!
- Please use Set-ExecutionPolicy to allow scripts to run on this system!'
-            Write-Host $msg -Foreground Yellow
-            [void]$summaryLog.AppendLine()
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-
-            TrackWarningAnonymously 'Advanced | RestrictedExecutionPolicy'
-            return
-        }
-
-        $jobParameters = @{
-            Server                  = $Server
-            Database                = $Database
-            Port                    = $port
-            User                    = $User
-            Password                = $Password
-            #EncryptionProtocol      = $EncryptionProtocol
-            RepositoryBranch        = $RepositoryBranch
-            Local                   = $Local
-            LocalPath               = $LocalPath
-            SendAnonymousUsageData  = $SendAnonymousUsageData
-            AnonymousRunId          = $AnonymousRunId
-            logsFolderName          = $logsFolderName
-            outFolderName           = $outFolderName
-            ConnectionAttempts      = $ConnectionAttempts
-            DelayBetweenConnections = $DelayBetweenConnections
-        }
-
-        if ($Local) {
-            Copy-Item -Path $($LocalPath + './AdvancedConnectivityPolicyTests.ps1') -Destination ".\AdvancedConnectivityPolicyTests.ps1"
-        }
-        else {
-            try {
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
-            }
-            catch {
-                $msg = $CannotDownloadAdvancedScript
-                Write-Host $msg -Foreground Yellow
-                [void]$summaryLog.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'Advanced | CannotDownloadScript'
-                return
-            }
-        }
-
-        TrackWarningAnonymously 'Advanced | Invoked'
-        $job = Start-Job -ArgumentList $jobParameters -FilePath ".\AdvancedConnectivityPolicyTests.ps1"
-        Wait-Job $job | Out-Null
-        Receive-Job -Job $job
-
-        Set-Location -Path $env:TEMP
-        Set-Location $logsFolderName
-        Set-Location $outFolderName
-        $logPath = Join-Path ((Get-Location).Path) 'AdvancedTests_LastRunLog.txt'
-        $result = $([System.IO.File]::ReadAllText($logPath))
-        $routingMatch = [Regex]::Match($result, "Routing to: (.*)\.")
-
-        if ($routingMatch.Success) {
-            $routingArray = $routingMatch.Groups[1].Value -split ':'
-            $routingServer = $routingArray[0]
-            $routingPort = $routingArray[1]
-            $networkingErrorMatch = [Regex]::Match($result, "Networking error 10060 while trying to connect to (.*)\.")
-            $networkingErrorArray = $networkingErrorMatch.Groups[1].Value -split ':'
-            $networkingErrorServer = $networkingErrorArray[0]
-            $networkingErrorPort = $networkingErrorArray[1]
-
-            if ($networkingErrorMatch.Success -and ($routingServer -ieq $networkingErrorServer) -and ($routingPort -ieq $networkingErrorPort)) {
-                [void]$summaryLog.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine()
-                $msg = "ROOT CAUSE:"
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                $msg = "The issue is caused by lack of direct network connectivity to the node hosting the database under REDIRECT connection type."
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                $msg = [string]::Format("This machine cannot connect to {0} on port {1}", $networkingErrorServer, $networkingErrorPort);
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
-              
-            }
-        }
- #       Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
-    }
-    catch {
-        $msg = ' ERROR running Advanced Connectivity Tests: ' + $_.Exception.Message
-        Write-Host $msg -Foreground Red
-        [void]$summaryLog.AppendLine()
-        [void]$summaryLog.AppendLine($msg)
-        TrackWarningAnonymously 'ERROR running Advanced Connectivity Test'
-    }
-}
+# Advanced Connectivity Test is not supported in MySQL.
+#function RunConnectivityPolicyTests($port) {
+#    try {
+#        Write-Host
+#        Write-Host 'Advanced connectivity policy tests (please wait):' -ForegroundColor Green
+#
+#        if ($(Get-ExecutionPolicy) -eq 'Restricted') {
+#            $msg = ' Advanced connectivity policy tests cannot be run because of current execution policy (Restricted)!
+# Please use Set-ExecutionPolicy to allow scripts to run on this system!'
+#            Write-Host $msg -Foreground Yellow
+#            [void]$summaryLog.AppendLine()
+#            [void]$summaryLog.AppendLine($msg)
+#            [void]$summaryRecommendedAction.AppendLine()
+#            [void]$summaryRecommendedAction.AppendLine($msg)
+#
+#            TrackWarningAnonymously 'Advanced | RestrictedExecutionPolicy'
+#            return
+#        }
+#
+#        $jobParameters = @{
+#            Server                  = $Server
+#            Database                = $Database
+#            Port                    = $port
+#            User                    = $User
+#            Password                = $Password
+#            #EncryptionProtocol      = $EncryptionProtocol
+#            RepositoryBranch        = $RepositoryBranch
+#            Local                   = $Local
+#            LocalPath               = $LocalPath
+#            SendAnonymousUsageData  = $SendAnonymousUsageData
+#            AnonymousRunId          = $AnonymousRunId
+#            logsFolderName          = $logsFolderName
+#            outFolderName           = $outFolderName
+#            ConnectionAttempts      = $ConnectionAttempts
+#            DelayBetweenConnections = $DelayBetweenConnections
+#        }
+#
+#        if ($Local) {
+#            Copy-Item -Path $($LocalPath + './AdvancedConnectivityPolicyTests.ps1') -Destination ".\AdvancedConnectivityPolicyTests.ps1"
+#        }
+#        else {
+#            try {
+#                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
+#                Invoke-WebRequest -Uri $('https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/' + $RepositoryBranch + '/AdvancedConnectivityPolicyTests.ps1') -OutFile ".\AdvancedConnectivityPolicyTests.ps1" -UseBasicParsing
+#            }
+#            catch {
+#                $msg = $CannotDownloadAdvancedScript
+#                Write-Host $msg -Foreground Yellow
+#                [void]$summaryLog.AppendLine()
+#                [void]$summaryLog.AppendLine($msg)
+#                [void]$summaryRecommendedAction.AppendLine()
+#                [void]$summaryRecommendedAction.AppendLine($msg)
+#                TrackWarningAnonymously 'Advanced | CannotDownloadScript'
+#                return
+#            }
+#        }
+#
+#        TrackWarningAnonymously 'Advanced | Invoked'
+#        $job = Start-Job -ArgumentList $jobParameters -FilePath ".\AdvancedConnectivityPolicyTests.ps1"
+#        Wait-Job $job | Out-Null
+#        Receive-Job -Job $job
+#
+#        Set-Location -Path $env:TEMP
+#        Set-Location $logsFolderName
+#        Set-Location $outFolderName
+#        $logPath = Join-Path ((Get-Location).Path) 'AdvancedTests_LastRunLog.txt'
+#        $result = $([System.IO.File]::ReadAllText($logPath))
+#        $routingMatch = [Regex]::Match($result, "Routing to: (.*)\.")
+#
+#        if ($routingMatch.Success) {
+#            $routingArray = $routingMatch.Groups[1].Value -split ':'
+#            $routingServer = $routingArray[0]
+#            $routingPort = $routingArray[1]
+#            $networkingErrorMatch = [Regex]::Match($result, "Networking error 10060 while trying to connect to (.*)\.")
+#            $networkingErrorArray = $networkingErrorMatch.Groups[1].Value -split ':'
+#            $networkingErrorServer = $networkingErrorArray[0]
+#            $networkingErrorPort = $networkingErrorArray[1]
+#
+#            if ($networkingErrorMatch.Success -and ($routingServer -ieq $networkingErrorServer) -and ($routingPort -ieq $networkingErrorPort)) {
+#                [void]$summaryLog.AppendLine()
+#                [void]$summaryRecommendedAction.AppendLine()
+#                $msg = "ROOT CAUSE:"
+#                [void]$summaryLog.AppendLine($msg)
+#                [void]$summaryRecommendedAction.AppendLine($msg)
+#                $msg = "The issue is caused by lack of direct network connectivity to the node hosting the database under REDIRECT connection type."
+#                [void]$summaryLog.AppendLine($msg)
+#                [void]$summaryRecommendedAction.AppendLine($msg)
+#                $msg = [string]::Format("This machine cannot connect to {0} on port {1}", $networkingErrorServer, $networkingErrorPort);
+#                [void]$summaryLog.AppendLine($msg)
+#                [void]$summaryRecommendedAction.AppendLine($msg)
+#                [void]$summaryRecommendedAction.AppendLine('This indicates a client-side networking issue (usually a port being blocked) that you will need to pursue with your local network administrator.')
+#              
+#            }
+#        }
+# #       Remove-Item ".\AdvancedConnectivityPolicyTests.ps1" -Force
+#    }
+#    catch {
+#        $msg = ' ERROR running Advanced Connectivity Tests: ' + $_.Exception.Message
+#        Write-Host $msg -Foreground Red
+#        [void]$summaryLog.AppendLine()
+#        [void]$summaryLog.AppendLine($msg)
+#        TrackWarningAnonymously 'ERROR running Advanced Connectivity Test'
+#    }
+#}
 
 function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
 
@@ -1385,6 +1383,7 @@ try {
         else {
             Write-Host 'The folder' $logsFolderName 'already exists and all logs will be sent to this folder.'
         }
+
         Set-Location $logsFolderName
         $outFolderName = [System.DateTime]::Now.ToString('yyyyMMddTHHmmss')
         New-Item $outFolderName -ItemType directory | Out-Null
@@ -1491,7 +1490,8 @@ try {
             }
             else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
-                $startNetworkTrace = "netsh trace start persistent=yes capture=yes report=yes tracefile=$traceFileName"
+                #$startNetworkTrace = "netsh trace start persistent=yes capture=yes report=yes tracefile=$traceFileName"
+                $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
                 Invoke-Expression $startNetworkTrace
                 $netWorkTraceStarted = $true
             }
