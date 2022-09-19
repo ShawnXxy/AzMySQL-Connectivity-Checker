@@ -364,6 +364,8 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
 
 function ValidateDNS([String] $Server) {
     Try {
+
+        Write-Host
         Write-Host 'Validating DNS record for' $Server -ForegroundColor Green
         $DNSlist = New-Object Collections.Generic.List[string]
 
@@ -462,7 +464,7 @@ function ValidateDNS([String] $Server) {
         }
     }
     Catch {
-        Write-Host "Error at ValidateDNS" -Foreground Red
+        Write-Host "Error at Resolve the IP for the server." -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
     }
 }
@@ -1479,7 +1481,7 @@ try {
         #Print local network configuration
         PrintLocalNetworkConfiguration
 
-        Write-Host
+        Write-Host 'Start to collect network trace for the test' -ForegroundColor Green
 
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
@@ -1547,8 +1549,9 @@ try {
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
     catch {
+        Write-Host 'Script Execution Terminated Due to the Error below' -ForegroundColor Yellow
         Write-Host $_.Exception.Message -ForegroundColor Red
-        Write-Host 'Exception thrown while testing, stopping execution...' -ForegroundColor Yellow
+        #Write-Host 'Exception thrown while testing, stopping execution...' -ForegroundColor Yellow
     }
     finally {
         if ($netWorkTraceStarted) {
