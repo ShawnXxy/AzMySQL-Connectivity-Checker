@@ -1495,7 +1495,7 @@ try {
             {
                 Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
             }
-            elseif {
+            else {
                 $traceFileName = (Get-Location).Path + '\NetworkTrace_' + [System.DateTime]::Now.ToString('yyyyMMddTHHmmss') + '.etl'
                 #$startNetworkTrace = "netsh trace start persistent=yes capture=yes report=yes tracefile=$traceFileName"
                 $startNetworkTrace = "netsh trace start persistent=yes capture=yes tracefile=$traceFileName"
