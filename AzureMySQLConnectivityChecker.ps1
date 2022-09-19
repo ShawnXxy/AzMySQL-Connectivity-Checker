@@ -1491,7 +1491,7 @@ try {
                 Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
                 $netWorkTraceStarted = $false
             }
-            elseif ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) 
+            elseif (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
             {
                 Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
             }
