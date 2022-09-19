@@ -465,7 +465,7 @@ function ValidateDNS([String] $Server) {
     }
     Catch {
         Write-Host "Error at Resolve the IP for the server." -Foreground Red
-        Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host 'The Error Message is: ' $_.Exception.Message -ForegroundColor Red
     }
 }
 
@@ -1555,9 +1555,9 @@ try {
     }
     finally {
         if ($netWorkTraceStarted) {
-              Write-Host 'Stopping network trace.... please wait, this may take a few minutes' -ForegroundColor Yellow
-             $stopNetworkTrace = "netsh trace stop"
-             Invoke-Expression $stopNetworkTrace
+            Write-Host 'Stopping network trace.... please wait, this may take a few minutes' -ForegroundColor Yellow
+            $stopNetworkTrace = "netsh trace stop"
+            Invoke-Expression $stopNetworkTrace
             $netWorkTraceStarted = $false
         }
 
