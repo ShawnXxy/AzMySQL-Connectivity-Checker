@@ -304,7 +304,7 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         );
         process {
             try {
-                Write-Host "Trying to resolve DNS for" $Name
+                #Write-Host "Trying to resolve DNS for" $Name
                 return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName}, @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
             }
             catch {
