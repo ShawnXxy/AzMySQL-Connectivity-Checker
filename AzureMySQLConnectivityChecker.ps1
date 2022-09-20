@@ -267,7 +267,7 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
     Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
    "
 
-$AzureMySQL_VNetTestError='TCP connection to the server on the port failed, which means firewall blocking or remote server is stopped'
+$AzureMySQL_VNetTestError='TCP connection to the server on the 3306 port failed, which means firewall blocking or remote server is stopped'
 $AzureMySQL_VNetTestErrorAction= "You can only connect to Azure MySQL Server via Private Endpointaddress if you are connecting from one of the following:
     - machine inside the same virtual network
     - machine in a peered virtual network
@@ -319,9 +319,9 @@ You can see more details about how to use this tool at https://github.com/ShawnX
 #Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
 #or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/'
 
-$DNSResolutionDNSfromHostsFile = "We detected a configuration via hosts file, note that Azure MySQL doesn't have a static IP address.
-Logins for Azure MySQL can land on any of the Gateways in a region.
-For this reason, we strongly discourage relying on immutability of the IP address as it could cause unnecessary downtime."
+$DNSResolutionDNSfromHostsFile = 'Azure MySQL does not have a static IP, therefore if it changes, the connection will be lost.
+Additionally, it is expected that the IP will change following a server failover if you are utilizing Flexible Server in High Availability mode.'
+$DNSResolutionDNSfromHostsFileAction='We suggest using the Server Name in the connection string. And it is recommanded to use the Private DNS zone and other solutions if you are connecting to the MySQL Server using Private Endpoint for dynamic IP Resolution.'
 
 # PowerShell Container Image Support Start
 
@@ -468,15 +468,13 @@ function ValidateDNS([String] $Server) {
 
             if ($DNSfromHostsAddress) {
                
-                $msg = $DNSResolutionDNSfromHostsFile
+                $msg =$DNSResolutionDNSfromHostsFile 
           
                 Write-Host
                 Write-Host $msg -ForegroundColor Red
-                [void]$summaryLog.AppendLine()
-                [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine()
+                [void]$summaryLog.AppendLine($DNSResolutionDNSfromHostsFile)
+                [void]$summaryRecommendedAction.AppendLine($DNSResolutionDNSfromHostsFileAction)
+             
             }
 
             if (!$DNSfromCustomerServerAddress) {
@@ -856,7 +854,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         #     TrackWarningAnonymously 'MySQL | FlexPrivate'
         # }
         Write-Host
-        Write-Host 'Connectivity tests start(please wait):' -ForegroundColor Green
+        Write-Host 'TCP Connectivity test start(please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -869,19 +867,16 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         else {
             Write-Host ' -> TCP test FAILED' -ForegroundColor Red
             Write-Host
-            Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
-            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-            If ($ProcessError)
-            {
-                Write-Host '  Could not to get IP routes for this interface'
-            }
-            Write-Host 'test db connection when tcp not working.'
-                       
+            #Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
+            #Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            #If ($ProcessError)
+            #{
+           #     Write-Host '  Could not to get IP routes for this interface'
+           # }
+                                 
             Write-Host
-
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
-
             TrackWarningAnonymously 'MySQL | Private | TestFailed'
             return $false
         }
@@ -995,15 +990,15 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         else {
             Write-Host ' -> TCP test Fails, which means there is network blocking or network package droping between the client and server.' -ForegroundColor Red
             Write-Host
-            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
-            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-            If ($ProcessError) {
-                Write-Host '  Could not to get IP routes for this interface'
-            }
-            Write-Host
-            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-                tracert -h 10 $Server
-            }
+            #Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+           # Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+           # If ($ProcessError) {
+           #     Write-Host '  Could not to get IP routes for this interface'
+           # }
+           # Write-Host
+           # if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+           #     tracert -h 10 $Server
+           # }
 
             $msg = 'Gateway connectivity to ' + $gatewayAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
@@ -1059,7 +1054,6 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
                 [void]$redirectTestsResultMessage.AppendLine('Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
                 [void]$redirectTestsResultMessage.AppendLine('Please note this was just some tests to check connectivity using the 16000-16499 port range, not your database')
-
                 [void]$redirectTestsResultMessage.Append('Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
 
                 $msg = $redirectTestsResultMessage.ToString()
