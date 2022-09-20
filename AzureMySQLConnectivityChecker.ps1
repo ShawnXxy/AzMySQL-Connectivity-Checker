@@ -1544,7 +1544,7 @@ try {
 
         #Write-Host
         #[void]$summaryLog.AppendLine()
-
+        Write-Host 'debugging2'
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
