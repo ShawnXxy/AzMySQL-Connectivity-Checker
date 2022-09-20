@@ -866,7 +866,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host 'debugging'
             return $false
             Write-Host 'debugging4'
-            Write-Host 'debugging4'
+            Write-Host 'debugging5'
         
         }
     }
