@@ -227,6 +227,9 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 
 "
 
+
+
+
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
 #"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
@@ -567,7 +570,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
         return $true
 
-    } catch [MySql.Data.MySqlClient.MySqlException] {
+    } catch #[MySql.Data.MySqlClient.MySqlException] 
+    {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
         Write-Host ([string]::Format("The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
@@ -640,13 +644,16 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
-            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
+            #$msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+  #          [void]$summaryLog.AppendLine($msg)
+  #          [void]$summaryRecommendedAction.AppendLine()
+ #           [void]$summaryRecommendedAction.AppendLine($msg)
+ #           [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
+#            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+           [void]$summaryLog.AppendLine($MySQL_AccessDeniedError )
+         [void]$summaryRecommendedAction.AppendLine()
+          [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
 
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
             return $false
