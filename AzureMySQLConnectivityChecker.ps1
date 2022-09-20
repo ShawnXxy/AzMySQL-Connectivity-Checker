@@ -1525,11 +1525,13 @@ try {
   #      }
     
         ValidateDNS $Server
+
+        ValidateDNS $Server
         Write-Host 'resolvedAddress2'
         Write-Host $resolvedAddress
 
 
-        
+
         try {
             Write-Host 'resolvedAddress1'
             Write-Host 'resolvedAddress2'
