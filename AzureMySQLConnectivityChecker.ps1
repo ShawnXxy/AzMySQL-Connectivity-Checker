@@ -467,7 +467,7 @@ function ValidateDNS([String] $Server) {
         Write-Host
     
         Write-Host $_.Exception.Message -Foreground Red
-        $msg=$_.Exception.Message      
+        #$msg=$_.Exception.Message      
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg)
 
@@ -1529,7 +1529,8 @@ try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
         }
         catch {
-            $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed'
+            Write-Host
+            $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
@@ -1573,7 +1574,7 @@ try {
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
     catch {
-        Write-Host 'Script Execution Terminated Due to the Error below' -ForegroundColor Yellow
+        Write-Host 'Script Execution Terminated Due to Exception' -ForegroundColor Yellow
         Write-Host $_.Exception.Message -ForegroundColor Red
         #Write-Host 'Exception thrown while testing, stopping execution...' -ForegroundColor Yellow
     }
