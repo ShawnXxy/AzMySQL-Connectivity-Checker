@@ -1527,7 +1527,10 @@ try {
         ValidateDNS $Server
 
         try {
+            Write-Host 'resolvedAddress1'
+            Write-Host $resolvedAddress
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
+            
         }
         catch {
             Write-Host
