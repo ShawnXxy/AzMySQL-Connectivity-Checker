@@ -363,7 +363,7 @@ function ValidateDNS([String] $Server) {
     Try {
 
         Write-Host
-        Write-Host 'Advanced DNS record validation for' $Server -ForegroundColor Green
+        Write-Host 'Advanced DNS record validation for ' $Server 'starts' -ForegroundColor Green
         $DNSlist = New-Object Collections.Generic.List[string]
 
         if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
