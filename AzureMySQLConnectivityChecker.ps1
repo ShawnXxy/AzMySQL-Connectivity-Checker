@@ -863,6 +863,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryRecommendedAction.AppendLine($msg)
 
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
+            Write-Host 'debugging'
             return $false
         }
     }
