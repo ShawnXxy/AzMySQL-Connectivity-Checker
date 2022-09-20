@@ -363,7 +363,7 @@ function ValidateDNS([String] $Server) {
     Try {
 
         Write-Host
-        Write-Host 'Validating DNS record for' $Server -ForegroundColor Green
+        Write-Host 'Advanced DNS record validation for' $Server -ForegroundColor Green
         $DNSlist = New-Object Collections.Generic.List[string]
 
         if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
@@ -457,8 +457,9 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            Write-Host 'Advanced DNS resolution check is not supported because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
+            Write-Host 'Advanced DNS resolution verification is not supported because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
             Write-Host 'We detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
+            TrackWarningAnonymously 'LinuxAdvancedDNSResolutionCheck'
         }
     }
     Catch {
@@ -471,7 +472,7 @@ function ValidateDNS([String] $Server) {
   #      [void]$summaryLog.AppendLine()
   #      [void]$summaryLog.AppendLine($msg)
 
-  #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+  #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')s
    #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
    #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
 
@@ -479,7 +480,7 @@ function ValidateDNS([String] $Server) {
    #     [void]$summaryRecommendedAction.AppendLine()
     #    [void]$summaryRecommendedAction.AppendLine($action_msg)
 
-         TrackWarningAnonymously 'AdvanceDNSResolutionFailed'
+         TrackWarningAnonymously 'AdvanceDNSResolutionCheckFailed'
 
 
     }
