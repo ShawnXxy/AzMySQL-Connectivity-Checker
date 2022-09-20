@@ -901,6 +901,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             If ($ProcessError) {
                 Write-Host '  Could not to get IP routes for this interface'
             }
+            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             
             Write-Host
 
