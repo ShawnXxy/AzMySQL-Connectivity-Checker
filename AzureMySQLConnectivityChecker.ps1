@@ -457,13 +457,28 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            Write-Host 'Advanced DNS resolution check fails because this is not a Windows Environment or the PowerShell Version does not Meet the requirement. '
+            #Write-Host 'Advanced DNS resolution check fails because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
             Write-Host 'We detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
         }
     }
     Catch {
         Write-Host "Error at Resolve the IP for the server." -Foreground Red
         Write-Host 'The Error Message is: ' $_.Exception.Message -ForegroundColor Red
+        Write-Host
+    
+        Write-Host $_.Exception.Message -Foreground Red
+        $msg=$_.Exception.Message      
+        [void]$summaryLog.AppendLine()
+        [void]$summaryLog.AppendLine($msg)
+
+        $action_msg='DNS resolution fails: Check on the following:1. Verify if the server name is correct or not.2. If you are using Private link or Private Endpoint, you need to use priate DNS zone or  use DNS server etc. to resolve the server to the correct IP'
+        [void]$summaryRecommendedAction.AppendLine()
+        [void]$summaryRecommendedAction.AppendLine($action_msg)
+
+
+        TrackWarningAnonymously 'DNSResolutionFailed'
+
+
     }
 }
 
@@ -1480,17 +1495,17 @@ try {
         PrintLocalNetworkConfiguration
 
         Write-Host 'Start to collect network trace for the test' -ForegroundColor Green
-        Write-Host $canWriteFiles   $CollectNetworkTrace $PSVersionTable.PSVersion.Major  $IsWindows
+        
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
             
             if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
             {
-                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Yellow
+                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             elseif (!$CustomerRunningInElevatedMode) {
-                Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Yellow
+                Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             else {
