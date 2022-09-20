@@ -869,6 +869,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Catch {
         Write-Host "Error at RunMySQLFlexPublicConnectivityTests" -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host"Error at RunMySQLFlexPublicConnectivityTests1" -Foreground Red
         TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests | Exception'
     }
 }
