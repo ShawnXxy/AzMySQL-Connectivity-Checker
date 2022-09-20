@@ -866,7 +866,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host 'debugging'
             #return $false
             Write-Host 'debugging4'
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+        
         }
     }
     Catch {
