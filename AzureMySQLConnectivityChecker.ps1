@@ -227,9 +227,6 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 
 "
 
-
-
-
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
 #"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
 
@@ -974,10 +971,10 @@ function PrintAverageConnectionTime($addressList, $port) {
             $avg = $sum / $numSuccessful
         }
 
- #       $ilb = ''
-  #    if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
-  #        $ilb = ' [ilb]'
-   #     }
+        $ilb = ''
+      if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+          $ilb = ' [ilb]'
+        }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
