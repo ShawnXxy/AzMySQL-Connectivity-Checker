@@ -268,7 +268,7 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
    "
 
 $AzureMySQL_VNetTestError='TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is stopped'
-$AzureMySQL_VNetTestErrorAction= "When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
+$AzureMySQL_VNetTestErrorAction= 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
     - When connecting from the same Vnet as the database server, there are no additional settings by default.
     - When connecting from another Vnet, [Vnet Peering](https://docs.microsoft.com/azure/virtual-network/virtual-network-peering-overview) is necessary to bridge the connection between different Vnets
     - When connecting from on-prem,  [ExpressRoute](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/expressroute/) or [VPN](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/vpn/) and virtual network [connected to on-premises](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/) are required.
@@ -282,7 +282,7 @@ We strongly recommend you request assistance from your network administrator, so
     - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
     - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
-"
+'
 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
 #"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
@@ -511,8 +511,8 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            Write-Host 'Advanced DNS resolution verification is not supported because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
-            Write-Host 'We detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
+            Write-Host ' Advanced DNS resolution verification is not supported because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
+            Write-Host ' However, we detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
             TrackWarningAnonymously 'LinuxAdvancedDNSResolutionCheck'
         }
     }
@@ -1449,11 +1449,11 @@ try {
             
             if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
             {
-                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
+                Write-Host ' Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             elseif (!$CustomerRunningInElevatedMode) {
-                Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Red
+                Write-Host ' Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             else {
@@ -1475,7 +1475,7 @@ try {
         }
         catch {
             Write-Host
-            $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
+            $msg = ' ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
