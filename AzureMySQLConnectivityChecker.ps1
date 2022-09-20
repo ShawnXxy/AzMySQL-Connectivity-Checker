@@ -170,6 +170,12 @@ $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
 
 # Error Messages
+
+$MySQL_AccessDeniedError = 'Connection to database ' + $Database + ' failed because the username/password is wrong.'
+$MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
+If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
+
+
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -639,14 +645,16 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($MySQL_AccessDeniedError )
+            [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
     
-            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
+#            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
     
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
+#            [void]$summaryLog.AppendLine($msg)
+ #           [void]$summaryRecommendedAction.AppendLine()
+#            [void]$summaryRecommendedAction.AppendLine($msg)
+#            [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
+#            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
 
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
             return $false
