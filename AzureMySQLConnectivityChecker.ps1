@@ -606,7 +606,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
         return $true
 
-    } catch [MySql.Data.MySqlClient.MySqlException] {
+    } catch #[MySql.Data.MySqlClient.MySqlException] 
+    {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
         Write-Host ([string]::Format("The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
@@ -777,11 +778,12 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             return $false
         }
         return $false
-    } catch {
-        Write-Host $_.Exception.Message -ForegroundColor Yellow
-        TrackWarningAnonymously 'TestConnectionToDatabase | Exception'
-        return $false
-    }
+    } 
+    #catch {
+    #    Write-Host $_.Exception.Message -ForegroundColor Yellow
+    #    TrackWarningAnonymously 'TestConnectionToDatabase | Exception'
+    #    return $false
+    #}
 }
 
 function PrintLocalNetworkConfiguration() {
