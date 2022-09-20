@@ -846,6 +846,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            return $true
         }
         else {
             Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
