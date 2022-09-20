@@ -1534,6 +1534,7 @@ try {
             $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
+            Write-Host 'resolvedAddress'
             Write-Host $resolvedAddress
             if (IsMySQLFlexPublic $resolvedAddress) {
                 $msg = $DNSResolutionFailedAzureMySQLFlexPublic
