@@ -864,8 +864,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
 
          #   return $false
-
-        
+       
         }
     }
     Catch {
@@ -1305,7 +1304,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     [void]$summaryRecommendedAction.AppendLine()
                     [void]$summaryRecommendedAction.AppendLine($msg)
 
-                    $msg = 'Please confirm the database name is correct and/or look at the operation logs to see if the database has been dropped by another user.'
+                    $msg = 'Please confirm the database name is correct and/or look at the activity or audit logs to see if the database has been dropped by another user if the database should be there.'
                     Write-Host $msg -Foreground Red
                     [void]$summaryRecommendedAction.AppendLine($msg)
                     TrackWarningAnonymously 'DatabaseNotFoundInMySQL'
