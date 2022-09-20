@@ -457,30 +457,29 @@ function ValidateDNS([String] $Server) {
             }
         }
         else {
-            #Write-Host 'Advanced DNS resolution check fails because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
+            Write-Host 'Advanced DNS resolution check is not supported because this is not a Windows Environment or the PowerShell Version does not meet the requirement. '
             Write-Host 'We detect the IP of the server as' ([System.Net.DNS]::GetHostAddresses($Server).IPAddressToString)
         }
     }
     Catch {
-        Write-Host "Error at Resolve the IP for the server." -Foreground Red
+        Write-Host "Error at Resolve the IP for the server during advanced DNS check." -Foreground Red
         Write-Host ' The Error Message is: ' $_.Exception.Message -ForegroundColor Red
         Write-Host
     
-        Write-Host $_.Exception.Message -Foreground Red
-        #$msg=$_.Exception.Message      
-        #[void]$summaryLog.AppendLine()
-        #[void]$summaryLog.AppendLine($msg)
+        #Write-Host $_.Exception.Message -Foreground Red
+ #       $msg=$_.Exception.Message      
+  #      [void]$summaryLog.AppendLine()
+  #      [void]$summaryLog.AppendLine($msg)
 
-        [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-        [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
-        [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
+  #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+   #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
+   #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
 
    #     $action_msg='erver etc. to resolve the server to the correct IP'
    #     [void]$summaryRecommendedAction.AppendLine()
     #    [void]$summaryRecommendedAction.AppendLine($action_msg)
 
-
-        TrackWarningAnonymously 'DNSResolutionFailed'
+         TrackWarningAnonymously 'AdvanceDNSResolutionFailed'
 
 
     }
@@ -1526,38 +1525,20 @@ try {
     
         ValidateDNS $Server
 
-        ValidateDNS $Server
-        Write-Host 'resolvedAddress2'
-        Write-Host $resolvedAddress
-
-
-
         try {
-            Write-Host 'resolvedAddress1'
-            Write-Host 'resolvedAddress2'
-            Write-Host $resolvedAddress
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
-            
         }
         catch {
             Write-Host
             $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
-            Write-Host 'resolvedAddress'
-            Write-Host $resolvedAddress
-            if (IsMySQLFlexPublic $resolvedAddress) {
-                $msg = $DNSResolutionFailedAzureMySQLFlexPublic
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'DNSResolutionFailedAzureMySQLFlexPublic'
-            }
-            else {
-                $msg = $DNSResolutionFailed
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
-                TrackWarningAnonymously 'DNSResolutionFailed'
-            }
+
+            $msg = $DNSResolutionFailed
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            TrackWarningAnonymously 'DNSResolutionFailed'
+
             Write-Error '' -ErrorAction Stop
         }
 
