@@ -267,11 +267,12 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
     Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
    "
 
-$AzureMySQL_VNetTestError='TCP connection to the server on the 3306 port failed, which means firewall blocking or remote server is stopped'
-$AzureMySQL_VNetTestErrorAction= "You can only connect to Azure MySQL Server via Private Endpointaddress if you are connecting from one of the following:
-    - machine inside the same virtual network
-    - machine in a peered virtual network
-    - machine that is network connected by VPN or Azure ExpressRoute
+$AzureMySQL_VNetTestError='TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is stopped'
+$AzureMySQL_VNetTestErrorAction= "When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
+    - When connecting from the same Vnet as the database server, there are no additional settings by default.
+    - When connecting from another Vnet, [Vnet Peering](https://docs.microsoft.com/azure/virtual-network/virtual-network-peering-overview) is necessary to bridge the connection between different Vnets
+    - When connecting from on-prem,  [ExpressRoute](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/expressroute/) or [VPN](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/vpn/) and virtual network [connected to on-premises](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/) are required.
+
 Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked).
 We strongly recommend you request assistance from your network administrator, some validations you may do together are:
     - The target Azure MySQL instance is in a ready state to accept connections.
@@ -1506,7 +1507,7 @@ try {
         }
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
-        [void]$summaryRecommendedAction.AppendLine('Addtional Reference the sample error message to the MySQL database for other drivers: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
+        [void]$summaryRecommendedAction.AppendLine(' Addtional Reference for the sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
 
     }
     catch {
