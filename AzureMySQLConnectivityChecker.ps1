@@ -1528,6 +1528,7 @@ try {
 
         try {
             Write-Host 'resolvedAddress1'
+            Write-Host 'resolvedAddress2'
             Write-Host $resolvedAddress
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
             
