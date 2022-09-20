@@ -726,7 +726,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($BasicTierError)
             [void]$summaryRecommendedAction.AppendLine($BasicTierErrorAction)
     
-            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $BasicTierError)
             return $false
             
         } 
@@ -904,8 +904,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
                 Write-Host '  Could not to get IP routes for this interface'
             }
             Write-Host 'test db connection when tcp not working.'
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            
+                       
             Write-Host
 
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
@@ -1540,8 +1539,8 @@ try {
             RunMySQLConnectivityTests $resolvedAddress
         }
 
-        Write-Host
-        [void]$summaryLog.AppendLine()
+        #Write-Host
+        #[void]$summaryLog.AppendLine()
 
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
