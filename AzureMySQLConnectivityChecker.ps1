@@ -175,7 +175,15 @@ $MySQL_AccessDeniedError = 'Connection to database ' + $Database + ' failed beca
 $MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
 If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
 
+$ServerStoppedError= 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
+$ServerStoppedErrorAction='The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
+We suggest you:
+	- Please verify if the server is put in a STOP mode in Portal!
+	- Please verify if the server is in a ready state in Portal!
+	- Please verify if the server is in a high CPU or Memory usage!
+	- The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!'
 
+    
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -186,7 +194,6 @@ The Gateway used is not static, configuring a single specific address (like in h
 Having DNS resolution switching between a couple of Gateway addresses is expected.
 If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
 Please review the DNS results.'
-
 # $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
 #  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 #  or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -585,20 +592,13 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
-            $msg = 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
+            $msg =
     
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('The FQDN can be resolved successfully, however, the MySQL server cannot be reached. ')
+            [void]$summaryLog.AppendLine($ServerStoppedError)
+            [void]$summaryRecommendedAction.AppendLine($ServerStoppedErrorAction)
+            [void]$summaryRecommendedAction.AppendLine(' ')
             # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is put in a STOP mode in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a ready state in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is in a high CPU or Memory usage!')
-            [void]$summaryRecommendedAction.AppendLine('    - The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!')
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $ServerStoppedError)
             return $false
             
         } 
@@ -1529,7 +1529,7 @@ try {
   #      }
     
         ValidateDNS $Server
-        
+
         try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
         }
