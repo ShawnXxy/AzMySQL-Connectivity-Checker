@@ -626,12 +626,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
-            $msg =
-    
+  
             [void]$summaryLog.AppendLine($ServerStoppedError)
             [void]$summaryRecommendedAction.AppendLine($ServerStoppedErrorAction)
-            [void]$summaryRecommendedAction.AppendLine(' ')
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
             TrackWarningAnonymously ('TestConnectionToDatabase | unavailble: ' + $ServerStoppedError)
             return $false
             
@@ -642,11 +639,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
             [void]$summaryLog.AppendLine($SingleFirewallBlockingError)
-            [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($SingleFirewallBlockingErrorAction)
-
             TrackWarningAnonymously ('TestConnectionToDatabase | firewall: ' + $SingleFirewallBlockingError)
             return $false
         }
@@ -658,11 +652,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
-    
             [void]$summaryLog.AppendLine($NotUsingPasswordError)
             [void]$summaryRecommendedAction.AppendLine($NotUsingPasswordErrorAction)
             [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
-    
             TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $erMsg)
             return $false
         }
@@ -674,9 +666,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
             [void]$summaryLog.AppendLine($MySQL_AccessDeniedError)
             [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
-  
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $MySQL_AccessDeniedError)
-      
             return $false
         }
         elseif($erMsg -Match 'Invalid Username') {
@@ -685,13 +675,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
-    
+   
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
-    
             TrackWarningAnonymously ('TestConnectionToDatabase | username: ' + $erMsg)
             return $false
         }
@@ -701,10 +688,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
             [void]$summaryLog.AppendLine($UnknownDatabaseError)
             [void]$summaryRecommendedAction.AppendLine($UnknownDatabaseErrorAction)
-                
             TrackWarningAnonymously ('TestConnectionToDatabase | 1044: ' + $UnknownDatabaseError)
             return $false
         }
@@ -714,10 +699,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-  
             [void]$summaryLog.AppendLine($TooManyConnectionError)
             [void]$summaryRecommendedAction.AppendLine($TooManyConnectionErrorAction)
-
             TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $TooManyConnectionError)
             return $false
         }
@@ -727,15 +710,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
-    
             [void]$summaryLog.AppendLine($BasicTierError)
             [void]$summaryRecommendedAction.AppendLine($BasicTierErrorAction)
-    
             TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $BasicTierError)
             return $false
-            
         } 
         elseif($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
@@ -743,9 +721,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
-    
             [void]$summaryLog.AppendLine($ConnectionTimeoutError)
             [void]$summaryRecommendedAction.AppendLine($ConnectionTimeoutErrorAction)
             TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
