@@ -649,6 +649,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
             [void]$summaryLog.AppendLine($MySQL_AccessDeniedError)
+            [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
   
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $MySQL_AccessDeniedError)
