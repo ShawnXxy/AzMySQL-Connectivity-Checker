@@ -645,7 +645,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-            [void]$summaryLog.AppendLine($MySQL_AccessDeniedError )
+            [void]$summaryLog.AppendLine($MySQL_AccessDeniedError)
             [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
     
 #            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
@@ -1529,7 +1529,7 @@ try {
   #      }
     
         ValidateDNS $Server
-
+        
         try {
             $dnsResult = [System.Net.DNS]::GetHostEntry($Server)
         }
