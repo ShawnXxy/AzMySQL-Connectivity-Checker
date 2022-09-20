@@ -175,7 +175,6 @@ $MySQL_AccessDeniedError = 'Connection to database failed because the username/p
 $MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
 If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
 
-
 $ServerStoppedError= 'Connection to database failed due to that the server is not in a ready state.'
 $ServerStoppedErrorAction='The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
 We suggest you:
@@ -192,6 +191,25 @@ $SingleFirewallBlockingErrorAction='It seems that the connecting request is refu
 $NotUsingPasswordError='Connection to database failed because the password is missing.'
 $NotUsingPasswordErrorAction='It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.'
 
+$UnknownDatabaseError='Connection to database failed because the database does not exist.'
+$UnknownDatabaseErrorAction='It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.'
+
+$TooManyConnectionError='Connection to database failed because of reaching max_connection limit.'
+$TooManyConnectionErrorAction='It seems that the server hit "too many connections error".
+We suggest you:
+    - Please verify if the number of the active connections reached the max allowed limit in Portal!
+	- Please consider increase the value of parameter max_connection in Portal!
+	- Please consider scale up the tier to next level to gain more max allowed connections!'
+
+$BasicTierError='Connection to database failed because the MySQL server is a Basic tier while connecting request is sent via VNET which is not supported for Basic'
+$BasicTierErrorAction='We suggest you:
+    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.
+	- Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers'
+	
+$ConnectionTimeoutError='Connection to database failed becasue of timeout error.'
+$ConnectionTimeoutErrorAction='We suggest you:
+        - Please check the portal to see whether the server is not in stop status, and if it is, start it.
+        - Please check the server firewall rule setting and ensure the client IP address has been added.'
   
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
@@ -635,7 +653,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
             [void]$summaryLog.AppendLine($NotUsingPasswordError)
-            [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($NotUsingPasswordErrorAction)
             [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
@@ -649,7 +666,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
             [void]$summaryLog.AppendLine($MySQL_AccessDeniedError)
-            [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
   
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $MySQL_AccessDeniedError)
@@ -666,7 +682,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             $msg = 'Connection to database ' + $Database + ' failed.' + $erMsg
     
             [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
             [void]$summaryRecommendedAction.AppendLine($msg)
             [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
     
@@ -680,14 +695,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
-            $msg = 'Connection to database ' + $Database + ' failed due to that the database does not exist.'
-    
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.')
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | 1044: ' + $erMsg)
+            [void]$summaryLog.AppendLine($UnknownDatabaseError)
+            [void]$summaryRecommendedAction.AppendLine($UnknownDatabaseErrorAction)
+                
+            TrackWarningAnonymously ('TestConnectionToDatabase | 1044: ' + $UnknownDatabaseError)
             return $false
         }
         elseif($erMsg -Match 'too many connections') {
@@ -696,20 +707,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed due to reaching max_connection limit.'
-    
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that the server hit "too many connections error".')
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the number of the active connections reached the max allowed limit in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please consider increase the value of parameter max_connection in Portal!')
-            [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level to gain more max allowed connections!')
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $erMsg)
+  
+            [void]$summaryLog.AppendLine($TooManyConnectionError)
+            [void]$summaryRecommendedAction.AppendLine($TooManyConnectionErrorAction)
+
+            TrackWarningAnonymously ('TestConnectionToDatabase | 1040: ' + $TooManyConnectionError)
             return $false
         }
         elseif ($erMsg -Match 'Basic tier') {
@@ -721,17 +723,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the server is a Basic tier while connecting request is sent via VNET.'
     
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('The connection request failed because target server is a Basic tier while connecting request is sent via VNET.')
-            [void]$summaryRecommendedAction.AppendLine('Support for VNet service endpoints is only for General Purpose and Memory Optimized servers. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-vnet-using-portal')
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.')
-            [void]$summaryRecommendedAction.AppendLine('    - Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers')
-            [void]$summaryRecommendedAction.AppendLine('Feel free to submit a support ticket if you have any questions.')
-                
+            [void]$summaryLog.AppendLine($BasicTierError)
+            [void]$summaryRecommendedAction.AppendLine($BasicTierErrorAction)
+    
             TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $erMsg)
             return $false
             
@@ -745,16 +739,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     
             $msg = 'Connection to database ' + $Database + ' failed becasue of timeout error..'
     
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please check the portal to see whether the server is not in stop status, and if it is, start it.')
-            [void]$summaryRecommendedAction.AppendLine('    - Please check the server firewall rule setting and ensure the client IP address has been added.')
-            
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $erMsg)
+            [void]$summaryLog.AppendLine($ConnectionTimeoutError)
+            [void]$summaryRecommendedAction.AppendLine($ConnectionTimeoutErrorAction)
+            TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
             return $false
         }
         elseif ($erMsg -Match 'access token') {
@@ -887,7 +874,6 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-
         Write-Host 'Detected as Azure MySQL Single Server using Private Link or Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
 
         #Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
