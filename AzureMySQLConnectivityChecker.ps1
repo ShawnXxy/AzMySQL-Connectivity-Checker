@@ -1535,7 +1535,7 @@ try {
             [void]$summaryLog.AppendLine($msg)
 
             $msg = $DNSResolutionFailed
-            Write-Host $msg -Foreground Red
+            #Write-Host $msg -Foreground Red
             [void]$summaryRecommendedAction.AppendLine($msg)
             TrackWarningAnonymously 'DNSResolutionFailed'
 
@@ -1567,6 +1567,7 @@ try {
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
     catch {
+        Write-Host
         Write-Host 'Script Execution Terminated Due to Exception' -ForegroundColor Yellow
         Write-Host $_.Exception.Message -ForegroundColor Red
         #Write-Host 'Exception thrown while testing, stopping execution...' -ForegroundColor Yellow
