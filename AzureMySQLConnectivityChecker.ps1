@@ -471,9 +471,13 @@ function ValidateDNS([String] $Server) {
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg)
 
-        $action_msg='DNS resolution fails: Check on the following:1. Verify if the server name is correct or not.2. If you are using Private link or Private Endpoint, you need to use priate DNS zone or  use DNS server etc. to resolve the server to the correct IP'
-        [void]$summaryRecommendedAction.AppendLine()
-        [void]$summaryRecommendedAction.AppendLine($action_msg)
+        [void]$summaryRecommendedAction.AppendLine('We suggest you:')
+        [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
+        [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
+
+   #     $action_msg='erver etc. to resolve the server to the correct IP'
+   #     [void]$summaryRecommendedAction.AppendLine()
+    #    [void]$summaryRecommendedAction.AppendLine($action_msg)
 
 
         TrackWarningAnonymously 'DNSResolutionFailed'
