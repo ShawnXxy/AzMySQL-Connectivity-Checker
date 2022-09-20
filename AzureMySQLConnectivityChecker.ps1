@@ -463,13 +463,13 @@ function ValidateDNS([String] $Server) {
     }
     Catch {
         Write-Host "Error at Resolve the IP for the server." -Foreground Red
-        Write-Host 'The Error Message is: ' $_.Exception.Message -ForegroundColor Red
+        Write-Host ' The Error Message is: ' $_.Exception.Message -ForegroundColor Red
         Write-Host
     
         Write-Host $_.Exception.Message -Foreground Red
         #$msg=$_.Exception.Message      
-        [void]$summaryLog.AppendLine()
-        [void]$summaryLog.AppendLine($msg)
+        #[void]$summaryLog.AppendLine()
+        #[void]$summaryLog.AppendLine($msg)
 
         [void]$summaryRecommendedAction.AppendLine('We suggest you:')
         [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
@@ -1523,6 +1523,7 @@ try {
    #     if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTrace) {
    #         $CollectNetworkTrace = $false
   #      }
+    
         ValidateDNS $Server
 
         try {
@@ -1533,7 +1534,7 @@ try {
             $msg = 'ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
-
+            Write-Host $resolvedAddress
             if (IsMySQLFlexPublic $resolvedAddress) {
                 $msg = $DNSResolutionFailedAzureMySQLFlexPublic
                 Write-Host $msg -Foreground Red
