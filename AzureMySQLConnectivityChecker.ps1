@@ -865,6 +865,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
             Write-Host 'debugging'
             #return $false
+            Write-Host 'debugging4'
         }
     }
     Catch {
