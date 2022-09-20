@@ -218,6 +218,16 @@ Please check if the server is in a Stopped Status or not.
 Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
 Or your can check with your network team on the Network setting.'
 
+$AADFailure='Connection to database failed because the token used for this connection test is not valid.'
+$AADFailureAction='It seems that you are connecting via a AAD account but the token used is not valid.
+Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
+We suggest you:
+    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
+	- Please verify if token is expired and try to regenerate a new token if needed.'
+
+ $InvalidUsernameError='Connection to database failed because the user name is incorrect.'
+ $InvalidUsernameErrorAction='It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
+        
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -650,12 +660,10 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host ' Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
             [void]$summaryLog.AppendLine($NotUsingPasswordError)
             [void]$summaryRecommendedAction.AppendLine($NotUsingPasswordErrorAction)
             [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
-            TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $erMsg)
+            TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $NotUsingPasswordErrorAction)
             return $false
         }
         elseif($erMsg -Match 'Access denied for user') {
@@ -675,11 +683,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-   
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string')
-            TrackWarningAnonymously ('TestConnectionToDatabase | username: ' + $erMsg)
+            [void]$summaryLog.AppendLine($InvalidUsernameError)
+            [void]$summaryRecommendedAction.AppendLine($InvalidUsernameErrorAction)
+            TrackWarningAnonymously ('TestConnectionToDatabase | username: ' + $InvalidUsernameError)
             return $false
         }
         elseif($erMsg -Match 'Unknown database') {
@@ -733,20 +739,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-    
-            $msg = 'Connection to database ' + $Database + ' failed due to that the token used for this test connection is not valid.'
-    
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that you are connecting via a AAD account but the token used is not valid.')
-            [void]$summaryRecommendedAction.AppendLine('Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication')
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('We suggest you:')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
-            [void]$summaryRecommendedAction.AppendLine('    - Please verify if token is expired and try to regenerate a new token if needed.')
-                
-            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $erMsg)
+            [void]$summaryLog.AppendLine($AADFailure)
+            [void]$summaryRecommendedAction.AppendLine($AADFailureAction)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure)
             return $false
             
         } 
