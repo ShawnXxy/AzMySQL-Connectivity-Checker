@@ -481,8 +481,6 @@ function ValidateDNS([String] $Server) {
     #    [void]$summaryRecommendedAction.AppendLine($action_msg)
 
          TrackWarningAnonymously 'AdvanceDNSResolutionCheckFailed'
-
-
     }
 }
 
@@ -848,15 +846,13 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host '   -> TCP Connection Test Succeed.' #-ForegroundColor Green
+            Write-Host '   -> TCP Test succeeds, which normally indicates no firewall blocking.' #-ForegroundColor Green
             Write-Host .
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
-
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            
         }
         else {
             Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
@@ -864,7 +860,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($msg)
 
-           #Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
+            #Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
         #    $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
         #    Write-Host $msg -Foreground Red
         #    [void]$summaryRecommendedAction.AppendLine($msg)
@@ -975,10 +971,10 @@ function PrintAverageConnectionTime($addressList, $port) {
             $avg = $sum / $numSuccessful
         }
 
-        $ilb = ''
-      if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
-          $ilb = ' [ilb]'
-        }
+ #       $ilb = ''
+  #    if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+  #        $ilb = ' [ilb]'
+   #     }
 
         Write-Host '   IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
