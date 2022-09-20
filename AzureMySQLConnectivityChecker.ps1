@@ -1495,7 +1495,6 @@ try {
         ## Verify Connection To MySQL Flexible Public Endpoint
         if (IsMySQLFlexPublic $resolvedAddress) {
             RunMySQLFlexPublicConnectivityTests $resolvedAddress
-            Write-Host 'debugging1'
         }
         ## Verify Connection To MySQL Flexible/Single Private Connection
         elseif (IsMySQLVNet $resolvedAddress) {
@@ -1507,6 +1506,8 @@ try {
         }
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
+        [void]$summaryRecommendedAction.AppendLine('Addtional Reference the sample error message to the MySQL database for other drivers: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
+
     }
     catch {
         Write-Host
