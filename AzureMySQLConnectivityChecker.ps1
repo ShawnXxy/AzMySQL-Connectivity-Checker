@@ -846,7 +846,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            return $true
+            #return $true
         }
         else {
             Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
@@ -864,10 +864,9 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryRecommendedAction.AppendLine($msg)
 
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
-            Write-Host 'debugging'
-            return $false
-            Write-Host 'debugging4'
-            Write-Host 'debugging5'
+
+         #   return $false
+
         
         }
     }
@@ -1545,18 +1544,13 @@ try {
         else {
             RunMySQLConnectivityTests $resolvedAddress
         }
-
-        #Write-Host
-        #[void]$summaryLog.AppendLine()
-        Write-Host 'debugging2'
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
     }
     catch {
         Write-Host
         Write-Host 'Script Execution Terminated Due to Exception' -ForegroundColor Yellow
-        Write-Host $_.Exception.Message -ForegroundColor Red
-        #Write-Host 'Exception thrown while testing, stopping execution...' -ForegroundColor Yellow
+        
     }
     finally {
         if ($netWorkTraceStarted) {
