@@ -181,6 +181,11 @@ Having DNS resolution switching between a couple of Gateway addresses is expecte
 If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
 Please review the DNS results.'
 
+$MySQL_AccessDeniedError = 'Connection to database ' + $Database + ' failed because the username/password is wrong.'
+$MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
+If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
+
+
 # $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
 #  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 #  or a client-side networking issue that you will need to pursue with your local network administrator.'
