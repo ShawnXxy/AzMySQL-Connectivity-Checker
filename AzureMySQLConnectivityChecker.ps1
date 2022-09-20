@@ -1531,6 +1531,7 @@ try {
         ## Verify Connection To MySQL Flexible Public Endpoint
         if (IsMySQLFlexPublic $resolvedAddress) {
             RunMySQLFlexPublicConnectivityTests $resolvedAddress
+            Write-Host 'debugging1'
         }
         ## Verify Connection To MySQL Flexible/Single Private Connection
         elseif (IsMySQLVNet $resolvedAddress) {
