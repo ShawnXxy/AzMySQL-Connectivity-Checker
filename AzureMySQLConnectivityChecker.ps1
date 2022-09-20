@@ -171,11 +171,12 @@ $AnonymousRunId = ([guid]::NewGuid()).Guid
 
 # Error Messages
 
-$MySQL_AccessDeniedError = 'Connection to database ' + $Database + ' failed because the username/password is wrong.'
+$MySQL_AccessDeniedError = 'Connection to database failed because the username/password is wrong.'
 $MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
 If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
 
-$ServerStoppedError= 'Connection to database ' + $Database + ' failed due to that the server is not in a ready state.'
+
+$ServerStoppedError= 'Connection to database failed due to that the server is not in a ready state.'
 $ServerStoppedErrorAction='The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
 We suggest you:
 	- Please verify if the server is put in a STOP mode in Portal!
@@ -183,7 +184,15 @@ We suggest you:
 	- Please verify if the server is in a high CPU or Memory usage!
 	- The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!'
 
-    
+$SingleFirewallBlockingError='Connection to database failed due to firewall block.'
+$SingleFirewallBlockingErrorAction='It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal. 
+- For Single Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
+- For Flexible Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
+
+$NotUsingPasswordError='Connection to database failed because the password is missing.'
+$NotUsingPasswordErrorAction='It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.'
+
+  
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -609,17 +618,11 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
     
-            $msg = 'Connection to database ' + $Database + ' failed due to firewall block.'
-    
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($SingleFirewallBlockingError)
             [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine('It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal.')
-            # To-do: below message needs to be updated and linked to a centralized customer-facing document/TSG/Wiki
-            [void]$summaryRecommendedAction.AppendLine('    - For Single Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal')
-            [void]$summaryRecommendedAction.AppendLine('    - For Flexible Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public') 
-    
-            TrackWarningAnonymously ('TestConnectionToDatabase | firewall: ' + $erMsg)
+            [void]$summaryRecommendedAction.AppendLine($SingleFirewallBlockingErrorAction)
+
+            TrackWarningAnonymously ('TestConnectionToDatabase | firewall: ' + $SingleFirewallBlockingError)
             return $false
         }
         elseif ($erMsg -Match 'using password: NO' ) {
@@ -631,9 +634,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
     
             $msg = 'Connection to database ' + $Database + ' failed due to that the password is missing.'
     
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($NotUsingPasswordError)
             [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine($NotUsingPasswordErrorAction)
             [void]$summaryRecommendedAction.AppendLine('It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.')
     
             TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $erMsg)
@@ -647,16 +650,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
             [void]$summaryLog.AppendLine($MySQL_AccessDeniedError)
             [void]$summaryRecommendedAction.AppendLine($MySQL_AccessDeniedErrorAction)
-    
-#            $msg = 'Connection to database ' + $Database + ' failed due to that the username/password is wrong.'
-#            [void]$summaryLog.AppendLine($msg)
-#            [void]$summaryRecommendedAction.AppendLine()
-#            [void]$summaryRecommendedAction.AppendLine($msg)
-#            [void]$summaryRecommendedAction.AppendLine('It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.')
-#            [void]$summaryRecommendedAction.AppendLine('If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication')
-
+  
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $MySQL_AccessDeniedError)
-            #TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $erMsg)
+      
             return $false
         }
         elseif($erMsg -Match 'Invalid Username') {
