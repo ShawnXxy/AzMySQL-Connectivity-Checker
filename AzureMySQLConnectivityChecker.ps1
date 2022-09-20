@@ -250,11 +250,11 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
     Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
    "
 
-$AzureMySQLFlex_VNetTestFailed = "You can connect to Azure MySQL Flexible Server via private address if you are connecting from one of the following:
+$AzureMySQL_VNetTestError='TCP connection to the server on the port failed, which means firewall blocking or remote server is stopped'
+$AzureMySQL_VNetTestErrorAction= "You can only connect to Azure MySQL Server via Private Endpointaddress if you are connecting from one of the following:
     - machine inside the same virtual network
     - machine in a peered virtual network
     - machine that is network connected by VPN or Azure ExpressRoute
-
 Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked).
 We strongly recommend you request assistance from your network administrator, some validations you may do together are:
     - The target Azure MySQL instance is in a ready state to accept connections.
@@ -264,7 +264,6 @@ We strongly recommend you request assistance from your network administrator, so
     - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
     - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
-
 "
 
 $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
@@ -898,27 +897,17 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             Write-Host
             Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
             Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-            If ($ProcessError) {
+            If ($ProcessError)
+            {
                 Write-Host '  Could not to get IP routes for this interface'
             }
+            Write-Host 'test db connection when tcp not working.'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             
             Write-Host
 
-            $msg = 'Connectivity to ' + $resolvedAddress + ':3306 FAILED'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine()
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
-
-            $msg = 'Please fix the connectivity from this machine to ' + $resolvedAddress + ':3306'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
-
-            $msg = $AzureMySQLFlex_VNetTestFailed
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
+            [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
 
             TrackWarningAnonymously 'MySQL | Private | TestFailed'
             return $false
