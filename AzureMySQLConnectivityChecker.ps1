@@ -210,7 +210,14 @@ $ConnectionTimeoutError='Connection to database failed becasue of timeout error.
 $ConnectionTimeoutErrorAction='We suggest you:
         - Please check the portal to see whether the server is not in stop status, and if it is, start it.
         - Please check the server firewall rule setting and ensure the client IP address has been added.'
-  
+
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure='TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss'
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction='We suggest checking the following.
+Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
+Please check if the server is in a Stopped Status or not.
+Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
+Or your can check with your network team on the Network setting.'
+
 $DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
 Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.'
@@ -840,7 +847,6 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
         if ($testResult.TcpTestSucceeded) {
             Write-Host '   -> TCP Test succeeds, which normally indicates no firewall blocking.' #-ForegroundColor Green
-            Write-Host .
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
@@ -852,16 +858,8 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
             Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-
-            #Remove as error message has been provided in $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
-        #    $msg = 'Please make sure you fix the connectivity from this machine to ' + $resolvedAddress + ':3306 (MySQL Flexible public endpoint)'
-        #    Write-Host $msg -Foreground Red
-        #    [void]$summaryRecommendedAction.AppendLine($msg)
-
-            $msg = $AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
+            [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
 
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
 
