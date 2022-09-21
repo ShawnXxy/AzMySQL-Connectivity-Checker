@@ -809,22 +809,22 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         [void]$summaryLog.AppendLine($msg)
 
         Write-Host
-        #Write-Host 'MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
-        Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port:' -ForegroundColor Green
+        Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
+        Write-Host 'TCP Connectivity test start(please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host '   -> TCP Test succeeds, which normally indicates no connectivity issue.' #-ForegroundColor Green
+            Write-Host '   -> TCP Connectivity Test is successful, which typically means there is no a network issue.' #-ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
-            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
+            $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful'
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             #return $true
         }
         else {
-            Write-Host '   -> TCP Connection Test Failed, which means network blocking or the remote server does not have response' -ForegroundColor Red
-            $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
+            Write-Host '   -> TCP Connectivity Test fails, either the network has been blocked someh where or the remote MySQL server has not responded.' -ForegroundColor Red
+            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails'
             #Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
@@ -846,14 +846,8 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
         Write-Host 'Detected as Azure MySQL Single Server using Private Link or Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
-
-        #Write-Host 'Detected as Azure MySQL Server using private connections' -ForegroundColor Yellow
-        # $hasPrivateLink = HasPrivateLink $Server
-        # if ($hasPrivateLink) {
-        #     Write-Host ' This connection seems to be using Private Link' -ForegroundColor Yellow
-        #     TrackWarningAnonymously 'MySQL | FlexPrivate'
-        # }
         Write-Host
+        Write-Host 'Verify Network Connectivity to'  $Server ' with private Endpoint the on 3306 port.' -ForegroundColor Green
         Write-Host 'TCP Connectivity test start(please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
@@ -865,7 +859,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             return $true
         }
         else {
-            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+            Write-Host ' -> TCP Connectivity Test fails, either the network has been blocked someh where or the remote MySQL server has not responded.' -ForegroundColor Red
             Write-Host
             #Write-Host ' Trying to get IP routes for interface:' $testResult.InterfaceAlias
             #Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
@@ -875,6 +869,8 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
            # }
                                  
             Write-Host
+            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails'
+            [void]$summaryLog.AppendLine($msg)
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
             TrackWarningAnonymously 'MySQL | Private | TestFailed'
@@ -890,7 +886,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
 }
 
 function PrintAverageConnectionTime($addressList, $port) {
-    Write-Host ' Printing average connection times for 5 connection attempts:'
+    Write-Host ' Printing average connection time for 5 connection attempts:'
     $stopwatch = [StopWatch]::new()
 
     foreach ($ipAddress in $addressList) {
@@ -925,7 +921,7 @@ function PrintAverageConnectionTime($addressList, $port) {
           $ilb = ' [ilb]'
         }
 
-        Write-Host '   IP Address:'$ipAddress'  Port:'$port
+        Write-Host '   Server IP Address:'$ipAddress'  Port:'$port
         Write-Host '   Successful connections:'$numSuccessful
         Write-Host '   Failed connections:'$numFailed
         Write-Host '   Average response time:'$avg' ms '  #$ilb
