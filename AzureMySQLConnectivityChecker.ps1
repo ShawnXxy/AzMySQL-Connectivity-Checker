@@ -36,6 +36,7 @@ $ConnectionAttempts = 1
 $DelayBetweenConnections = 1
 $CollectNetworkTrace = $true  # Set as $true (default) or $false
 #EncryptionProtocol = ''  # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
+$RepositoryBranch=Init
 
 # Parameter region when Invoke-Command -ScriptBlock is used
 $parameters = $args[0]
@@ -1360,7 +1361,7 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
          else {
-            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/MySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
        $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
        [System.Reflection.Assembly]::Load($assembly) | Out-Null
