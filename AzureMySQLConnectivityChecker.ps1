@@ -397,12 +397,12 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
         else {
             if ($dnsResult -and $dnsResult.IPAddress -and !([string]::IsNullOrEmpty($dnsResult.IPAddress))) {
                 $dnsResultIpAddress = $dnsResult.IPAddress
-                $msg = 'Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
+                $msg = ' Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
                 Write-Host $msg
                 [void]$summaryLog.AppendLine($msg)
             }
             else {
-                Write-Host 'Could not find DNS record in' $dnsSource
+                Write-Host ' Could not find DNS record in' $dnsSource
             }
         }
         return $dnsResultIpAddress
@@ -419,7 +419,7 @@ function ValidateDNS([String] $Server) {
     Try {
 
         Write-Host
-        Write-Host 'Advanced DNS record validation for ' $Server 'starts' -ForegroundColor Green
+        Write-Host 'Advanced DNS record validation for' $Server 'starts' -ForegroundColor Green
         $DNSlist = New-Object Collections.Generic.List[string]
 
         if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
@@ -810,7 +810,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
         Write-Host
         #Write-Host 'MySQL Flexible Public Endpoint connectivity test starts:' -ForegroundColor Green
-        Write-Host 'Verify Network Connectivity to'  $Server 'the on 3306 port:' -ForegroundColor Green
+        Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port:' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -823,9 +823,9 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             #return $true
         }
         else {
-            Write-Host '   -> TCP Connection Test FAILED' -ForegroundColor Red
+            Write-Host '   -> TCP Connection Test Failed, which means network blocking or the remote server does not have response' -ForegroundColor Red
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 FAILED'
-            Write-Host $msg -Foreground Red
+            #Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
 
