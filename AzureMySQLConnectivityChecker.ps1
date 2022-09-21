@@ -32,7 +32,7 @@ $Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPas
 # Optional parameters (default values will be used if omitted)
 $SendAnonymousUsageData = $true  # Set as $true (default) or $false
 #$RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false#Set as $true (default) or $false, this will download library needed for running advanced connectivity policy tests
-$ConnectionAttempts = 1
+$ConnectionAttempts = 3
 $DelayBetweenConnections = 1
 $CollectNetworkTrace = $true  # Set as $true (default) or $false
 #EncryptionProtocol = ''  # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
@@ -229,9 +229,15 @@ We suggest you:
  $InvalidUsernameError='Connection to database failed because the user name is incorrect.'
  $InvalidUsernameErrorAction='It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
-$DNSResolutionFailed = 'Please make sure the server name FQDN is correct and that your machine can resolve it.
-Failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
-or a client-side networking issue that you will need to pursue with your local network administrator.'
+$DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
+1.	Server Name is incorrect.
+2.	If it is a Flexible server using Private Endpoint, you have to configure the Private DNS zone or other alternative solutions to resolve the IP correctly."
+
+$DNSResolutionFailureAction = "We suggest checking on the following:
+1.	Review the server name from the portal and ensure you are connecting to the correct and expected server.
+2.	For Flexible server with Private Endpoint, check if you have setup the Private DNS ZONE (https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#using-private-dns-zone) or customer DNS server with DNS forwarder correctly for the DNS setting(https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#integration-with-custom-dns-server)"
+
+
 
 $DNSResolutionGotMultipleAddresses = 'While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
 To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
@@ -1472,13 +1478,10 @@ try {
         }
         catch {
             Write-Host
-            $msg = ' ERROR: Name resolution (DNS) of ' + $Server + ' failed, connectivity check will stop.'
+            $msg = ' ERROR: Fail to resolve the IP server ' + $Server + ' connectivity check has to stop.'
             Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-
-            $msg = $DNSResolutionFailed
-            #Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryLog.AppendLine($DNSResolutionFailure)
+            [void]$summaryRecommendedAction.AppendLine($DNSResolutionFailureAction )
             TrackWarningAnonymously 'DNSResolutionFailed'
 
             Write-Error '' -ErrorAction Stop
