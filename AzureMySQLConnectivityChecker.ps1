@@ -621,7 +621,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
         return $true
 
-    } catch #[MySql.Data.MySqlClient.MySqlException] 
+    } catch [MySql.Data.MySqlClient.MySqlException] 
     {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
@@ -804,8 +804,8 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint'
-        Write-Host $msg -ForegroundColor Yellow
+        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint'  
+        Write-Host $msg -ForegroundColor Green
         [void]$summaryLog.AppendLine($msg)
 
         Write-Host
@@ -814,7 +814,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            Write-Host '   -> TCP Test succeeds, which normally indicates no firewall blocking.' #-ForegroundColor Green
+            Write-Host '   -> TCP Test succeeds, which normally indicates no connectivity issue.' #-ForegroundColor Green
             PrintAverageConnectionTime $resolvedAddress 3306
             $msg = '   TCP Connectivity to ' + $Server + ' ' + $resolvedAddress + ':3306 succeed'
             [void]$summaryLog.AppendLine($msg)
