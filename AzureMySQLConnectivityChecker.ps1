@@ -517,7 +517,7 @@ function ValidateDNS([String] $Server) {
         }
     }
     Catch {
-        Write-Host "Error at Resolve the IP for the server during advanced DNS check." -Foreground Red
+        Write-Host " Error at Resolve the IP for the server during advanced DNS check." -Foreground Red
         Write-Host ' The Error Message is: ' $_.Exception.Message -ForegroundColor Red
         Write-Host
     
@@ -1494,15 +1494,15 @@ try {
         Write-Host
         ## Verify Connection To MySQL Flexible Public Endpoint
         if (IsMySQLFlexPublic $resolvedAddress) {
-            RunMySQLFlexPublicConnectivityTests $resolvedAddress
+            $dbconnectiontestresult=RunMySQLFlexPublicConnectivityTests $resolvedAddress
         }
         ## Verify Connection To MySQL Flexible/Single Private Connection
         elseif (IsMySQLVNet $resolvedAddress) {
-            RunMySQLVNetConnectivityTests $resolvedAddress
+            $dbconnectiontestresult=RunMySQLVNetConnectivityTests $resolvedAddress
         }
         ## Verify Connection To MySQL Single Gateway Endpoint
         else {
-            RunMySQLConnectivityTests $resolvedAddress
+            $dbconnectiontestresult=RunMySQLConnectivityTests $resolvedAddress
         }
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
