@@ -36,7 +36,7 @@ $ConnectionAttempts = 1
 $DelayBetweenConnections = 1
 $CollectNetworkTrace = $true  # Set as $true (default) or $false
 #EncryptionProtocol = ''  # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
-#$RepositoryBranch='Init'
+
 
 # Parameter region when Invoke-Command -ScriptBlock is used
 $parameters = $args[0]
