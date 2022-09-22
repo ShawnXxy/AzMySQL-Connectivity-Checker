@@ -599,9 +599,13 @@ function HasPrivateLink([String] $Server) {
     [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") -or ($_.Name -Match ".private.") } | Measure-Object).Count) -gt 0)
 }
 
-function IsSinglePrivateLink([String] $Server) {
-    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") } | Measure-Object).Count) -gt 0)
+function IsSingleServer([String] $Server) {
+    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".control.") } | Measure-Object).Count) -gt 0)
 }
+
+#function IsSinglePrivateLink([String] $Server) {
+#    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") } | Measure-Object).Count) -gt #0)
+#}
 
 
 function SanitizeString([String] $param) {
@@ -869,7 +873,11 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-        Write-Host 'Detected as a Azure MySQL Single Server using Private Link or a Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
+
+        if(IsSingleServer($Server))
+        {Write-Host 'Detected as a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow}
+        else
+        {Write-Host 'Detected as a Azure MySQL Single Server using Private Link or a Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow}
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with private Endpoint the on 3306 port.' -ForegroundColor Green
         Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
