@@ -571,6 +571,23 @@ function IsMySQLVNet([String] $resolvedAddress) {
 
     # return [bool]((!$gateway) -and ($hasPrivateLink))
     if (!$gateway -and $hasPrivateLink) {
+        #No Public IP with Private alias.
+        return $true
+    }
+    else {
+        return $false
+    }
+}
+
+function IsMySQLSingleVNet([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+
+    # return [bool]((!$gateway) -and ($hasPrivateLink))
+    if ($gateway -and $hasPrivateLink) {
+         #This only works for Windows Enviroment.
+         #MySQL single server with Private link but resolving to public ip.
         return $true
     }
     else {
@@ -940,35 +957,46 @@ function RunMySQLConnectivityTests($resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-    if (!$gateway) {
-        if ($hasPrivateLink) {
-            Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
-            TrackWarningAnonymously 'MySQL | PrivateLink'
-        }
-        # elseif (!$hasPrivateLink -and $resolvedAddress ) {
-        #     Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
-        #     TrackWarningAnonymously 'MySQL|MeruPublic'
-        # }
-        else {
-            $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid address'
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine()
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine()
-            [void]$summaryRecommendedAction.AppendLine($msg)
+#    if (!$gateway) {
+##        if ($hasPrivateLink) {
+#            Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+#           TrackWarningAnonymously 'MySQL | PrivateLink'
+#       }
+#       # elseif (!$hasPrivateLink -and $resolvedAddress ) {
+#       #     Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
+#       #     TrackWarningAnonymously 'MySQL|MeruPublic'
+#       # }
+#       else {
+#           $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid address'
+#           Write-Host $msg -Foreground Red
+#           [void]$summaryLog.AppendLine()
+#           [void]$summaryLog.AppendLine($msg)
+#           [void]$summaryRecommendedAction.AppendLine()
+#           [void]$summaryRecommendedAction.AppendLine($msg)
+#
+#           $msg = $MySQL_InvalidGatewayIPAddress
+#           Write-Host $msg -Foreground Red
+#           [void]$summaryRecommendedAction.AppendLine($msg)
+#
+#           TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
+#           return $false
+#       }
+#
+  #      RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+   # }
 
-            $msg = $MySQL_InvalidGatewayIPAddress
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
 
-            TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
-            return $false
-        }
 
-        RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-    }
-    else {
-        Write-Host 'Detected as MySQL Single Server' -ForegroundColor Yellow
+
+   if (!(IsMySQLSingleVNet $resolvedAddress)) 
+   { Write-Host 'Detected as MySQL Single Server with Private Endpoint. 
+   However, this machine cannot find the Private IP for the connection and will use the Gateway IP for the Server instead' -ForegroundColor Yellow
+  
+   RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+
+  }  else {
+        
+        Write-Host 'Detected as MySQL Single Server connecting usng Gateway IP' -ForegroundColor Yellow
         TrackWarningAnonymously 'MySQL Single'
         Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
         Write-Host $gateway.Region -ForegroundColor Yellow
