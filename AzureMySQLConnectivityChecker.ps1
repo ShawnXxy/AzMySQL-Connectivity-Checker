@@ -1403,7 +1403,7 @@ try {
         Write-Host
         Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
-            Write-Host ' CollectNetworkTrace:            ' $CollectNetworkTrace -ForegroundColor Yellow
+            Write-Host ' CollectNetworkTrace:           ' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
 #        if ($null -ne $EncryptionProtocol) {
