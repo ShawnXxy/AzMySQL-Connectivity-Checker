@@ -988,9 +988,10 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
 
 
-   if (!(IsMySQLSingleVNet $resolvedAddress)) 
-   { Write-Host 'Detected as MySQL Single Server with Private Endpoint. 
-   However, this machine cannot find the Private IP for the connection and will use the Gateway IP for the Server instead' -ForegroundColor Yellow
+   if ((IsMySQLSingleVNet $resolvedAddress)) 
+   { 
+    Write-Host 'Detected as MySQL Single Server with Private Endpoint. 
+               However, this machine cannot find the Private IP for the connection and will use the Gateway IP for the Server instead' -ForegroundColor Yellow
   
    RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
 
