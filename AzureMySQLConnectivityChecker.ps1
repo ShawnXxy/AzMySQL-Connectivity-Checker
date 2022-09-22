@@ -999,8 +999,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
    if ((IsMySQLSingleVNet $resolvedAddress)) 
    { 
 
-    $msg='Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP' -ForegroundColor Yellow
-    Write-Host $msg
+    $msg='Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP' 
+    Write-Host $msg -ForegroundColor Yellow
     [void]$summaryLog.AppendLine($msg)
     [void]$summaryRecommendedAction.AppendLine($msg)
    RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
