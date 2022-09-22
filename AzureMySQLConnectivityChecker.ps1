@@ -817,7 +817,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
-        Write-Host 'TCP Connectivity test start(please wait):' -ForegroundColor Green
+        Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -827,7 +827,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($msg)
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            #return $true
+            return $true
         }
         else {
             Write-Host '   -> TCP Connectivity Test fails, either the network has been blocked someh where or the remote MySQL server has not responded.' -ForegroundColor Red
@@ -838,7 +838,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
 
-         #   return $false
+            return $false
        
         }
     }
@@ -852,10 +852,10 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
-        Write-Host 'Detected as Azure MySQL Single Server using Private Link or Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
+        Write-Host 'Detected as a Azure MySQL Single Server using Private Link or a Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with private Endpoint the on 3306 port.' -ForegroundColor Green
-        Write-Host 'TCP Connectivity test start(please wait):' -ForegroundColor Green
+        Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
