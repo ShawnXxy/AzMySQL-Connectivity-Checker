@@ -429,7 +429,7 @@ function ValidateDNS([String] $Server) {
     Try {
 
         Write-Host
-        Write-Host 'Advanced DNS record validation for' $Server 'starts' -ForegroundColor Green
+        Write-Host 'Advanced DNS Resolution Validation for' $Server 'starts' -ForegroundColor Green
         $DNSlist = New-Object Collections.Generic.List[string]
 
         if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
@@ -1483,7 +1483,6 @@ try {
         
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
-             #//reivew needed on Get-Command 'netsh'
             if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows -or $(Get-Command 'netsh' -errorAction SilentlyContinue)) )
             {
                 Write-Host ' Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
