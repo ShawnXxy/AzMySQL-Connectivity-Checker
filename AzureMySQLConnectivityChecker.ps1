@@ -19,7 +19,8 @@ using namespace MySql.Data.MySqlClient
 # [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
 
 # Parameter region for when script is run directly
-# Supports Single, Flexible (please provide FQDN, priavete endpoint and Vnet Ingested Flexible is supported)
+# Supports Single, Flexible (please provide FQDN), 
+# Both Public Endpoint and Private Endpoint are supported 
 # Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)
 $Server = '.mysql.database.azure.com' # or any other supported FQDN
 $Database = ''  # Set the name of the database you wish to test, 'information_schema' will be used by default if nothing is set
@@ -320,8 +321,10 @@ See more about connectivity using Public Endpoint at https://docs.microsoft.com/
 #$AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
 #This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
-$ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
-You can see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
+$ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script'
+
+$ServerNameNotSpecifiedAction = 'Server Name with correct format is necessery.  Database name, user and password are optional but desirable.
+You can see more details about how to use this tool at https://github.com/marlonj-ms/MySQL-Connectivity-Checker'
 
 #$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
 #Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
@@ -791,14 +794,14 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
 function PrintLocalNetworkConfiguration() {
     if (![System.Net.NetworkInformation.NetworkInterface]::GetIsNetworkAvailable()) {
-        Write-Host "There's no Network Interface available!" -ForegroundColor Red
+        Write-Host "There's no available Network Interface on this machine!" -ForegroundColor Red
         throw
     }
 
     $computerProperties = [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties()
     $networkInterfaces = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces()
 
-#Todo:add route table and IP config information
+    #Todo:add route table and IP config information
 
     Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
 
@@ -1436,20 +1439,12 @@ try {
             Write-Host ' Database:  ' $Database -ForegroundColor Yellow
         }
 
-#        if ($null -ne $RunAdvancedConnectivityPolicyTests) {
-#            Write-Host ' RunAdvancedConnectivityPolicyTests:' $RunAdvancedConnectivityPolicyTests -ForegroundColor Yellow
-#            TrackWarningAnonymously ('RunAdvancedConnectivityPolicyTests:' + $RunAdvancedConnectivityPolicyTests)
-#        }
         Write-Host
         Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
             Write-Host ' CollectNetworkTrace:           ' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
-#        if ($null -ne $EncryptionProtocol) {
-#            Write-Host ' EncryptionProtocol:' $EncryptionProtocol -ForegroundColor Yellow
-#            TrackWarningAnonymously ('EncryptionProtocol:' + $EncryptionProtocol)
-#        }
         if ($null -ne $ConnectionAttempts) {
             Write-Host ' TCP Connection Attempts:    	' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
@@ -1466,11 +1461,10 @@ try {
         $Server = $Server.Replace(',3306', '')
         $Server = $Server.Replace(';', '')
 
-        if (!$Server -or $Server.Length -eq 0 -or $Server -eq '.mysql.database.azure.com') {
-            $msg = $ServerNameNotSpecified
-            Write-Host $msg -Foreground Red
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine($msg)
+        if (!$Server -or $Server.Length -eq 0 -or $Server -eq '.mysql.database.azure.com' -or $Server -eq '.mysql.database.chinacloudapi.cn') {
+            Write-Host $ServerNameNotSpecified -Foreground Red
+            [void]$summaryLog.AppendLine($ServerNameNotSpecified)
+            [void]$summaryRecommendedAction.AppendLine($ServerNameNotSpecifiedAction)
             TrackWarningAnonymously 'ServerNameNotSpecified'
             Write-Error '' -ErrorAction Stop
         }
@@ -1489,8 +1483,8 @@ try {
         
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
-            
-            if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) )
+             #//reivew needed on Get-Command 'netsh'
+            if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows -or $(Get-Command 'netsh' -errorAction SilentlyContinue)) )
             {
                 Write-Host ' Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
                 $netWorkTraceStarted = $false
@@ -1507,9 +1501,6 @@ try {
                 $netWorkTraceStarted = $true
             }
         }
-   #     if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTrace) {
-   #         $CollectNetworkTrace = $false
-  #      }
     
         ValidateDNS $Server
 
@@ -1522,7 +1513,7 @@ try {
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($DNSResolutionFailure)
             [void]$summaryRecommendedAction.AppendLine($DNSResolutionFailureAction )
-            TrackWarningAnonymously 'DNSResolutionFailed'
+            TrackWarningAnonymously 'DNSResolutionFailure'
 
             Write-Error '' -ErrorAction Stop
         }
@@ -1544,8 +1535,11 @@ try {
         else {
             $dbconnectiontestresult=RunMySQLConnectivityTests $resolvedAddress
         }
+
+
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
+        Write-Host
         [void]$summaryRecommendedAction.AppendLine(' Addtional Reference for the sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
 
     }
