@@ -623,15 +623,14 @@ function IsMySQLSingleVNet([String] $resolvedAddress) {
 
 }
 
-function IsMySQLFlexVnet([String] $resolvedAddress) {
+function IsMySQLFlexVnet([String] $resolvedAddress) 
+    {
     
         $hasPrivateLink = HasPrivateLink $Server
         $single = IsMySingleServer  $Server
         if ( $hasPrivateLink -and !$single) 
-            {  return $true}
-       else {
-            return $false
-        }
+            {  return $true  }
+       else {  return $false }
     }
 function IsMySQLSinglePublic([String] $resolvedAddress) 
     {
@@ -1045,7 +1044,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         #[void]$summaryRecommendedAction.AppendLine($msg)
         RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
 
-  }  else {
+  }  elseif(IsMySQLSinglePublic $resolvedAddress) {
        
         Write-Host 'Detected as MySQL Single Server connecting using Gateway IP' -ForegroundColor Yellow
         Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates that you didn not configure the private DNS resolution correctly.' -ForegroundColor Yellow
