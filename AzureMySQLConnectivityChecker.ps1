@@ -409,7 +409,7 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
         if ($errorVariable -and $errorVariable[0].Exception.Message -notmatch 'DNS record does not exist' -and $errorVariable[0].Exception.Message -notmatch 'DNS name does not exist') {
             $msg = 'Error getting DNS record in ' + $dnsSource + ' (' + $errorVariable[0].Exception.Message.Replace(" : " + $Server, "") + ')'
             Write-Host $msg
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             TrackWarningAnonymously $msg
         }
         else {
@@ -417,7 +417,7 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
                 $dnsResultIpAddress = $dnsResult.IPAddress
                 $msg = ' Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
                 Write-Host $msg
-                [void]$summaryLog.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
             }
             else {
                 Write-Host ' Could not find DNS record in' $dnsSource
@@ -501,8 +501,8 @@ function ValidateDNS([String] $Server) {
                 Write-Host $msg -ForegroundColor Red
                 [void]$summaryLog.AppendLine()
                 [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 [void]$summaryRecommendedAction.AppendLine('We suggest you:')
                 [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
                 [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
@@ -519,13 +519,13 @@ function ValidateDNS([String] $Server) {
                 Write-Host $msg -ForegroundColor Red
                 [void]$summaryLog.AppendLine()
                 [void]$summaryRecommendedAction.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 TrackWarningAnonymously $msg
 
                 $msg = $DNSResolutionGotMultipleAddresses
                 Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
             }
         }
         else {
@@ -542,7 +542,7 @@ function ValidateDNS([String] $Server) {
         #Write-Host $_.Exception.Message -Foreground Red
  #       $msg=$_.Exception.Message      
   #      [void]$summaryLog.AppendLine()
-  #      [void]$summaryLog.AppendLine($msg)
+  #      [void]$summaryLog.AppendLine($msg.Trim())
 
   #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')s
    #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
@@ -864,7 +864,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         $msg = 'Detected as a MySQL Flexible Server using Public Endpoint' 
         TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
         Write-Host $msg -ForegroundColor Green
-        [void]$summaryLog.AppendLine($msg)
+        [void]$summaryLog.AppendLine($msg.Trim())
 
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
@@ -874,7 +874,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         if ($testResult.TcpTestSucceeded) {
             $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
             Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             PrintAverageConnectionTime $resolvedAddress 3306
             TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -883,7 +883,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         else {
             $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
 
@@ -918,16 +918,14 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
        
 
         Write-Host
-       
         Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
-       
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
 
             $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
             Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             PrintAverageConnectionTime $resolvedAddress 3306
             TrackWarningAnonymously 'MySQL | Private | EndPointTestSucceeded'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
@@ -938,7 +936,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             Write-Host
             $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
             TrackWarningAnonymously 'MySQL | Private | EndPointTestFailed'
@@ -1014,13 +1012,13 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid Gateway IP Address.'
                 Write-Host $msg -Foreground Red
                 [void]$summaryLog.AppendLine()
-                [void]$summaryLog.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
                 [void]$summaryRecommendedAction.AppendLine()
-                #[void]$summaryRecommendedAction.AppendLine($msg)
+                #[void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                 $msg = $MySQL_InvalidGatewayIPAddress
                 Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                 TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
                 return $false
@@ -1035,8 +1033,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
                 TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
-                [void]$summaryLog.AppendLine($msg)
-                #[void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
+                #[void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             } 
         elseif(IsMySQLSinglePublic $resolvedAddress) {       
@@ -1045,7 +1043,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 TrackWarningAnonymously 'MySQLSingleGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
                 Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
-                [void]$summaryLog.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
         }
        
         #Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
@@ -1068,7 +1066,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             #Write-Host ' -> TCP test succeed' -ForegroundColor Green
             $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
             Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             TrackWarningAnonymously ('MySQLSingle | Gateway | GatewayTestSucceeded' )
             PrintAverageConnectionTime $gatewayAddress 3306
                        
@@ -1077,11 +1075,11 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
             $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
-            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailure)
             $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
             Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine($msg.Trim())
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
             TrackWarningAnonymously 'MySQLSingle | Gateway | EndPointTestFailed'
 
@@ -1096,11 +1094,11 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             }
             $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
             Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
           # $msg = $MySQL_GatewayTestFailed
       #      Write-Host $msg -Foreground Red
-           # [void]$summaryRecommendedAction.AppendLine($msg)
+           # [void]$summaryRecommendedAction.AppendLine($msg.Trim())
  
         }
 
@@ -1145,14 +1143,14 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
                 $msg = $redirectTestsResultMessage.ToString()
                 Write-Host $msg -Foreground Yellow
-                [void]$summaryLog.AppendLine($msg)
+                [void]$summaryLog.AppendLine($msg.Trim())
 
                 TrackWarningAnonymously ('MySQL | Redirect | ' + $gateway.Region + ' | ' + $redirectSucceeded + '/' + $redirectTests)
 
                 if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
                     $msg = 'Based on the result it is likely the Redirect Policy will work from this machine'
                     Write-Host $msg -Foreground Green
-                    [void]$summaryLog.AppendLine($msg)
+                    [void]$summaryLog.AppendLine($msg.Trim())
                     [void]$summaryLog.AppendLine()
                 }
                 else {
@@ -1160,22 +1158,22 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                     if ($redirectSucceeded / $redirectTests -eq 0.0 ) {
                         $msg = 'Based on the result the Redirect Policy will NOT work from this machine'
                         Write-Host $msg -Foreground Red
-                        [void]$summaryLog.AppendLine($msg)
+                        [void]$summaryLog.AppendLine($msg.Trim())
                         [void]$summaryLog.AppendLine()
                         TrackWarningAnonymously 'MySQL | Redirect | AllTestsFailed'
                     }
                     else {
                         $msg = 'Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
                         Write-Host $msg -Foreground Red
-                        [void]$summaryLog.AppendLine($msg)
+                        [void]$summaryLog.AppendLine($msg.Trim())
                         [void]$summaryLog.AppendLine()
                         TrackWarningAnonymously ('MySQL | Redirect | MoreThanHalfFailed | ' + $redirectSucceeded + '/' + $redirectTests)
                     }
 
-                    [void]$summaryRecommendedAction.AppendLine($msg)
+                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                     $msg = $MySQL_Redirect
                     Write-Host $msg -Foreground Red
-                    [void]$summaryRecommendedAction.AppendLine($msg)
+                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 }
             }
         }
@@ -1237,14 +1235,14 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
                 Write-Host "Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
                     $msg = $Database + ' was found in MySQL'
                     Write-Host $msg -Foreground Green
-                    [void]$summaryLog.AppendLine($msg)
+                    [void]$summaryLog.AppendLine($msg.Trim())
 
                     #Test database from parameter
                     if ($customDatabaseNameWasSet) {
@@ -1255,13 +1253,13 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                     $msg = 'ERROR: ' + $Database + ' was not found in MySQL!'
                     Write-Host $msg -Foreground Red
                     [void]$summaryLog.AppendLine()
-                    [void]$summaryLog.AppendLine($msg)
+                    [void]$summaryLog.AppendLine($msg.Trim())
                     [void]$summaryRecommendedAction.AppendLine()
-                    [void]$summaryRecommendedAction.AppendLine($msg)
+                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                     $msg = 'Please confirm the database name is correct and/or look at the activity or audit logs to see if the database has been dropped by another user if the database should be there.'
                     Write-Host $msg -Foreground Red
-                    [void]$summaryRecommendedAction.AppendLine($msg)
+                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                     TrackWarningAnonymously 'DatabaseNotFoundInMySQL'
                 }
             }
@@ -1269,7 +1267,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 #Test database from parameter anyway
                 $msg = 'Default database information_schema cannot be reached. There could be a connectivity issue or lacking of permission to the database. Please refer to other checks below.'
                 Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 [void]$summaryRecommendedAction.AppendLine()
 
                 $msg = 'Start to check connecitivity to custom database: ' + $Database 
@@ -1286,7 +1284,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         $msg = ' ERROR at RunConnectionToDatabaseTestsAndAdvancedTests: ' + $_.Exception.Message
         Write-Host $msg -Foreground Red
         [void]$summaryLog.AppendLine()
-        [void]$summaryLog.AppendLine($msg)
+        [void]$summaryLog.AppendLine($msg.Trim())
         TrackWarningAnonymously 'ERROR at RunConnectionToDatabaseTestsAndAdvancedTests'
     }
 }
