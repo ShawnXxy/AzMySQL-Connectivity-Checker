@@ -1009,7 +1009,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
         if (!$gateway) {
             if ($hasPrivateLink) {
-                Write-Host 'This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+                #Write-Host 'This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+                Write-Host 'This connection seems to be using Private Connection.' -ForegroundColor Yellow
                 TrackWarningAnonymously 'RunMySQLConnectivityTests | PrivateLink'
                 }
        # Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
@@ -1030,8 +1031,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
                 return $false
          }
-        Write-Host 'We will still perform database connection to the resolved IP address.'
-        RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            Write-Host 'We will still perform database connection to the resolved IP address.'
+            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         } 
         else
         {
@@ -1045,12 +1046,19 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             } 
         elseif(IsMySQLSinglePublic $resolvedAddress) {       
-            
+
                 $msg=  'Detected as MySQL Single Server with only Public Endpoint.' 
                 TrackWarningAnonymously 'MySQLSingleGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
                 Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
                 [void]$summaryLog.AppendLine($msg.Trim())
+        }
+        else {
+            $msg = 'Detected as MySQL Server with Gateway IP resolution' 
+            TrackWarningAnonymously 'MySQLNoCRGatewayTest' 
+            Write-Host $msg -ForegroundColor Yellow
+            Write-Host 'Although the server IP address is a gateway IP, DNS validation does not recognize it as a MySQL single server. Typically, this is related to a customized DNS or network setting.' -ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($msg.Trim())
         }
        
         #Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
