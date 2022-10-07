@@ -1059,8 +1059,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         Write-Host 'Gateway connectivity test starts (please wait):' -ForegroundColor Green
         $hasGatewayTestSuccess = $false
         $gatewayAddress = $resolvedAddress
-        Write-Host
-        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
+        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White# -NoNewline
         $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -1119,7 +1118,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 }
 
                 foreach ($port in $TRPorts) {
-                    Write-Host 'Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
+                    Write-Host ' Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
                     $tcpClient = New-Object System.Net.Sockets.TcpClient
                     $portOpen = $tcpClient.ConnectAsync($addr, $port).Wait(6000)
                     if ($portOpen) {
