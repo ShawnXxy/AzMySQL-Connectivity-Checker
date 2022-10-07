@@ -49,13 +49,13 @@ if ($null -ne $parameters) {
     if ($null -ne $parameters['SendAnonymousUsageData']) {
         $SendAnonymousUsageData = $parameters['SendAnonymousUsageData']
     }
-#    if ($null -ne $parameters['RunAdvancedConnectivityPolicyTests']) {
-#        $RunAdvancedConnectivityPolicyTests = $parameters['RunAdvancedConnectivityPolicyTests']
-#    }
+    #    if ($null -ne $parameters['RunAdvancedConnectivityPolicyTests']) {
+    #        $RunAdvancedConnectivityPolicyTests = $parameters['RunAdvancedConnectivityPolicyTests']
+    #    }
     if ($null -ne $parameters['CollectNetworkTrace']) {
         $CollectNetworkTrace = $parameters['CollectNetworkTrace']
     }
-#    $EncryptionProtocol = $parameters['EncryptionProtocol']
+    #    $EncryptionProtocol = $parameters['EncryptionProtocol']
     if ($null -ne $parameters['Local']) {
         $Local = $parameters['Local']
     }
@@ -174,61 +174,61 @@ $AnonymousRunId = ([guid]::NewGuid()).Guid
 # Error Messages
 
 $MySQL_AccessDeniedError = 'Connection to database failed because the username/password is wrong.'
-$MySQL_AccessDeniedErrorAction ='It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
+$MySQL_AccessDeniedErrorAction = 'It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
 If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
 
-$ServerStoppedError= 'Connection to database failed due to that the server is not in a ready state.'
-$ServerStoppedErrorAction='The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
+$ServerStoppedError = 'Connection to database failed due to that the server is not in a ready state.'
+$ServerStoppedErrorAction = 'The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
 We suggest you:
 	- Please verify if the server is put in a STOP mode in Portal!
 	- Please verify if the server is in a ready state in Portal!
 	- Please verify if the server is in a high CPU or Memory usage!
 	- The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!'
 
-$SingleFirewallBlockingError='Connection to database failed due to firewall block.'
-$SingleFirewallBlockingErrorAction='It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal. 
+$SingleFirewallBlockingError = 'Connection to database failed due to firewall block.'
+$SingleFirewallBlockingErrorAction = 'It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal. 
 - For Single Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
 - For Flexible Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
-$NotUsingPasswordError='Connection to database failed because the password is missing.'
-$NotUsingPasswordErrorAction='It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.'
+$NotUsingPasswordError = 'Connection to database failed because the password is missing.'
+$NotUsingPasswordErrorAction = 'It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.'
 
-$UnknownDatabaseError='Connection to database failed because the database does not exist.'
-$UnknownDatabaseErrorAction='It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.'
+$UnknownDatabaseError = 'Connection to database failed because the database does not exist.'
+$UnknownDatabaseErrorAction = 'It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.'
 
-$TooManyConnectionError='Connection to database failed because of reaching max_connection limit.'
-$TooManyConnectionErrorAction='It seems that the server hit "too many connections error".
+$TooManyConnectionError = 'Connection to database failed because of reaching max_connection limit.'
+$TooManyConnectionErrorAction = 'It seems that the server hit "too many connections error".
 We suggest you:
     - Please verify if the number of the active connections reached the max allowed limit in Portal!
 	- Please consider increase the value of parameter max_connection in Portal!
 	- Please consider scale up the tier to next level to gain more max allowed connections!'
 
-$BasicTierError='Connection to database failed because the MySQL server is a Basic tier while connecting request is sent via VNET which is not supported for Basic'
-$BasicTierErrorAction='We suggest you:
+$BasicTierError = 'Connection to database failed because the MySQL server is a Basic tier while connecting request is sent via VNET which is not supported for Basic'
+$BasicTierErrorAction = 'We suggest you:
     - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.
 	- Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers'
 	
-$ConnectionTimeoutError='Connection to database failed becasue of timeout error.'
-$ConnectionTimeoutErrorAction='We suggest you:
+$ConnectionTimeoutError = 'Connection to database failed becasue of timeout error.'
+$ConnectionTimeoutErrorAction = 'We suggest you:
         - Please check the portal to see whether the server is not in stop status, and if it is, start it.
         - Please check the server firewall rule setting and ensure the client IP address has been added.'
 
-$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure='TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss'
-$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction='We suggest checking the following.
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss'
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following.
 Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
 Please check if the server is in a Stopped Status or not.
 Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
 Or your can check with your network team on the Network setting.'
 
-$AADFailure='Connection to database failed because the token used for this connection test is not valid.'
-$AADFailureAction='It seems that you are connecting via a AAD account but the token used is not valid.
+$AADFailure = 'Connection to database failed because the token used for this connection test is not valid.'
+$AADFailureAction = 'It seems that you are connecting via a AAD account but the token used is not valid.
 Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
 We suggest you:
     - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
 	- Please verify if token is expired and try to regenerate a new token if needed.'
 
- $InvalidUsernameError='Connection to database failed because the user name is incorrect.'
- $InvalidUsernameErrorAction='It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
+$InvalidUsernameError = 'Connection to database failed because the user name is incorrect.'
+$InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
 $DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
 1.	Server Name is incorrect.
@@ -281,8 +281,8 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
     Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
    "
 
-$AzureMySQL_VNetTestError='TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is stopped'
-$AzureMySQL_VNetTestErrorAction= 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
+$AzureMySQL_VNetTestError = 'TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is stopped'
+$AzureMySQL_VNetTestErrorAction = 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
     - When connecting from the same Vnet as the database server, there are no additional settings by default.
     - When connecting from another Vnet, [Vnet Peering](https://docs.microsoft.com/azure/virtual-network/virtual-network-peering-overview) is necessary to bridge the connection between different Vnets
     - When connecting from on-prem,  [ExpressRoute](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/expressroute/) or [VPN](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/vpn/) and virtual network [connected to on-premises](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/) are required.
@@ -338,7 +338,7 @@ You can see more details about how to use this tool at https://github.com/marlon
 
 $DNSResolutionDNSfromHostsFile = 'Azure MySQL does not have a static IP, therefore if it changes, the connection will be lost.
 Additionally, it is expected that the IP will change following a server failover if you are utilizing Flexible Server in High Availability mode.'
-$DNSResolutionDNSfromHostsFileAction='We suggest using the Server Name in the connection string. And it is recommanded to use the Private DNS zone and other solutions if you are connecting to the MySQL Server using Private Endpoint for dynamic IP Resolution.'
+$DNSResolutionDNSfromHostsFileAction = 'We suggest using the Server Name in the connection string. And it is recommanded to use the Private DNS zone and other solutions if you are connecting to the MySQL Server using Private Endpoint for dynamic IP Resolution.'
 
 # PowerShell Container Image Support Start
 
@@ -377,9 +377,9 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         );
         process {
             try {
-                return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName}, 
-                @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString}, 
-                @{FullInfor = nslookup $Name};
+                return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName }, 
+                @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString }, 
+                @{FullInfor = nslookup $Name };
             }
             catch {
                 TrackWarningAnonymously ('Error at Resolve-DnsName override: ' + $_.Exception.Message)
@@ -486,7 +486,7 @@ function ValidateDNS([String] $Server) {
 
             if ($DNSfromHostsAddress) {
                
-                $msg =$DNSResolutionDNSfromHostsFile 
+                $msg = $DNSResolutionDNSfromHostsFile 
           
                 Write-Host
                 Write-Host $msg -ForegroundColor Red
@@ -540,19 +540,19 @@ function ValidateDNS([String] $Server) {
         Write-Host
     
         #Write-Host $_.Exception.Message -Foreground Red
- #       $msg=$_.Exception.Message      
-  #      [void]$summaryLog.AppendLine()
-  #      [void]$summaryLog.AppendLine($msg.Trim())
+        #       $msg=$_.Exception.Message      
+        #      [void]$summaryLog.AppendLine()
+        #      [void]$summaryLog.AppendLine($msg.Trim())
 
-  #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')s
-   #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
-   #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
+        #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')s
+        #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
+        #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
 
-   #     $action_msg='erver etc. to resolve the server to the correct IP'
-   #     [void]$summaryRecommendedAction.AppendLine()
-    #    [void]$summaryRecommendedAction.AppendLine($action_msg)
+        #     $action_msg='erver etc. to resolve the server to the correct IP'
+        #     [void]$summaryRecommendedAction.AppendLine()
+        #    [void]$summaryRecommendedAction.AppendLine($action_msg)
 
-         TrackWarningAnonymously 'AdvanceDNSResolutionCheckFailed'
+        TrackWarningAnonymously 'AdvanceDNSResolutionCheckFailed'
     }
 }
 
@@ -569,7 +569,7 @@ function IsMySingleServer([String] $Server) {
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+    $gateway = $MySQLSterlingGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
     
     # return [bool]((!$gateway) -and (!$hasPrivateLink))
     if (!$gateway -and (!$hasPrivateLink)) {
@@ -583,10 +583,10 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
 # If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
 #   -- a Single Server configured with privatelink and making connections from a client in the same vnet
 #   -- a Flexible Server configured with VNet Intergrated and making connections from a client in the same vnet
- function IsMySQLVNet([String] $resolvedAddress) {
+function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+    $gateway = $MySQLSterlingGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
     
     # return [bool]((!$gateway) -and ($hasPrivateLink))
     # IP is not gateway IP and contains private key words.
@@ -604,31 +604,29 @@ function IsMySQLSingleVNet([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $single = IsMySingleServer  $Server
     if ( $hasPrivateLink -and $single) 
-        {  return $true}
-   else {
+    { return $true }
+    else {
         return $false
     }
 
 }
 
-function IsMySQLFlexVnet([String] $resolvedAddress) 
-    {
-        $hasPrivateLink = HasPrivateLink $Server
-        $single = IsMySingleServer  $Server
-        if ( $hasPrivateLink -and !$single) 
-            {  return $true  }
-       else {  return $false }
+function IsMySQLFlexVnet([String] $resolvedAddress) {
+    $hasPrivateLink = HasPrivateLink $Server
+    $single = IsMySingleServer  $Server
+    if ( $hasPrivateLink -and !$single) 
+    { return $true }
+    else { return $false }
+}
+function IsMySQLSinglePublic([String] $resolvedAddress) {
+    $hasPrivateLink = HasPrivateLink $Server
+    $single = IsMySingleServer  $Server
+    if ( !$hasPrivateLink -and $single) 
+    { return $true }
+    else {
+        return $false
     }
-function IsMySQLSinglePublic([String] $resolvedAddress) 
-    {
-        $hasPrivateLink = HasPrivateLink $Server
-        $single = IsMySingleServer  $Server
-            if ( !$hasPrivateLink -and $single) 
-        {  return $true}
-        else {
-            return $false
-        }
-    }    
+}    
 
 
 
@@ -661,28 +659,28 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
 
     Write-Host
     # [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing MySQL connection to server {0} and database {1} (please wait):", $Server,$Database)) -ForegroundColor Yellow
+    Write-Host ([string]::Format("Testing MySQL connection to server {0} and database {1} (please wait):", $Server, $Database)) -ForegroundColor Yellow
 
     Try {
       
-        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString = 'server=' + $Server + ';port=' + $gatewayPort + ';uid=' + $User + ';pwd=' + $Password + ';database=' + $Database }
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
-        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server,$Database))
+        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
+        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
         $MySQLConnection.Close()
 
         ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
 
         return $true
 
-    } catch [MySql.Data.MySqlClient.MySqlException] 
-    {
+    }
+    catch [MySql.Data.MySqlClient.MySqlException] {
         $erno = $_.Exception.Number
         $erMsg = $_.Exception.Message
-        Write-Host ([string]::Format("The connection to server {0} and database {1} Failed because of the error below.", $Server,$Database)) -ForegroundColor Red
+        Write-Host ([string]::Format("The connection to server {0} and database {1} Failed because of the error below.", $Server, $Database)) -ForegroundColor Red
         if (($erno -eq '1042') -or ($erMsg -Match 'is currently stopped')) {
             
             if ($erno -ne '0') {
@@ -721,7 +719,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | Password: ' + $NotUsingPasswordErrorAction)
             return $false
         }
-        elseif($erMsg -Match 'Access denied for user') {
+        elseif ($erMsg -Match 'Access denied for user') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
@@ -732,7 +730,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 1045: ' + $MySQL_AccessDeniedError)
             return $false
         }
-        elseif($erMsg -Match 'Invalid Username') {
+        elseif ($erMsg -Match 'Invalid Username') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
@@ -743,7 +741,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | username: ' + $InvalidUsernameError)
             return $false
         }
-        elseif($erMsg -Match 'Unknown database') {
+        elseif ($erMsg -Match 'Unknown database') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
@@ -754,7 +752,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 1044: ' + $UnknownDatabaseError)
             return $false
         }
-        elseif($erMsg -Match 'too many connections') {
+        elseif ($erMsg -Match 'too many connections') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
@@ -776,7 +774,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $BasicTierError)
             return $false
         } 
-        elseif($erMsg -Match 'Timeout expired.') {
+        elseif ($erMsg -Match 'Timeout expired.') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
@@ -801,7 +799,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             
         } 
         else {
-                if ($erno -ne '0') {
+            if ($erno -ne '0') {
                 Write-Host 'Error Code:' $erno -ForegroundColor Red
             }
             Write-Host 'Error Message:' 
@@ -839,10 +837,10 @@ function PrintLocalNetworkConfiguration() {
         $properties = $networkInterface.GetIPProperties()
         
         # [void]$summaryLog.AppendLine(' Client Machine Network Config Details ')
-		# [void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
-		# [void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
-		# [void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
-		# [void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
+        # [void]$summaryLog.AppendLine(' Interface name: ' + $networkInterface.Name)
+        # [void]$summaryLog.AppendLine(' Interface description: ' + $networkInterface.Description)
+        # [void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
+        # [void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
 
         Write-Host ' Interface name: ' $networkInterface.Name
         Write-Host ' Interface description: ' $networkInterface.Description
@@ -867,14 +865,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         #    TrackWarningAnonymously 'RunMySQLSingleUnknownGatewayIPConnectivityTests' 
         #    Write-Host $msg -ForegroundColor Green
         #    [void]$summaryLog.AppendLine($msg.Trim())
-       # }
+        # }
         #else {
-            $msg = 'Detected as a MySQL Flexible Server using Public Endpoint with the default setting. It might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
-            TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
-            Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg.Trim())
+        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint with the default setting. It might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
+        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
+        Write-Host $msg -ForegroundColor Green
+        [void]$summaryLog.AppendLine($msg.Trim())
             
-       # }
+        # }
  
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
@@ -911,14 +909,12 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
 
-        if(IsMySQLSingleVNet($resolvedAddress))
-        {
+        if (IsMySQLSingleVNet($resolvedAddress)) {
             Write-Host 'Detected as a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQLSingleServerVNetConnectivityTest' 
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link on the 3306 port.' -ForegroundColor Green
         }
-        else
-        {
+        else {
             Write-Host 'Detected as a Azure MySQL Flexible Server using Private Endpoint or a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQLVNetConnectivityTests' 
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
@@ -990,8 +986,8 @@ function PrintAverageConnectionTime($addressList, $port) {
         }
 
         $ilb = ''
-      if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
-          $ilb = ' [ilb]'
+        if ((IsMySQLFlexPublic $resolvedAddress) -and ($ipAddress -eq $resolvedAddress)) {
+            $ilb = ' [ilb]'
         }
 
         Write-Host '   Server IP Address:'$ipAddress'  Port:'$port
@@ -1002,20 +998,19 @@ function PrintAverageConnectionTime($addressList, $port) {
 }
 
 function RunMySQLConnectivityTests($resolvedAddress) {
-    Try 
-    {
+    Try {
         $hasPrivateLink = HasPrivateLink $Server
-        $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+        $gateway = $MySQLSterlingGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
 
         if (!$gateway) {
             if ($hasPrivateLink) {
                 #Write-Host 'This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
                 Write-Host 'This connection seems to be using Private Connection.' -ForegroundColor Yellow
                 TrackWarningAnonymously 'RunMySQLConnectivityTests | PrivateLink'
-                }
-       # Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
-       # Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
-       # TrackWarningAnonymously 'MySQL | PrivateLink'
+            }
+            # Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
+            # Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+            # TrackWarningAnonymously 'MySQL | PrivateLink'
             else {
                 $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid Gateway IP Address.'
                 Write-Host $msg -Foreground Red
@@ -1030,180 +1025,171 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
                 TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
                 return $false
-         }
+            }
             Write-Host 'We will still perform database connection to the resolved IP address.'
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         } 
-        else
-        {
-        if ((IsMySQLSingleVNet $resolvedAddress)) 
-            { 
-                $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
+        else {
+            if ((IsMySQLSingleVNet $resolvedAddress)) { 
+                $msg = 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
                 TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
                 [void]$summaryLog.AppendLine($msg.Trim())
                 #[void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
             } 
-        elseif(IsMySQLSinglePublic $resolvedAddress) {       
+            elseif (IsMySQLSinglePublic $resolvedAddress) {       
 
-                $msg=  'Detected as MySQL Single Server with only Public Endpoint.' 
+                $msg = 'Detected as MySQL Single Server with only Public Endpoint.' 
                 TrackWarningAnonymously 'MySQLSingleGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
                 Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
                 [void]$summaryLog.AppendLine($msg.Trim())
-        }
-        else {
-            $msg = 'Detected as MySQL Server with Gateway IP resolution' 
-            TrackWarningAnonymously 'MySQLNoCRGatewayTest' 
-            Write-Host $msg -ForegroundColor Yellow
-            Write-Host 'Although the server IP address is a gateway IP, DNS validation does not recognize it as a MySQL single server. Typically, this is related to a customized DNS or network setting.' -ForegroundColor Yellow
-            [void]$summaryLog.AppendLine($msg.Trim())
-        }
-       
-        #Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
-        #Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates that you didn not configure the private DNS resolution correctly.' -ForegroundColor Yellow
-        #TrackWarningAnonymously 'MySQL Single'
-        Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
-        Write-Host $gateway.Region -ForegroundColor Yellow
-
-        Write-Host
-        [void]$summaryLog.AppendLine()
-        Write-Host 'Gateway connectivity test starts (please wait):' -ForegroundColor Green
-        $hasGatewayTestSuccess = $false
-        $gatewayAddress = $resolvedAddress
-        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White
-        # -NoNewline
-        $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
-
-        if ($testResult.TcpTestSucceeded) {
-            $hasGatewayTestSuccess = $true
-            #Write-Host ' -> TCP test succeed' -ForegroundColor Green
-            $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
-            Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg.Trim())
-            TrackWarningAnonymously ('MySQLSingle | Gateway | GatewayTestSucceeded' )
-            PrintAverageConnectionTime $gatewayAddress 3306
-                       
-        }
-        else {
-
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
-            Write-Host $msg -ForegroundColor Red
-            [void]$summaryLog.AppendLine($msg.Trim())
-            [void]$summaryLog.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailure)
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg.Trim())
-            [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
-            TrackWarningAnonymously 'MySQLSingle | Gateway | EndPointTestFailed'
-
-            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
-            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-            If ($ProcessError) {
-                Write-Host '  Could not to get IP routes for this interface'
             }
-            Write-Host
-            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-                tracert -h 10 $Server
-            }
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg.Trim())
-
-          # $msg = $MySQL_GatewayTestFailed
-      #      Write-Host $msg -Foreground Red
-           # [void]$summaryRecommendedAction.AppendLine($msg.Trim())
- 
-        }
-
-        if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
-            Write-Host
-            Write-Host 'Redirect Policy tests:' -ForegroundColor Green
-            $redirectSucceeded = 0
-            $redirectTests = 0
-            foreach ($tr in $gateway.TRs | Where-Object { $_ -ne '' }) {
-                $addr = [string]::Format("{0}.{1}", $tr, $gateway.Cluster)
-                $trDNS = Resolve-DnsName -Name $addr -ErrorAction SilentlyContinue
-                if ($null -eq $trDNS -or $null -eq $trDNS.IPAddress) {
-                    Write-Host (' ' + $addr + ' DNS name could not be resolved, skipping tests on ' + $tr) -ForegroundColor Yellow
-                    TrackWarningAnonymously ('TR | DNS | ' + $addr)
-                    continue
-                }
-
-                foreach ($port in $TRPorts) {
-                    Write-Host ' Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
-                    $tcpClient = New-Object System.Net.Sockets.TcpClient
-                    $portOpen = $tcpClient.ConnectAsync($addr, $port).Wait(6000)
-                    if ($portOpen) {
-                        $redirectTests += 1
-                        $redirectSucceeded += 1
-                        Write-Host ' -> TCP test succeeded' -ForegroundColor Green
-                    }
-                    else {
-                        $redirectTests += 1
-                        Write-Host ' -> TCP test FAILED' -ForegroundColor Red
-                    }
-                }
-            }
-
-            if ($redirectTests -gt 0) {
-                $redirectTestsResultMessage = [System.Text.StringBuilder]::new()
-                [void]$redirectTestsResultMessage.AppendLine()
-                $redirectTestsResultMessage.ToString()
-
-                [void]$redirectTestsResultMessage.AppendLine('Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
-                [void]$redirectTestsResultMessage.AppendLine('Please note this was just some tests to check connectivity using the 16000-16499 port range which redirect connection will use')
-                [void]$redirectTestsResultMessage.Append('Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
-
-                $msg = $redirectTestsResultMessage.ToString()
-                Write-Host $msg -Foreground Yellow
+            else {
+                $msg = 'Detected as MySQL Server with Gateway IP resolution' 
+                TrackWarningAnonymously 'MySQLNoCRGatewayTest' 
+                Write-Host $msg -ForegroundColor Yellow
+                Write-Host 'Although the server IP address is a gateway IP, DNS validation does not recognize it as a MySQL single server. Typically, this is related to a customized DNS or network setting.' -ForegroundColor Yellow
                 [void]$summaryLog.AppendLine($msg.Trim())
+            }
 
-                TrackWarningAnonymously ('MySQL | Redirect | ' + $gateway.Region + ' | ' + $redirectSucceeded + '/' + $redirectTests)
+            Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
+            Write-Host $gateway.Region -ForegroundColor Yellow
 
-                if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
-                    $msg = 'Based on the result it is likely the Redirect Policy will work from this machine'
-                    Write-Host $msg -Foreground Green
-                    [void]$summaryLog.AppendLine($msg.Trim())
-                    [void]$summaryLog.AppendLine()
+            Write-Host
+            [void]$summaryLog.AppendLine()
+            Write-Host 'Gateway connectivity test starts (please wait):' -ForegroundColor Green
+            $hasGatewayTestSuccess = $false
+            $gatewayAddress = $resolvedAddress
+            Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White
+            # -NoNewline
+            $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
+
+            if ($testResult.TcpTestSucceeded) {
+                $hasGatewayTestSuccess = $true
+                #Write-Host ' -> TCP test succeed' -ForegroundColor Green
+                $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
+                Write-Host $msg -ForegroundColor Green
+                [void]$summaryLog.AppendLine($msg.Trim())
+                TrackWarningAnonymously ('MySQLSingle | Gateway | GatewayTestSucceeded' )
+                PrintAverageConnectionTime $gatewayAddress 3306
+
+            }
+            else {
+
+                $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
+                Write-Host $msg -ForegroundColor Red
+                [void]$summaryLog.AppendLine($msg.Trim())
+                [void]$summaryLog.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailure)
+                $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
+                [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
+                TrackWarningAnonymously 'MySQLSingle | Gateway | EndPointTestFailed'
+
+                Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+                Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+                If ($ProcessError) {
+                    Write-Host '  Could not to get IP routes for this interface'
                 }
-                else {
+                Write-Host
+                if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+                    tracert -h 10 $Server
+                }
+                $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
-                    if ($redirectSucceeded / $redirectTests -eq 0.0 ) {
-                        $msg = 'Based on the result the Redirect Policy will NOT work from this machine'
-                        Write-Host $msg -Foreground Red
+            }
+
+            if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
+                Write-Host
+                Write-Host 'Redirect Policy tests:' -ForegroundColor Green
+                $redirectSucceeded = 0
+                $redirectTests = 0
+                foreach ($tr in $gateway.TRs | Where-Object { $_ -ne '' }) {
+                    $addr = [string]::Format("{0}.{1}", $tr, $gateway.Cluster)
+                    $trDNS = Resolve-DnsName -Name $addr -ErrorAction SilentlyContinue
+                    if ($null -eq $trDNS -or $null -eq $trDNS.IPAddress) {
+                        Write-Host (' ' + $addr + ' DNS name could not be resolved, skipping tests on ' + $tr) -ForegroundColor Yellow
+                        TrackWarningAnonymously ('TR | DNS | ' + $addr)
+                        continue
+                    }
+
+                    foreach ($port in $TRPorts) {
+                        Write-Host ' Tested (redirect) connectivity to' $addr':'$port -ForegroundColor White -NoNewline
+                        $tcpClient = New-Object System.Net.Sockets.TcpClient
+                        $portOpen = $tcpClient.ConnectAsync($addr, $port).Wait(6000)
+                        if ($portOpen) {
+                            $redirectTests += 1
+                            $redirectSucceeded += 1
+                            Write-Host ' -> TCP test succeeded' -ForegroundColor Green
+                        }
+                        else {
+                            $redirectTests += 1
+                            Write-Host ' -> TCP test FAILED' -ForegroundColor Red
+                        }
+                    }
+                }
+
+                if ($redirectTests -gt 0) {
+                    $redirectTestsResultMessage = [System.Text.StringBuilder]::new()
+                    [void]$redirectTestsResultMessage.AppendLine()
+                    $redirectTestsResultMessage.ToString()
+
+                    [void]$redirectTestsResultMessage.AppendLine('Tested (redirect) connectivity ' + $redirectTests + ' times and ' + $redirectSucceeded + ' of them succeeded')
+                    [void]$redirectTestsResultMessage.AppendLine('Please note this was just some tests to check connectivity using the 16000-16499 port range which redirect connection will use')
+                    [void]$redirectTestsResultMessage.Append('Some tests may even fail and not be a problem since ports tested here are static and Azure MySQL is a dynamic environment.')
+
+                    $msg = $redirectTestsResultMessage.ToString()
+                    Write-Host $msg -Foreground Yellow
+                    [void]$summaryLog.AppendLine($msg.Trim())
+
+                    TrackWarningAnonymously ('MySQL | Redirect | ' + $gateway.Region + ' | ' + $redirectSucceeded + '/' + $redirectTests)
+
+                    if ($redirectSucceeded / $redirectTests -ge 0.5 ) {
+                        $msg = 'Based on the result it is likely the Redirect Policy will work from this machine with proper driver.'
+                        Write-Host $msg -Foreground Green
                         [void]$summaryLog.AppendLine($msg.Trim())
                         [void]$summaryLog.AppendLine()
-                        TrackWarningAnonymously 'MySQL | Redirect | AllTestsFailed'
                     }
                     else {
-                        $msg = 'Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
-                        Write-Host $msg -Foreground Red
-                        [void]$summaryLog.AppendLine($msg.Trim())
-                        [void]$summaryLog.AppendLine()
-                        TrackWarningAnonymously ('MySQL | Redirect | MoreThanHalfFailed | ' + $redirectSucceeded + '/' + $redirectTests)
-                    }
 
-                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
-                    $msg = $MySQL_Redirect
-                    Write-Host $msg -Foreground Red
-                    [void]$summaryRecommendedAction.AppendLine($msg.Trim())
+                        if ($redirectSucceeded / $redirectTests -eq 0.0 ) {
+                            $msg = 'Based on the result the Redirect Policy will NOT work from this machine'
+                            Write-Host $msg -Foreground Red
+                            [void]$summaryLog.AppendLine($msg.Trim())
+                            [void]$summaryLog.AppendLine()
+                            TrackWarningAnonymously 'MySQL | Redirect | AllTestsFailed'
+                        }
+                        else {
+                            $msg = 'Based on the result the Redirect Policy MAY NOT work from this machine, this can be expected for connections from outside Azure'
+                            Write-Host $msg -Foreground Red
+                            [void]$summaryLog.AppendLine($msg.Trim())
+                            [void]$summaryLog.AppendLine()
+                            TrackWarningAnonymously ('MySQL | Redirect | MoreThanHalfFailed | ' + $redirectSucceeded + '/' + $redirectTests)
+                        }
+
+                        [void]$summaryRecommendedAction.AppendLine($msg.Trim())
+                        $msg = $MySQL_Redirect
+                        Write-Host $msg -Foreground Red
+                        [void]$summaryRecommendedAction.AppendLine($msg.Trim())
+                    }
                 }
             }
-        }
 
-        if ($hasGatewayTestSuccess -eq $true) {
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            if ($hasGatewayTestSuccess -eq $true) {
+                RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            }
         }
     }
-}
-Catch {
-    Write-Host "Error at Test Connection to MySQL Single Server with below error message" -Foreground Red -Foreground Red
-    Write-Host $_.Exception.Message -ForegroundColor Red
-    TrackWarningAnonymously 'RunMySQLConnectivityTests | Exception'
-    return $false
-}
+    Catch {
+        Write-Host "Error at Test Connection to MySQL Single Server with below error message" -Foreground Red -Foreground Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
+        TrackWarningAnonymously 'RunMySQLConnectivityTests | Exception'
+        return $false
+    }
 
 }
 
@@ -1215,7 +1201,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
     Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
     Try {
         Write-Host 'Checking if' $Database 'exists:' -ForegroundColor White
-        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString='server='+$Server+';port='+$gatewayPort+';uid='+$User+';pwd='+$Password+';database='+$Database}
+        $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString = 'server=' + $Server + ';port=' + $gatewayPort + ';uid=' + $User + ';pwd=' + $Password + ';database=' + $Database }
         $MySQLConnection.Open()
 
         $MySQLCommand = New-Object MySql.Data.MySqlClient.MySqlCommand
@@ -1236,8 +1222,6 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
         return $false
     }
 }
-
-
 function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Database, $User, $Password) {
     try {
         $customDatabaseNameWasSet = $Database -and $Database.Length -gt 0 -and $Database -ne 'information_schema'
@@ -1363,12 +1347,12 @@ try {
         if ($Local) {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
-         else {
+        else {
             #ShawnXxy/AzMySQL-Connectivity-Checker
             Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
-       $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
-       [System.Reflection.Assembly]::Load($assembly) | Out-Null
+        $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
+        [System.Reflection.Assembly]::Load($assembly) | Out-Null
 
     }
     catch {
@@ -1438,8 +1422,7 @@ try {
         
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
-            if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows -or $(Get-Command 'netsh' -errorAction SilentlyContinue)) )
-            {
+            if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows -or $(Get-Command 'netsh' -errorAction SilentlyContinue)) ) {
                 Write-Host ' Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
@@ -1479,14 +1462,14 @@ try {
         Write-Host
         ## Verify Connection To MySQL Flexible Public Endpoint
         if (IsMySQLFlexPublic $resolvedAddress) {
-            $dbconnectiontestresult=RunMySQLFlexPublicConnectivityTests $resolvedAddress
+            $dbconnectiontestresult = RunMySQLFlexPublicConnectivityTests $resolvedAddress
         }
         ## Verify Connection To MySQL Flexible/Single Private Connection
         elseif (IsMySQLVNet $resolvedAddress) {
-            $dbconnectiontestresult=RunMySQLVNetConnectivityTests $resolvedAddress
+            $dbconnectiontestresult = RunMySQLVNetConnectivityTests $resolvedAddress
         }
         else {
-            $dbconnectiontestresult=RunMySQLConnectivityTests $resolvedAddress
+            $dbconnectiontestresult = RunMySQLConnectivityTests $resolvedAddress
         }
 
 
