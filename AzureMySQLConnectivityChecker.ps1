@@ -255,9 +255,9 @@ In case you are not using Private Link, failure to resolve domain name for your 
 or a client-side networking issue that you will need to pursue with your local network administrator.
 See the valid gateway addresses at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses.'
 
-$MySQL_GatewayTestFailure = 'Fail to connect to the MySQL Single Server using the Gateway IP address.'
+$AzureMySQLSingle_Gateway_TCPConnectionTestFailure = 'Fail to connect to the MySQL Single Server using the Gateway IP address.'
 
-$MySQL_GatewayTestFailureAction = 'The Gateway serves as the starting point for connections to the MySQL Single Servers in the same region. Based on the information in the connection string, Gateway will ensure the connection been redirect to the correct server.
+$AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction = 'The Gateway serves as the starting point for connections to the MySQL Single Servers in the same region. Based on the information in the connection string, Gateway will ensure the connection been redirect to the correct server.
 The failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to check with your local network administrator. 
 See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture.'
 
@@ -997,78 +997,112 @@ function PrintAverageConnectionTime($addressList, $port) {
 }
 
 function RunMySQLConnectivityTests($resolvedAddress) {
-    Try {
-    $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
+    Try 
+    {
+        $hasPrivateLink = HasPrivateLink $Server
+        $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
-#    if (!$gateway) {
-##        if ($hasPrivateLink) {
-#            Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
-#           TrackWarningAnonymously 'MySQL | PrivateLink'
-#       }
-#       # elseif (!$hasPrivateLink -and $resolvedAddress ) {
-#       #     Write-Host 'Detected as MySQL Flexible Server and public connection is used, skipping Gateway connectivity tests' -ForegroundColor Yellow
-#       #     TrackWarningAnonymously 'MySQL|MeruPublic'
-#       # }
-#       else {
-#           $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid address'
-#           Write-Host $msg -Foreground Red
-#           [void]$summaryLog.AppendLine()
-#           [void]$summaryLog.AppendLine($msg)
-#           [void]$summaryRecommendedAction.AppendLine()
-#           [void]$summaryRecommendedAction.AppendLine($msg)
-#
-#           $msg = $MySQL_InvalidGatewayIPAddress
-#           Write-Host $msg -Foreground Red
-#           [void]$summaryRecommendedAction.AppendLine($msg)
-#
-#           TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
-#           return $false
-#       }
-#
-  #      RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-   # }
+        if (!$gateway) {
+            if ($hasPrivateLink) {
+                Write-Host 'This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+                TrackWarningAnonymously 'RunMySQLConnectivityTests | PrivateLink'
+                }
+       # Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
+       # Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
+       # TrackWarningAnonymously 'MySQL | PrivateLink'
+            else {
+                $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid Gateway IP Address.'
+                Write-Host $msg -Foreground Red
+                [void]$summaryLog.AppendLine()
+                [void]$summaryLog.AppendLine($msg)
+                [void]$summaryRecommendedAction.AppendLine()
+                #[void]$summaryRecommendedAction.AppendLine($msg)
 
-   if (!$gateway) {
+                $msg = $MySQL_InvalidGatewayIPAddress
+                Write-Host $msg -Foreground Red
+                [void]$summaryRecommendedAction.AppendLine($msg)
 
-    if ((IsMySQLSingleVNet $resolvedAddress)) 
-    { 
-         $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'  -ForegroundColor Yellow
-         TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
-         Write-Host $msg -ForegroundColor Yellow
-         [void]$summaryLog.AppendLine($msg)
-         #[void]$summaryRecommendedAction.AppendLine($msg)
-         #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
- 
-   } 
-   elseif(IsMySQLSinglePublic $resolvedAddress) {
-       
-    $msg=  'Detected as MySQL Single Server with only Public Endpoint.' -ForegroundColor Yellow
-    TrackWarningAnonymously 'MySQLSingleGatewayTest' 
-    Write-Host $msg -ForegroundColor Yellow
-    Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
-    [void]$summaryLog.AppendLine($msg)
-    
-   }
-
-
-
-
-   if ((IsMySQLSingleVNet $resolvedAddress)) 
-   { 
-        $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP' 
-        TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
-        Write-Host $msg -ForegroundColor Yellow
-        [void]$summaryLog.AppendLine($msg)
-        #[void]$summaryRecommendedAction.AppendLine($msg)
+                TrackWarningAnonymously 'MySQL | InvalidGatewayIPAddressWarning'
+                return $false
+         }
+        Write-Host 'We will still perform database connection to the resolved IP address.'
         RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-
-  }  elseif(IsMySQLSinglePublic $resolvedAddress) {
+        } 
+        else
+        {
+        if ((IsMySQLSingleVNet $resolvedAddress)) 
+            { 
+                $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
+                TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
+                Write-Host $msg -ForegroundColor Yellow
+                [void]$summaryLog.AppendLine($msg)
+                #[void]$summaryRecommendedAction.AppendLine($msg)
+                #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+            } 
+        elseif(IsMySQLSinglePublic $resolvedAddress) {       
+            
+                $msg=  'Detected as MySQL Single Server with only Public Endpoint.' 
+                TrackWarningAnonymously 'MySQLSingleGatewayTest' 
+                Write-Host $msg -ForegroundColor Yellow
+                Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
+                [void]$summaryLog.AppendLine($msg)
+        }
        
-        Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
-        Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates that you didn not configure the private DNS resolution correctly.' -ForegroundColor Yellow
-        TrackWarningAnonymously 'MySQL Single'
-      
+        #Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
+        #Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates that you didn not configure the private DNS resolution correctly.' -ForegroundColor Yellow
+        #TrackWarningAnonymously 'MySQL Single'
+        Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
+        Write-Host $gateway.Region -ForegroundColor Yellow
+
+        Write-Host
+        [void]$summaryLog.AppendLine()
+        Write-Host 'Gateway connectivity test starts (please wait):' -ForegroundColor Green
+        $hasGatewayTestSuccess = $false
+        $gatewayAddress = $resolvedAddress
+        Write-Host
+        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
+        $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
+
+        if ($testResult.TcpTestSucceeded) {
+            $hasGatewayTestSuccess = $true
+            #Write-Host ' -> TCP test succeed' -ForegroundColor Green
+            $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
+            Write-Host $msg -ForegroundColor Green
+            [void]$summaryLog.AppendLine($msg)
+            TrackWarningAnonymously ('MySQLSingle | Gateway | GatewayTestSucceeded' )
+            PrintAverageConnectionTime $gatewayAddress 3306
+                       
+        }
+        else {
+
+            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
+            Write-Host $msg -ForegroundColor Red
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryLog.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailure)
+            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
+            TrackWarningAnonymously 'MySQLSingle | Gateway | EndPointTestFailed'
+
+            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            If ($ProcessError) {
+                Write-Host '  Could not to get IP routes for this interface'
+            }
+            Write-Host
+            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+                tracert -h 10 $Server
+            }
+            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+            Write-Host $msg -Foreground Red
+            [void]$summaryRecommendedAction.AppendLine($msg)
+
+          # $msg = $MySQL_GatewayTestFailed
+      #      Write-Host $msg -Foreground Red
+           # [void]$summaryRecommendedAction.AppendLine($msg)
+ 
+        }
 
         if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
             Write-Host
