@@ -570,7 +570,7 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
-
+    
     # return [bool]((!$gateway) -and (!$hasPrivateLink))
     if (!$gateway -and (!$hasPrivateLink)) {
         return $true
@@ -861,11 +861,21 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint' 
-        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
-        Write-Host $msg -ForegroundColor Green
-        [void]$summaryLog.AppendLine($msg.Trim())
-
+        #if(IsMySingleServer($resolvedAddress))
+        #{ 
+        #    $msg = 'Detected as a MySQL Single Server, but the IP of the server is not in the Gateway IPs Library. This may incidicate a wrong DNS resolution.'
+        #    TrackWarningAnonymously 'RunMySQLSingleUnknownGatewayIPConnectivityTests' 
+        #    Write-Host $msg -ForegroundColor Green
+        #    [void]$summaryLog.AppendLine($msg.Trim())
+       # }
+        #else {
+            $msg = 'Detected as a MySQL Flexible Server using Public Endpoint with the default setting. It might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
+            TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
+            Write-Host $msg -ForegroundColor Green
+            [void]$summaryLog.AppendLine($msg.Trim())
+            
+       # }
+ 
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
         Write-Host 'TCP Connectivity test starts (please wait):' -ForegroundColor Green
@@ -886,9 +896,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
-
             TrackWarningAnonymously 'MySQLFlex | Public | EndPointTestFailed'
-
             return $false
        
         }
@@ -916,7 +924,6 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
         }
        
-
         Write-Host
         Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
@@ -1520,7 +1527,7 @@ try {
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
         else {
-            Write-Host $summaryRecommendedAction.ToString()
+            Write-Host $summaryRecommendedAction.ToString() 
         }
         Write-Host
         Write-Host
