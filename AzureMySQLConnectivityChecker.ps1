@@ -889,23 +889,24 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             return $true
         }
         else {
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
+            $msg = '   TCP Connectivity to server ' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
             [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
             TrackWarningAnonymously 'MySQLFlex | Public | EndPointTestFailed'
 
-            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Write-Host
+            Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
             Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
             If ($ProcessError) {
-                Write-Host '  Could not to get IP routes for this interface'
+                Write-Host ' Could not to get IP routes for this interface'
             }
             Write-Host
             if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
                 tracert -h 10 $Server
             }
-            
+
             return $false
        
         }
@@ -948,17 +949,17 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         }
         else {
             Write-Host
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
+            $msg = '   TCP Connectivity to server ' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
             [void]$summaryLog.AppendLine($msg.Trim())
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
             TrackWarningAnonymously 'MySQL | Private | EndPointTestFailed'
 
-            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
             Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
             If ($ProcessError) {
-                Write-Host '  Could not to get IP routes for this interface'
+                Write-Host ' Could not to get IP routes for this interface'
             }
             Write-Host
             if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
@@ -1110,7 +1111,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
                 TrackWarningAnonymously 'MySQLSingle | Gateway | EndPointTestFailed'
 
-                Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+                Write-Host
+                Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
                 Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
                 If ($ProcessError) {
                     Write-Host '  Could not to get IP routes for this interface'
@@ -1465,7 +1467,7 @@ try {
         }
         catch {
             Write-Host
-            $msg = ' ERROR: Fail to resolve the IP server ' + $Server + ', Connectivity Checker has to stop.'
+            $msg = 'ERROR: Fail to resolve the IP of server ' + $Server + ', Connectivity Checker has to stop.'
             Write-Host $msg -Foreground Red
             [void]$summaryLog.AppendLine($DNSResolutionFailure)
             [void]$summaryRecommendedAction.AppendLine($DNSResolutionFailureAction )
