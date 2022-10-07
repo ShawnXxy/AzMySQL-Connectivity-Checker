@@ -583,12 +583,13 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
 # If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
 #   -- a Single Server configured with privatelink and making connections from a client in the same vnet
 #   -- a Flexible Server configured with VNet Intergrated and making connections from a client in the same vnet
-function IsMySQLVNet([String] $resolvedAddress) {
+ function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
-
+    
     # return [bool]((!$gateway) -and ($hasPrivateLink))
+    # IP is not gateway IP and contains private key words.
     if (!$gateway -and $hasPrivateLink) {
         #No Public IP with Private alias.
         return $true
@@ -600,19 +601,6 @@ function IsMySQLVNet([String] $resolvedAddress) {
 
 function IsMySQLSingleVNet([String] $resolvedAddress) {
     
-#    $hasPrivateLink = HasPrivateLink $Server
-#    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
-
-    # return [bool]((!$gateway) -and ($hasPrivateLink))
-#    if ($gateway -and $hasPrivateLink) {
-         #This only works for Windows Enviroment.
-         #MySQL single server with Private link but resolving to public ip.
-#        return $true
-#    }
-#    else {
-#        return $false
-#    }
-
     $hasPrivateLink = HasPrivateLink $Server
     $single = IsMySingleServer  $Server
     if ( $hasPrivateLink -and $single) 
@@ -625,7 +613,6 @@ function IsMySQLSingleVNet([String] $resolvedAddress) {
 
 function IsMySQLFlexVnet([String] $resolvedAddress) 
     {
-    
         $hasPrivateLink = HasPrivateLink $Server
         $single = IsMySingleServer  $Server
         if ( $hasPrivateLink -and !$single) 
@@ -874,7 +861,8 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint'  
+        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint' 
+        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
         Write-Host $msg -ForegroundColor Green
         [void]$summaryLog.AppendLine($msg)
 
@@ -893,37 +881,46 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             return $true
         }
         else {
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked some where or the remote MySQL server has not responded.'
+            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
 
-            TrackWarningAnonymously 'MySQL | FlexPublic | EndPointTestFailed'
+            TrackWarningAnonymously 'MySQLFlex | Public | EndPointTestFailed'
 
             return $false
        
         }
     }
     Catch {
-        Write-Host "Error at Test Database Connection To MySQL Flexible Server with Public Endpoint with below error message" -Foreground Red
+        Write-Host "Error at Test Connection to MySQL Flexible Server using Public Endpoint with below error message" -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
-        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests'
+        TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests | Exception'
     }
 }
 
 function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
 
-        if(IsMySQLSingleVNet($Server))
-        {Write-Host 'Detected as a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow}
-        elseif(IsMySQLFlexVnet($Server))
-        {Write-Host 'Detected as a Azure MySQL Flexible Server using Private Endpoint' -ForegroundColor Yellow}
+        if(IsMySQLSingleVNet($resolvedAddress))
+        {
+            Write-Host 'Detected as a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
+            TrackWarningAnonymously 'MySQLSingleServerVNetConnectivityTest' 
+            Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link on the 3306 port.' -ForegroundColor Green
+        }
+        else
+        {
+            Write-Host 'Detected as a Azure MySQL Flexible Server using Private Endpoint or a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
+            TrackWarningAnonymously 'MySQLVNetConnectivityTests' 
+            Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
+        }
+       
+
         Write-Host
-
-
-        Write-Host 'Verify Network Connectivity to'  $Server ' with private Endpoint the on 3306 port.' -ForegroundColor Green
+       
         Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
+       
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -939,7 +936,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         }
         else {
             Write-Host
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked some where or the remote MySQL server has not responded.'
+            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
             Write-Host $msg -ForegroundColor Red
             [void]$summaryLog.AppendLine($msg)
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
@@ -949,7 +946,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         }
     }
     Catch {
-        Write-Host "Error at RunMySQLVNetConnectivityTests" -Foreground Red
+        Write-Host "Error at Test Connection to MySQL Vnet Server with below error message" -Foreground Red -Foreground Red
         Write-Host $_.Exception.Message -ForegroundColor Red
         TrackWarningAnonymously 'RunMySQLVNetConnectivityTests | Exception'
         return $false
@@ -1000,7 +997,7 @@ function PrintAverageConnectionTime($addressList, $port) {
 }
 
 function RunMySQLConnectivityTests($resolvedAddress) {
-
+    Try {
     $hasPrivateLink = HasPrivateLink $Server
     $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
 
@@ -1032,13 +1029,35 @@ function RunMySQLConnectivityTests($resolvedAddress) {
   #      RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
    # }
 
+   if (!$gateway) {
+
+    if ((IsMySQLSingleVNet $resolvedAddress)) 
+    { 
+         $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'  -ForegroundColor Yellow
+         TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
+         Write-Host $msg -ForegroundColor Yellow
+         [void]$summaryLog.AppendLine($msg)
+         #[void]$summaryRecommendedAction.AppendLine($msg)
+         #RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
+ 
+   } 
+   elseif(IsMySQLSinglePublic $resolvedAddress) {
+       
+    $msg=  'Detected as MySQL Single Server with only Public Endpoint.' -ForegroundColor Yellow
+    TrackWarningAnonymously 'MySQLSingleGatewayTest' 
+    Write-Host $msg -ForegroundColor Yellow
+    Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates this client cannot resolve the Private IP for the MySQL Single Server.' -ForegroundColor Yellow
+    [void]$summaryLog.AppendLine($msg)
+    
+   }
+
 
 
 
    if ((IsMySQLSingleVNet $resolvedAddress)) 
    { 
-
         $msg= 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP' 
+        TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
         Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg)
         #[void]$summaryRecommendedAction.AppendLine($msg)
@@ -1046,59 +1065,10 @@ function RunMySQLConnectivityTests($resolvedAddress) {
 
   }  elseif(IsMySQLSinglePublic $resolvedAddress) {
        
-        Write-Host 'Detected as MySQL Single Server connecting using Gateway IP' -ForegroundColor Yellow
+        Write-Host 'Detected as MySQL Single Server with only Public Endpoint' -ForegroundColor Yellow
         Write-Host 'Note if the MySQL Single Server is configured with Private Endpoint, this indicates that you didn not configure the private DNS resolution correctly.' -ForegroundColor Yellow
         TrackWarningAnonymously 'MySQL Single'
-        Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
-        Write-Host $gateway.Region -ForegroundColor Yellow
-
-        Write-Host
-        [void]$summaryLog.AppendLine()
-        Write-Host 'Gateway connectivity tests (please wait):' -ForegroundColor Green
-        $hasGatewayTestSuccess = $false
-        $gatewayAddress = $resolvedAddress
-        Write-Host
-        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White -NoNewline
-        $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
-
-        if ($testResult.TcpTestSucceeded) {
-            $hasGatewayTestSuccess = $true
-            $msg = '   TCP Connectivity test to' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue to the Gateway IP address.'
-            Write-Host $msg -ForegroundColor Green
-            [void]$summaryLog.AppendLine($msg)
-            PrintAverageConnectionTime $resolvedAddress 3306
-            TrackWarningAnonymously 'MySQL | GatewayTestSucceeded'
-            RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
-            return $true
-        }
-        else {
-
-            $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked some where or the remote MySQL server has not responded.'
-            Write-Host $msg -ForegroundColor Red
-            [void]$summaryLog.AppendLine($MySQL_GatewayTestFailure)
-            [void]$summaryRecommendedAction.AppendLine($MySQL_GatewayTestFailureAction)
-
-            $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
-            Write-Host $msg -Foreground Red
-            [void]$summaryRecommendedAction.AppendLine($msg)
-
-            TrackWarningAnonymously 'MySQL | GatewayTestFailed'
-
-            return $false
-
-            
-  
-            #Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
-           # Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
-           # If ($ProcessError) {
-           #     Write-Host '  Could not to get IP routes for this interface'
-           # }
-           # Write-Host
-           # if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-           #     tracert -h 10 $Server
-           # }
-
-        }
+      
 
         if ($gateway.TRs -and $gateway.Cluster -and $gateway.Cluster.Length -gt 0 ) {
             Write-Host
@@ -1180,6 +1150,14 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             RunConnectionToDatabaseTestsAndAdvancedTests $Server '3306' $Database $User $Password
         }
     }
+}
+Catch {
+    Write-Host "Error at Test Connection to MySQL Single Server with below error message" -Foreground Red -Foreground Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    TrackWarningAnonymously 'RunMySQLConnectivityTests | Exception'
+    return $false
+}
+
 }
 
 
@@ -1460,7 +1438,6 @@ try {
         elseif (IsMySQLVNet $resolvedAddress) {
             $dbconnectiontestresult=RunMySQLVNetConnectivityTests $resolvedAddress
         }
-        ## Verify Connection To MySQL Single Gateway Endpoint
         else {
             $dbconnectiontestresult=RunMySQLConnectivityTests $resolvedAddress
         }
