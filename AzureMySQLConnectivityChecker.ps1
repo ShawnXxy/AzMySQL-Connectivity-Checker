@@ -1498,7 +1498,7 @@ try {
         Write-Host '######################################################' -ForegroundColor Green
         Write-Host 'SUMMARY:' -ForegroundColor Yellow
         Write-Host '######################################################' -ForegroundColor Green
-        Write-Host $summaryLog.ToString() -ForegroundColor Yellow
+        Write-Host $summaryLog.ToString()
         Write-Host
         Write-Host '######################################################' -ForegroundColor Green
         Write-Host 'RECOMMENDED ACTION(S):' -ForegroundColor Yellow
@@ -1520,7 +1520,7 @@ try {
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
         else {
-            Write-Host $summaryRecommendedAction.ToString() -ForegroundColor Yellow
+            Write-Host $summaryRecommendedAction.ToString()
         }
         Write-Host
         Write-Host
