@@ -180,10 +180,10 @@ Please first configure the AAD configuration in Portal if you are trying to esta
 $ServerStoppedError = 'Connection to database failed because the server is not in a ready state.'
 $ServerStoppedErrorAction = 'The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
 We suggest you:
-        - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
-        - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
-        - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
-        - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
+    - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
+    - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
+    - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
+    - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
 
 $SingleFirewallBlockingError = 'Connection to database failed because of the server-side firewall blocking.'
 $SingleFirewallBlockingErrorAction = 'By default MySQL Single Server will reject all connections only if the Client has been added to the Server Firewall rule.
@@ -202,8 +202,8 @@ $TooManyConnectionErrorAction = 'It seems that the server hit (too many connecti
 We suggest you:
     - Please verify if the number of the active connections reached the max allowed limit in Portal!
     - Please consider increase the value of parameter max_connection in Portal!
-- Please consider scale up the tier to next level to gain more max allowed connections!
-- Review the Resource Usages of the database and review the workload to the database.'
+    - Please consider scale up the tier to next level to gain more max allowed connections!
+    - Review the Resource Usages of the database and review the workload to the database.'
 
 $BasicTierError = 'Connection to database failed because the MySQL server is a Basic tier while client is in a VNet with SQL Service Point enabled. This will force connection go through VNet which is not supported for Basic'
 $BasicTierErrorAction = 'We suggest you:
@@ -212,10 +212,10 @@ $BasicTierErrorAction = 'We suggest you:
 	
 $ConnectionTimeoutError = 'Connection to database failed because of timeout error.'
 $ConnectionTimeoutErrorAction = 'We suggest you:
-        - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
-        - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
-        - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
-        - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
+    - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
+    - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
+    - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
+    - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
 
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss or no response from the server.'
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following:
@@ -633,9 +633,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
-        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
-        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded", $Server, $Database))
+        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
+        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
+        [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
         $MySQLConnection.Close()
 
         ##Todo: Consider to Add connection to a test instance in case of server firewall blocking
@@ -854,14 +854,14 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
 
             Write-Host
             Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
-            $Route=Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            $Route = Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
             Write-Host $Route
             If ($ProcessError) {
                 Write-Host ' Could not to get IP routes for this interface'
             }
             Write-Host
             if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-                $tracert=tracert -h 10 $Server
+                $tracert = tracert -h 10 $Server
                 Write-Host $tracert
             }
 
