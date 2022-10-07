@@ -343,11 +343,10 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         );
         process {
             try {
-                return 
-                #@{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName }, 
-                @{ Name = nslookup $Name }, 
-                @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
-                #@{FullInfor = nslookup $Name };
+                #return @{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName }, 
+                return @{ Name =  nslookup $Name  },
+                @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString }; 
+               # @{FullInfor = nslookup $Name };
             }
             catch {
                 TrackWarningAnonymously ('Error at Resolve-DnsName override: ' + $_.Exception.Message)
