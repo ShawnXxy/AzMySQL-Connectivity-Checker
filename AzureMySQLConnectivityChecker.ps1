@@ -171,74 +171,78 @@ $summaryLog = New-Object -TypeName "System.Text.StringBuilder"
 $summaryRecommendedAction = New-Object -TypeName "System.Text.StringBuilder"
 $AnonymousRunId = ([guid]::NewGuid()).Guid
 
-# Error Messages
+### Error Messages
 
-$MySQL_AccessDeniedError = 'Connection to database failed because the username/password is wrong.'
-$MySQL_AccessDeniedErrorAction = 'It seems that the user/password is not correct. Please verify if the correct username/password is placed for a sucessful authentitication.
-If you are trying to make connections via an AAD account, please configure the AAD setting in Portal first. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication'
+$MySQL_AccessDeniedError = 'Connection to database server failed because the username or password is wrong.'
+$MySQL_AccessDeniedErrorAction = 'Please double confirm if you are using a correct username or password.
+Please first configure the AAD configuration in Portal if you are trying to establish connections using an AAD account. Reference: https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication'
 
-$ServerStoppedError = 'Connection to database failed due to that the server is not in a ready state.'
+$ServerStoppedError = 'Connection to database failed because the server is not in a ready state.'
 $ServerStoppedErrorAction = 'The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
 We suggest you:
-	- Please verify if the server is put in a STOP mode in Portal!
-	- Please verify if the server is in a ready state in Portal!
-	- Please verify if the server is in a high CPU or Memory usage!
-	- The server may be in an automatic failover process and is not ready to accept connections. If the process took long, please dont hesitate to submit a support ticket!'
+        - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
+        - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
+        - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
+        - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
 
-$SingleFirewallBlockingError = 'Connection to database failed due to firewall block.'
-$SingleFirewallBlockingErrorAction = 'It seems that the connecting request is refused because the client IP address is not whitelisted. Please ensure the client IP is added in the firewall rule in Portal. 
-- For Single Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
-- For Flexible Server, please refer to https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
+$SingleFirewallBlockingError = 'Connection to database failed because of the server-side firewall blocking.'
+$SingleFirewallBlockingErrorAction = 'By default MySQL Single Server will reject all connections only if the Client has been added to the Server Firewall rule.
+Please ensure the client IP is added in the firewall rule in Portal by using (Public IP firewall rule) or (Vnet Firewall rule) or (Allow access to Azure services) option. 
+- For Single Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
+- For Flexible Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
 $NotUsingPasswordError = 'Connection to database failed because the password is missing.'
-$NotUsingPasswordErrorAction = 'It seems that the password is not used. Please ensure the password is correctly input for a sucessful authentitication.'
+$NotUsingPasswordErrorAction = 'It seems that the password is not provided. Please ensure the password is correctly input for a successful authentication.'
 
 $UnknownDatabaseError = 'Connection to database failed because the database does not exist.'
-$UnknownDatabaseErrorAction = 'It seems that either the database name is not correct or the database does not exist. Please verify if the database exists.'
+$UnknownDatabaseErrorAction = 'It seems that either the database name is not correct, or the database does not exist. Please verify if the database exists.'
 
 $TooManyConnectionError = 'Connection to database failed because of reaching max_connection limit.'
-$TooManyConnectionErrorAction = 'It seems that the server hit "too many connections error".
+$TooManyConnectionErrorAction = 'It seems that the server hit (too many connections error).
 We suggest you:
     - Please verify if the number of the active connections reached the max allowed limit in Portal!
-	- Please consider increase the value of parameter max_connection in Portal!
-	- Please consider scale up the tier to next level to gain more max allowed connections!'
+    - Please consider increase the value of parameter max_connection in Portal!
+- Please consider scale up the tier to next level to gain more max allowed connections!
+- Review the Resource Usages of the database and review the workload to the database.'
 
-$BasicTierError = 'Connection to database failed because the MySQL server is a Basic tier while connecting request is sent via VNET which is not supported for Basic'
+$BasicTierError = 'Connection to database failed because the MySQL server is a Basic tier while client is in a VNet with SQL Service Point enabled. This will force connection go through VNet which is not supported for Basic'
 $BasicTierErrorAction = 'We suggest you:
-    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET->Subnet page. Uncheck this option could mitigate the issue.
-	- Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be referred to https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers'
+    - Please verify if Microsoft.Sql service endpoint is enabled in Portal! You can check in the VNET-)Subnet page. Uncheck this option can mitigate the issue but you need to check with your Network Team if other service is using this endpoint.
+    - Please consider scale up the tier to next level for a production environment! The limitation of Basic tier can be found at https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-pricing-tiers'
 	
-$ConnectionTimeoutError = 'Connection to database failed becasue of timeout error.'
+$ConnectionTimeoutError = 'Connection to database failed because of timeout error.'
 $ConnectionTimeoutErrorAction = 'We suggest you:
-        - Please check the portal to see whether the server is not in stop status, and if it is, start it.
-        - Please check the server firewall rule setting and ensure the client IP address has been added.'
+        - For Flexible Server, please check the server firewall rule setting and ensure the client IP address has been added.
+        - Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
+        - Please verify if the server is in a high CPU or Memory usage. Review the workload from application and reduce it if possible.
+        - The server may be in an automatic failover process and is not ready to accept connections. Please wait for some time.'
 
-$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss'
-$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following.
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss or no response from the server.'
+$AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following:
 Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
 Please check if the server is in a Stopped Status or not.
 Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
-Or your can check with your network team on the Network setting.'
+Or you can check with your network team on the Network setting.
+Check this link for more details on the connection setting for MySQL Flexible server: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
-$AADFailure = 'Connection to database failed because the token used for this connection test is not valid.'
-$AADFailureAction = 'It seems that you are connecting via a AAD account but the token used is not valid.
-Support for AAD can be found at: https://docs.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
+$AADFailure = 'Connection to database failed because the token used for this connection test is invalid.'
+$AADFailureAction = 'It seems that you are connecting via a AAD account, but the token is invalid.
+Support for AAD can be found at: https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
 We suggest you:
-    - Please verify if the AAD account used is correctly configured: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
-	- Please verify if token is expired and try to regenerate a new token if needed.'
+    - Please verify if the AAD account used is correctly configured: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
+    - Please verify if token is expired and try to regenerate a new token if needed.'
 
-$InvalidUsernameError = 'Connection to database failed because the user name is incorrect.'
-$InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is wrong. Please verify if the correct username is placed for a sucessful authentitication. Ref: https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
+$InvalidUsernameError = 'Connection to database failed because the username is incorrect.'
+$InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
+Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
 $DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
 1.	Server Name is incorrect.
-2.	If it is a Flexible server using Private Endpoint, you have to configure the Private DNS zone or other alternative solutions to resolve the IP correctly."
+2.	Incorrect DNS setting. You must set up the Private DNS zone or find another solutions if it is a Flexible server using Private Endpoint in order to correctly resolve the IP."
 
 $DNSResolutionFailureAction = "We suggest checking on the following:
-1.	Review the server name from the portal and ensure you are connecting to the correct and expected server.
+1.	Make sure you are connecting to the correct and intended server by comparing with the server name provided by the portal.
 2.	For Flexible server with Private Endpoint, check if you have setup the Private DNS ZONE (https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#using-private-dns-zone) or customer DNS server with DNS forwarder correctly for the DNS setting(https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#integration-with-custom-dns-server)"
-
-
 
 $DNSResolutionGotMultipleAddresses = 'While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
 To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
@@ -246,23 +250,16 @@ The Gateway used is not static, configuring a single specific address (like in h
 Having DNS resolution switching between a couple of Gateway addresses is expected.
 If you are using Private Link, a mismatch between your DNS server and OpenDNS is expected.
 Please review the DNS results.'
-# $DNSResolutionFailedAzureMySQLFlexPublic = ' Please make sure the server name FQDN is correct and that your machine can resolve it.
-#  If public endpoint is enabled, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
-#  or a client-side networking issue that you will need to pursue with your local network administrator.'
 
 $MySQL_InvalidGatewayIPAddress = 'In case you are not using Private Endpoint, please make sure the server name FQDN is correct and that your machine can resolve it to a valid gateway IP address (DNS configuration).
 In case you are not using Private Link, failure to resolve domain name for your logical server is almost always the result of specifying an invalid/misspelled server name,
 or a client-side networking issue that you will need to pursue with your local network administrator.
-See the valid gateway addresses at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses.'
+See the valid gateway addresses at https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-connectivity-architecture#azure-database-for-mysql-gateway-ip-addresses'
 
 $AzureMySQLSingle_Gateway_TCPConnectionTestFailure = 'Fail to connect to the MySQL Single Server using the Gateway IP address.'
-
 $AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction = 'The Gateway serves as the starting point for connections to the MySQL Single Servers in the same region. Based on the information in the connection string, Gateway will ensure the connection been redirect to the correct server.
 The failure to reach the Gateway is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to check with your local network administrator. 
-See more about connectivity architecture at https://docs.microsoft.com/en-us/azure/mysql/concepts-connectivity-architecture.'
-
-
-
+See more about connectivity architecture at https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-connectivity-architecture'
 
 $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the server's connection policy setting:
 
@@ -281,55 +278,23 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
     Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
    "
 
-$AzureMySQL_VNetTestError = 'TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is stopped'
-$AzureMySQL_VNetTestErrorAction = 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network enviorment.
+$AzureMySQL_VNetTestError = 'TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is not responding'
+$AzureMySQL_VNetTestErrorAction = 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network environment.
     - When connecting from the same Vnet as the database server, there are no additional settings by default.
     - When connecting from another Vnet, [Vnet Peering](https://docs.microsoft.com/azure/virtual-network/virtual-network-peering-overview) is necessary to bridge the connection between different Vnets
     - When connecting from on-prem,  [ExpressRoute](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/expressroute/) or [VPN](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/vpn/) and virtual network [connected to on-premises](https://docs.microsoft.com/azure/architecture/reference-architectures/hybrid-networking/) are required.
 
-Failure to reach the VNet Integrated Flexible Server is usually a client-side networking issue (like DNS issue or a port being blocked).
 We strongly recommend you request assistance from your network administrator, some validations you may do together are:
-    - The target Azure MySQL instance is in a ready state to accept connections.
-    - The host name is valid and port used for the connection is 3306, format is tcp:<servername>.mysql.database.azure.com,3306
+    - The target Azure MySQL instance is in a ready state to accept connections. Please verify if the server is in a ready state instead of Stop or Starting on Stopping in Portal!
     - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
     - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
     - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
-    - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview
-Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet
-'
+- If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview 
+Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet'
 
-$AzureMySQLFlex_PublicEndPoint_ConnectionTestFailed = 
-#"If the server is in a ready state shown in Portal, this usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator or firewall configuration issue that you can check from Networking blade in Portal.
-
-#We strongly recommend you performing some validations you may do as below :
-#   - Double confirm if the server is in a health state. You can check from the portal to see if the server is in a ready state.
-#   - Network traffic to this endpoint and port is allowed from the source and any networking appliances you may have (firewalls, etc.). Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
-#See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
-#"
-"TCP Connection To the MySQL Flexible Server on 3306 port fails.
-To resolve the issue, check on the following tips:
-            - Please check the portal to see whether the server is in Stop status, and if it is, start it.
-            - Please check the Server firewall rule setting and ensure the client IP address has been added.
-            - Please check your local firewall setting and ensure that the connection has been allowed to the MySQL Flexible Server.
-            Ref: https://docs.microsoft.com/en-us/azure/mysql/flexible-server/how-to-manage-firewall-portal
-See more about connectivity using Public Endpoint at https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public
-"
-
-#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
-#$AAD_login_windows_net = 'If you are using AAD Password or AAD Integrated Authentication please make sure you fix the connectivity from this machine to login.windows.net:443
-#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
-
-#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
-#$AAD_login_microsoftonline_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to login.microsoftonline.com:443
-#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
-
-#Remove as only MySQL Single Supports AAD and MySQL AAD is not using this endpoint.
-#$AAD_secure_aadcdn_microsoftonline_p_com = 'If you are using AAD Universal with MFA authentication please make sure you fix the connectivity from this machine to secure.aadcdn.microsoftonline-p.com:443
-#This usually indicates a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.'
 
 $ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script'
-
-$ServerNameNotSpecifiedAction = 'Server Name with correct format is necessery.  Database name, user and password are optional but desirable.
+$ServerNameNotSpecifiedAction = 'Server Name with correct format is necessary.  Database name, user and password are optional but desirable.
 You can see more details about how to use this tool at https://github.com/marlonj-ms/MySQL-Connectivity-Checker'
 
 #$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
@@ -338,7 +303,8 @@ You can see more details about how to use this tool at https://github.com/marlon
 
 $DNSResolutionDNSfromHostsFile = 'Azure MySQL does not have a static IP, therefore if it changes, the connection will be lost.
 Additionally, it is expected that the IP will change following a server failover if you are utilizing Flexible Server in High Availability mode.'
-$DNSResolutionDNSfromHostsFileAction = 'We suggest using the Server Name in the connection string. And it is recommanded to use the Private DNS zone and other solutions if you are connecting to the MySQL Server using Private Endpoint for dynamic IP Resolution.'
+$DNSResolutionDNSfromHostsFileAction = 'We suggest using the Server Name in the connection string instead of the IP. For Flexible server with Private Endpoint, check if you have setup the Private DNS ZONE (https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#using-private-dns-zone) or customer DNS server with DNS forwarder correctly for the DNS setting(https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#integration-with-custom-dns-server)'
+
 
 # PowerShell Container Image Support Start
 
@@ -859,20 +825,10 @@ function PrintLocalNetworkConfiguration() {
 
 function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
-        #if(IsMySingleServer($resolvedAddress))
-        #{ 
-        #    $msg = 'Detected as a MySQL Single Server, but the IP of the server is not in the Gateway IPs Library. This may incidicate a wrong DNS resolution.'
-        #    TrackWarningAnonymously 'RunMySQLSingleUnknownGatewayIPConnectivityTests' 
-        #    Write-Host $msg -ForegroundColor Green
-        #    [void]$summaryLog.AppendLine($msg.Trim())
-        # }
-        #else {
-        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint with the default setting. It might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
+        $msg = 'Detected as a MySQL Flexible Server using Public Endpoint. However, it might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
         TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
         Write-Host $msg -ForegroundColor Green
         [void]$summaryLog.AppendLine($msg.Trim())
-            
-        # }
  
         Write-Host
         Write-Host 'Verify Network Connectivity to'  $Server ' with public endpoint the on 3306 port.' -ForegroundColor Green
