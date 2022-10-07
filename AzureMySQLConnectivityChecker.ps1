@@ -897,14 +897,16 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             TrackWarningAnonymously 'MySQLFlex | Public | EndPointTestFailed'
 
             Write-Host
-            Write-Host 'IP routes for Flex interface:' $testResult.InterfaceAlias
-            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
+            $Route=Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            Write-Host $Route
             If ($ProcessError) {
                 Write-Host ' Could not to get IP routes for this interface'
             }
             Write-Host
             if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
-                tracert -h 10 $Server
+                $tracert=tracert -h 10 $Server
+                Write-Host $tracert
             }
 
             return $false
