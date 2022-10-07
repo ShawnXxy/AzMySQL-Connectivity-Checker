@@ -895,6 +895,17 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction)
             TrackWarningAnonymously 'MySQLFlex | Public | EndPointTestFailed'
+
+            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            If ($ProcessError) {
+                Write-Host '  Could not to get IP routes for this interface'
+            }
+            Write-Host
+            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+                tracert -h 10 $Server
+            }
+            
             return $false
        
         }
@@ -943,6 +954,17 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             [void]$summaryLog.AppendLine($AzureMySQL_VNetTestError)
             [void]$summaryRecommendedAction.AppendLine($AzureMySQL_VNetTestErrorAction)
             TrackWarningAnonymously 'MySQL | Private | EndPointTestFailed'
+
+            Write-Host ' IP routes for interface:' $testResult.InterfaceAlias
+            Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
+            If ($ProcessError) {
+                Write-Host '  Could not to get IP routes for this interface'
+            }
+            Write-Host
+            if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
+                tracert -h 10 $Server
+            }
+
             return $false
         }
     }
@@ -1097,9 +1119,6 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
                     tracert -h 10 $Server
                 }
-                $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
-                Write-Host $msg -Foreground Red
-                [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
             }
 
