@@ -1059,7 +1059,8 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         Write-Host 'Gateway connectivity test starts (please wait):' -ForegroundColor Green
         $hasGatewayTestSuccess = $false
         $gatewayAddress = $resolvedAddress
-        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White# -NoNewline
+        Write-Host ' Testing (gateway) connectivity to' $gatewayAddress':3306' -ForegroundColor White
+        # -NoNewline
         $testResult = Test-NetConnection $gatewayAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
