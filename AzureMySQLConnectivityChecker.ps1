@@ -335,7 +335,7 @@ if (!$(Get-Command 'Test-NetConnection' -errorAction SilentlyContinue)) {
 if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
     function Resolve-DnsName {
         param(
-            [Parameter(Position = 0)] $MySQLServerName,
+            [Parameter(Position = 0)] $Name,
             [Parameter()] $Server,
             [switch] $CacheOnly,
             [switch] $DnsOnly,
@@ -344,10 +344,10 @@ if (!$(Get-Command 'Resolve-DnsName' -errorAction SilentlyContinue)) {
         process {
             try {
                 return 
-                #Name = [System.Net.DNS]::GetHostEntry($Name).HostName }, 
-                @{Name = nslookup $MySQLServerName},
-                @{IPAddress = [System.Net.DNS]::GetHostAddresses($MySQLServerName).IPAddressToString };
-                #@{FullInfor = nslookup $Name     };
+                #@{ Name = [System.Net.DNS]::GetHostEntry($Name).HostName }, 
+                @{ Name = nslookup $Name }, 
+                @{IPAddress = [System.Net.DNS]::GetHostAddresses($Name).IPAddressToString };
+                #@{FullInfor = nslookup $Name };
             }
             catch {
                 TrackWarningAnonymously ('Error at Resolve-DnsName override: ' + $_.Exception.Message)
