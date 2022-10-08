@@ -585,6 +585,7 @@ function IsMySQLFlexVnet([String] $resolvedAddress) {
     { return $true }
     else { return $false }
 }
+
 function IsMySQLSinglePublic([String] $resolvedAddress) {
     $hasPrivateLink = HasPrivateLink $Server
     $single = IsMySingleServer  $Server
