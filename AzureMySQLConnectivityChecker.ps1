@@ -1530,6 +1530,6 @@ finally {
             Invoke-Item (Get-Location).Path
         }
 
-        Remove-Item ".\MySql.Data.dll" -Force
+        # Remove-Item ".\MySql.Data.dll" -Force
     }
 }
