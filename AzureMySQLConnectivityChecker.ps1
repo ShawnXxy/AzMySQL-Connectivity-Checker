@@ -232,6 +232,13 @@ We suggest you:
     - Please verify if the AAD account used is correctly configured: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
     - Please verify if token is expired and try to regenerate a new token if needed.'
 
+$AADFailureFlex = 'Connection to database failed because the token used for this connection test is invalid.'
+$AADFailureActionFlex = 'It seems that you are connecting via a AAD account, but the token is invalid.
+Support for AAD can be found at: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication
+We suggest you:
+    - Please verify if the AAD account used is correctly configured: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad
+    - Please verify if token is expired and try to regenerate a new token if needed.'
+
 $InvalidUsernameError = 'Connection to database failed because the username is incorrect.'
 $InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
 Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
@@ -763,6 +770,19 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($AADFailure)
             [void]$summaryRecommendedAction.AppendLine($AADFailureAction)
             TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure)
+            return $false
+            
+        } 
+         elseif ($erMsg -Match 'mysql_clear_password') {
+            if ($erno -ne '0') {
+                Write-Host 'Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
+            }
+            Write-Host 'Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($AADFailureFlex)
+            [void]$summaryRecommendedAction.AppendLine($AADFailureActionFlex)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailureFlex)
             return $false
             
         } 
@@ -1530,6 +1550,6 @@ finally {
             Invoke-Item (Get-Location).Path
         }
 
-        # Remove-Item ".\MySql.Data.dll" -Force
+        Remove-Item ".\MySql.Data.dll" -Force
     }
 }

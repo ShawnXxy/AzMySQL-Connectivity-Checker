@@ -101,6 +101,7 @@ In order to run this script on Linux you need to
     Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
+        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
         }
     catch {
