@@ -853,7 +853,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
     Try {
         $msg = 'Detected as a MySQL Flexible Server using Public Endpoint. However, it might be a Flexible Server with Private Endpoint or a Single Server due to a particular network or DNS configuration, but we will still perform the connectivity check.' 
         TrackWarningAnonymously 'RunMySQLFlexPublicConnectivityTests' 
-        Write-Host $msg -ForegroundColor Green
+        Write-Host $msg -ForegroundColor Yellow
         [void]$summaryLog.AppendLine($msg.Trim())
  
         Write-Host

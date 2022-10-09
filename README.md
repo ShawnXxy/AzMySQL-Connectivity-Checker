@@ -44,6 +44,7 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
     Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
+        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
         }
     catch {
@@ -101,7 +102,6 @@ In order to run this script on Linux you need to
     Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
-        [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
         }
     catch {
@@ -113,6 +113,21 @@ In order to run this script on Linux you need to
     #end
     ```
 4. Examine the output for any issues detected, and recommended steps to resolve the issue.
+
+> Note: if you experienced errors loading *mysql.data.dll* in Linux, please try to load in manually as below:
+> 1. Installing Mono on Linux (if you haven't before).    
+   See how to get the packages at https://www.mono-project.com/download/stable/#download-lin-ubuntu
+> 2. Download MySQL .Net connector and save on Linux from https://dev.mysql.com/downloads/connector/net/
+    ![image](/rsc/mysql-net-connector.png)
+    Making sure the folder is unzipped.
+> 3. After the package is installed, run ***pwsh*** from a Linux terminal. In the openned PowerShell console, register mysqlclient library by running the following command:
+>   ````powershell
+>       sudo gacutil -i "{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll"  # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
+>   ````
+> 4. Before running the test script above, load the mysqlclient first by running the following command:
+>   ````powershell
+>       [system.reflection.Assembly]::LoadFrom("{path_to_folder_from_step#3}/v4.xx/MySql.Data.dll") # replace {path_to_folder_from_step#3} with the path to the folder where the package is saved on your Linux machine
+>   ````
 
 ## How to run this from machines whithout Internet access
 
