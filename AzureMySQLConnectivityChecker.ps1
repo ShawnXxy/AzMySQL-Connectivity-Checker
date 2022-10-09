@@ -227,9 +227,13 @@ Check this link for more details on the connection setting for MySQL Flexible se
 
 $AADFailure = 'Connection to database failed because the token used for this connection test is invalid.'
 $AADFailureAction = 'It seems that you are connecting via a AAD account, but the token is invalid.
-Support for AAD can be found at: https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
+Support for AAD can be found at: 
+    - https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication for Single Server
+    - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication for Flexible Server
 We suggest you:
-    - Please verify if the AAD account used is correctly configured: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication
+    - Please verify if the AAD account used is correctly configured: 
+        - https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication for Single Server
+        - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad for Flexible Server
     - Please verify if token is expired and try to regenerate a new token if needed.'
 
 $AADFailureFlex = 'Connection to database failed because the token used for this connection test is invalid.'
