@@ -764,7 +764,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
             return $false
         }
-        elseif ($erMsg -Match 'access token') {
+        elseif ($erMsg -Match 'access token' -or $erMsg -Match 'cannot be loaded: plugin not enabled') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
@@ -774,19 +774,6 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($AADFailure)
             [void]$summaryRecommendedAction.AppendLine($AADFailureAction)
             TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure)
-            return $false
-            
-        } 
-         elseif ($erMsg -Match 'mysql_clear_password') {
-            if ($erno -ne '0') {
-                Write-Host 'Error Code' -ForegroundColor Red
-                Write-Host ' ' $erno -ForegroundColor Red
-            }
-            Write-Host 'Error Message:' 
-            Write-Host ' ' $erMsg #-ForegroundColor Yellow
-            [void]$summaryLog.AppendLine($AADFailureFlex)
-            [void]$summaryRecommendedAction.AppendLine($AADFailureActionFlex)
-            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailureFlex)
             return $false
             
         } 
