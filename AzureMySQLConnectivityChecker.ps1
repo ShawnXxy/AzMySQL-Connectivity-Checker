@@ -1319,8 +1319,8 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
         else {
-            #ShawnXxy/AzMySQL-Connectivity-Checker
-            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            #marlonj-ms/AzMySQL-Connectivity-Checker
+            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
         $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
         [System.Reflection.Assembly]::Load($assembly) | Out-Null
