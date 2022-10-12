@@ -1447,7 +1447,7 @@ try {
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
         Write-Host
-        [void]$summaryRecommendedAction.AppendLine(' Addtional Reference for the sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
+        [void]$summaryRecommendedAction.AppendLine
 
     }
     catch {
@@ -1476,7 +1476,7 @@ try {
             Write-Host 'We could not detect any issue while using MySQL driver, we suggest you:' -ForegroundColor Green
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
-
+            Write-Host ' - More sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues' -ForegroundColor Yellow
             if (IsMySQLFlexPublic $resolvedAddress ) {
                 Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/mysql/concepts-compatibility' -ForegroundColor Yellow
             }
