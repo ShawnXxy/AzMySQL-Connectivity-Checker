@@ -1255,6 +1255,8 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         Write-Host $msg -Foreground Red
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg.Trim())
+        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/discussions."
+        [void]$summaryRecommendedAction.AppendLine($ActionMsg.Trim())
         TrackWarningAnonymously 'ERROR at RunConnectionToDatabaseTestsAndAdvancedTests'
     }
 }
