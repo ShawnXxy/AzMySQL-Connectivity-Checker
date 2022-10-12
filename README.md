@@ -35,7 +35,6 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 
     $ProgressPreference = "SilentlyContinue";
     $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
-
     $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
     cls
     Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
