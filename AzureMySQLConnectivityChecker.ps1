@@ -219,10 +219,10 @@ $ConnectionTimeoutErrorAction = 'We suggest you:
 
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss or no response from the server.'
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following:
-Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
-Please check if the server is in a Stopped Status or not.
-Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
-Or you can check with your network team on the Network setting.
+    - Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
+    - Please check if the server is in a Stopped Status or not.
+    - Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
+    - Or you can check with your network team on the Network setting.
 Check this link for more details on the connection setting for MySQL Flexible server: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
 $AADFailure = 'Connection to database failed because the token used for this connection test is invalid.'
