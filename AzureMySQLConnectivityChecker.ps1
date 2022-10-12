@@ -1027,7 +1027,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$summaryLog.AppendLine($msg.Trim())
             }
 
-            Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
+            Write-Host ' The server' $Server 'is running in ' -ForegroundColor White -NoNewline
             Write-Host $gateway.Region -ForegroundColor Yellow
 
             Write-Host
