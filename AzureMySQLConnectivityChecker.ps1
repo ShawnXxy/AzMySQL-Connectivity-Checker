@@ -1477,6 +1477,7 @@ try {
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - More sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues' -ForegroundColor Yellow
+            
             if (IsMySQLFlexPublic $resolvedAddress ) {
                 Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/mysql/concepts-compatibility' -ForegroundColor Yellow
             }
