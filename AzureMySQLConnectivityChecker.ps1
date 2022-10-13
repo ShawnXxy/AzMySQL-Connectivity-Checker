@@ -33,7 +33,7 @@ $Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPas
 # Optional parameters (default values will be used if omitted)
 $SendAnonymousUsageData = $true  # Set as $true (default) or $false
 #$RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false#Set as $true (default) or $false, this will download library needed for running advanced connectivity policy tests
-$ConnectionAttempts = 3
+$ConnectionAttempts = 5
 $DelayBetweenConnections = 1
 $CollectNetworkTrace = $true  # Set as $true (default) or $false
 #EncryptionProtocol = ''  # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
@@ -247,16 +247,10 @@ $InvalidUsernameError = 'Connection to database failed because the username is i
 $InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
 Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
-
-
-
-$IncorrectServerNameInUsernameError = 'Connection to database failed because the server name in the user name is not valid.'
+$IncorrectServerNameInUsernameError = 'The username should be {your_user}@{servername} format, however, connection to database failed because the servername in the username is not valid and cannot be found in the backend.'
 $IncorrectServerNameInUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
 However, the servername is incorrect here and cannot be found. Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
-        
-
-
-
+  
 $DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
     1.	Server Name is incorrect.
     2.	Incorrect DNS setting. You must set up the Private DNS zone or find another solutions if it is a Flexible server using Private Endpoint in order to correctly resolve the IP."
@@ -312,14 +306,16 @@ We strongly recommend you request assistance from your network administrator, so
     - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview 
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet'
 
+$UnknownError = 'The error message was not recognized by this tool.'
+$UnknownErrorAction = 'Please check on the error message in details and see if any insights. Otherwise, please engage an Azure Support to help you.'
 
-$ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script'
+$ServerNameNotSpecified = 'The parameter Server was not specified, please set the parameters on the script'
 $ServerNameNotSpecifiedAction = 'Server Name with correct format is necessary.  Database name, user and password are optional but desirable.
-You can see more details about how to use this tool at https://github.com/ShawnXxy/MySQL-Connectivity-Checker'
+You can see more details about how to use this tool at https://github.com/marlonj-ms/MySQL-Connectivity-Checker'
 
 #$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
-#Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
-#or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/'
+#Confirm this machine can access https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/
+#or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/'
 
 $DNSResolutionDNSfromHostsFile = 'Azure MySQL does not have a static IP, therefore if it changes, the connection will be lost.
 Additionally, it is expected that the IP will change following a server failover if you are utilizing Flexible Server in High Availability mode.'
@@ -783,7 +779,9 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-            TrackWarningAnonymously ('TestConnectionToDatabase | Error: ' + $erMsg)
+            [void]$summaryLog.AppendLine($UnknownError)
+            [void]$summaryRecommendedAction.AppendLine($UnknownErrorAction)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $UnknownError)
             return $false
         }
         return $false
@@ -1276,7 +1274,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         Write-Host $msg -Foreground Red
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg.Trim())
-        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues.'
+        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues.'
         [void]$summaryRecommendedAction.AppendLine($ActionMsg.Trim())
         TrackWarningAnonymously 'ERROR at RunConnectionToDatabaseTestsAndAdvancedTests'
     }
@@ -1342,8 +1340,8 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
         else {
-            #ShawnXxy/AzMySQL-Connectivity-Checker
-            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            #marlonj-ms/AzMySQL-Connectivity-Checker
+            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
         $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
         [System.Reflection.Assembly]::Load($assembly) | Out-Null
@@ -1508,7 +1506,7 @@ try {
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string' -ForegroundColor Yellow
             Write-Host
-            Write-Host ' If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/MySQL-Connectivity-Checker/issues' -ForegroundColor Green
+            Write-Host ' If you have any feedback/issue/request let us know at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/issues' -ForegroundColor Green
 
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
