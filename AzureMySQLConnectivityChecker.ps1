@@ -247,6 +247,16 @@ $InvalidUsernameError = 'Connection to database failed because the username is i
 $InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
 Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
+
+
+
+$IncorrectServerNameInUsernameError = 'Connection to database failed because the server name in the user name is not valid.'
+$IncorrectServerNameInUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
+However, the servername is incorrect here and cannot be found. Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
+        
+
+
+
 $DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
     1.	Server Name is incorrect.
     2.	Incorrect DNS setting. You must set up the Private DNS zone or find another solutions if it is a Flexible server using Private Endpoint in order to correctly resolve the IP."
@@ -730,6 +740,17 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             [void]$summaryLog.AppendLine($BasicTierError)
             [void]$summaryRecommendedAction.AppendLine($BasicTierErrorAction)
             TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $BasicTierError)
+            return $false
+        } 
+        elseif ($erMsg -Match 'The server name you tried') {
+            if ($erno -ne '0') {
+                Write-Host 'Error Code:' $erno -ForegroundColor Red
+            }
+            Write-Host 'Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($IncorrectServerNameInUsernameError)
+            [void]$summaryRecommendedAction.AppendLine($IncorrectServerNameInUsernameErrorAction)
+            TrackWarningAnonymously ('TestConnectionToDatabase | 9009: ' + $IncorrectServerNameInUsernameError)
             return $false
         } 
         elseif ($erMsg -Match 'Timeout expired.') {
