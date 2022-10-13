@@ -34,7 +34,11 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
      }
 
     $ProgressPreference = "SilentlyContinue";
-    $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
+    if ("AzureKudu" -eq $env:DOTNET_CLI_TELEMETRY_PROFILE) {
+        $scriptFile = '/ReducedMySQLConnectivityChecker.ps1'
+        } else {
+            $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
+    }
     $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
     cls
     Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
