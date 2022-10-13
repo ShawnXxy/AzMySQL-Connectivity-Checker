@@ -166,8 +166,6 @@ If the user has the permissions to create folders, a folder with the resulting l
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
 
-
-
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
