@@ -132,22 +132,23 @@ In order to run this script on Linux you need to
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
-1. Copy the downloaded zip file to the machine you need to run tests from.
+2. Copy the downloaded zip file to the machine you need to run tests from.
 
-1. Extract all the files into a folder.
+3. Extract all the files into a folder.
 
-1. Open Windows PowerShell ISE in Administrator mode.  
+4. Open Windows PowerShell ISE in Administrator mode.  
 For the better results, our recommendation is to use the advanced connectivity tests which demand to start PowerShell in Administrator mode. You can still run the basic tests, in case you decide not to run this way. Please note that script parameters 'RunAdvancedConnectivityPolicyTests' and 'CollectNetworkTrace' will only work if the admin privileges are granted.
 
-1. From PowerShell ISE, open the file named 'RunLocally.ps1' you can find in the previous folder.
+5. From PowerShell ISE, open the file named 'RunLocally.ps1' you can find in the previous folder.
 
-1. Set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
+6. Set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
 
-1. Save the changes.
+7. Save the changes.
 
-1. Click Run Script (play button). You cannot run this partially or copy paste to the command line.
+8. Click Run Script (play button). You cannot run this partially or copy paste to the command line.
+   For Security Consideration, you might not be able to execute the script with error such as ''. To fix this error, you can Bypass ExecutionPolicy by using 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting.
 
-1. The results can be seen in the output window.
+9. The results can be seen in the output window.
 If the user has the permissions to create folders, a folder with the resulting log file will be created.
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
