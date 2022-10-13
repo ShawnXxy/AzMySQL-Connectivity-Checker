@@ -1529,15 +1529,15 @@ try {
 }
 finally {
     if ($canWriteFiles) {
+        Remove-Item ".\MySql.Data.dll" -Force
         Write-Host Log file can be found at (Get-Location).Path
         if ($PSVersionTable.PSVersion.Major -ge 5) {
             $destAllFiles = (Get-Location).Path + '/AllFiles.zip'
             Compress-Archive -Path ((Get-Location).Path + '/*.txt'), ((Get-Location).Path + '/*.cab'), ((Get-Location).Path + '/*.etl') -DestinationPath $destAllFiles -Force
             Write-Host 'A zip file with all the files can be found at' $destAllFiles -ForegroundColor Green
         }
-
         if ($PSVersionTable.Platform -eq 'Unix') {
-            Remove-Item ".\MySql.Data.dll" -Force
+            
             Get-ChildItem
         }
         else {
