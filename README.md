@@ -33,9 +33,9 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 
     $ProgressPreference = "SilentlyContinue";
     $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
-    $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
+    $scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/master'
     cls
-    Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
+    Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
         [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
@@ -44,9 +44,9 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
     catch {
         Write-Host 'ERROR: The script file could not be downloaded or the script execution failed:' -ForegroundColor Red
         $_.Exception
-        Write-Host 'Confirm this machine can access https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or raise your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
+        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or raise your issue at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
     }
     #end
     ```
@@ -86,9 +86,9 @@ In order to run this script on Linux you need to
 
     $ProgressPreference = "SilentlyContinue";
     $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
-    $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
+    $scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/master'
     cls
-    Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
+    Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
@@ -96,9 +96,9 @@ In order to run this script on Linux you need to
     catch {
         Write-Host 'ERROR: The script file could not be downloaded:' -ForegroundColor Red
         $_.Exception
-        Write-Host 'Confirm this machine can access https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or raise your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
+        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or raise your issue at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
     }
     #end
     ```
@@ -124,7 +124,7 @@ In order to run this script on Linux you need to
 **In order to run it from machines without Internet access you need to:**
 
 1. From a machine with Internet access
-    - Navigate to https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker
+    - Navigate to https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
