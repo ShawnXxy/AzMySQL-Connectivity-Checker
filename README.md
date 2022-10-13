@@ -26,32 +26,27 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 
         ## Optional parameters (default values will be used if omitted)
         SendAnonymousUsageData = $true  # Set as $true (default) or $false
-        RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false, this will load the library from Microsoft's GitHub repository needed for running advanced connectivity tests
-        ConnectionAttempts = 1 # Number of connection attempts while running advanced connectivity tests
+        ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
         DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
         CollectNetworkTrace = $true  # Set as $true (default) or $false
-        #EncryptionProtocol = '' # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
-    }
+     }
 
     $ProgressPreference = "SilentlyContinue";
-    if ("AzureKudu" -eq $env:DOTNET_CLI_TELEMETRY_PROFILE) {
-        $scriptFile = '/ReducedMySQLConnectivityChecker.ps1'
-    } else {
-        $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
-    }
-    $scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/master'
+    $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
+    $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
     cls
-    Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
+    Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
         [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
         }
     catch {
-        Write-Host 'ERROR: The script file could not be downloaded:' -ForegroundColor Red
+        Write-Host 'ERROR: The script file could not be downloaded or the script execution failed:' -ForegroundColor Red
         $_.Exception
-        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'Confirm this machine can access https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or raise your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
     }
     #end
     ```
@@ -84,22 +79,16 @@ In order to run this script on Linux you need to
 
         ## Optional parameters (default values will be used if omitted)
         SendAnonymousUsageData = $true  # Set as $true (default) or $false
-        RunAdvancedConnectivityPolicyTests = $true  # Set as $true (default) or $false, this will load the library from Microsoft's GitHub repository needed for running advanced connectivity tests
-        ConnectionAttempts = 1 # Number of connection attempts while running advanced connectivity tests
+        ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
         DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
         CollectNetworkTrace = $true  # Set as $true (default) or $false
-        #EncryptionProtocol = '' # Supported values: 'Tls 1.0', 'Tls 1.1', 'Tls 1.2'; Without this parameter operating system will choose the best protocol to use
-    }
+      }
 
     $ProgressPreference = "SilentlyContinue";
-    if ("AzureKudu" -eq $env:DOTNET_CLI_TELEMETRY_PROFILE) {
-        $scriptFile = '/ReducedMySQLConnectivityChecker.ps1'
-    } else {
-        $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
-    }
-    $scriptUrlBase = 'https://raw.githubusercontent.com/ShawnXxy/AzMySQL-Connectivity-Checker/master'
+    $scriptFile = '/AzureMySQLConnectivityChecker.ps1'
+    $scriptUrlBase = 'https://raw.githubusercontent.com/marlonj-ms/AzMySQL-Connectivity-Checker/master'
     cls
-    Write-Host 'Trying to download the script file from GitHub (https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker), please wait...'
+    Write-Host 'Trying to download the script file from GitHub (https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker), please wait...'
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls11 -bor [Net.SecurityProtocolType]::Tls
         Invoke-Command -ScriptBlock ([Scriptblock]::Create((Invoke-WebRequest ($scriptUrlBase + $scriptFile) -UseBasicParsing -TimeoutSec 60).Content)) -ArgumentList $parameters
@@ -107,8 +96,9 @@ In order to run this script on Linux you need to
     catch {
         Write-Host 'ERROR: The script file could not be downloaded:' -ForegroundColor Red
         $_.Exception
-        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'Confirm this machine can access https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or raise your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
     }
     #end
     ```
@@ -134,26 +124,44 @@ In order to run this script on Linux you need to
 **In order to run it from machines without Internet access you need to:**
 
 1. From a machine with Internet access
-    - Navigate to https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker
+    - Navigate to https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker
     - Click on the green button named 'Clone or download'
     - Select 'Download ZIP'
 
-1. Copy the downloaded zip file to the machine you need to run tests from.
+2. Copy the downloaded zip file to the machine you need to run tests from.
 
-1. Extract all the files into a folder.
+3. Extract all the files into a folder.
 
-1. Open Windows PowerShell ISE in Administrator mode.  
+### Windows
+#### Option 1
+4. Open Windows PowerShell ISE in Administrator mode.  
 For the better results, our recommendation is to use the advanced connectivity tests which demand to start PowerShell in Administrator mode. You can still run the basic tests, in case you decide not to run this way. Please note that script parameters 'RunAdvancedConnectivityPolicyTests' and 'CollectNetworkTrace' will only work if the admin privileges are granted.
 
-1. From PowerShell ISE, open the file named 'RunLocally.ps1' you can find in the previous folder.
+5. From PowerShell ISE, open the file named 'RunLocally.ps1' you can find in the previous folder.
 
-1. Set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
+6. Set the parameters on the script, you need to set server name. Database name, user and password are optional but desirable.
 
-1. Save the changes.
+7. Save the changes.
 
-1. Click Run Script (play button). You cannot run this partially or copy paste to the command line.
+8. Click Run Script (play button). You cannot run this partially or copy paste to the command line.
+   For Security Consideration, you might not be able to execute the script with error such as ''. To fix this error, you can Bypass ExecutionPolicy by using 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting.
 
-1. The results can be seen in the output window.
+9. The results can be seen in the output window.
+
+#### Option 2
+4. Open the file named 'RunLocally.ps1' you can find in the previous folder and update the parameters on the script, you need to set server name. Database name, user and password are optional but desirable. 
+
+5. Execute the Script. (For example, you can use '.\RunLocally.ps1' in the command window.)
+
+6. The results can be seen in the output window.
+
+### Linux
+4. Open the file named 'RunLocally.ps1' you can find in the previous folder and update the parameters on the script, you need to set server name. Database name, user and password are optional but desirable. 
+
+5. Execute the Script. (For example, you can use './RunLocally.ps1' in the command window.)
+
+6. The results can be seen in the output window.
+
 If the user has the permissions to create folders, a folder with the resulting log file will be created.
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.

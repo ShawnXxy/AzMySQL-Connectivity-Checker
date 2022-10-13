@@ -188,8 +188,8 @@ We suggest you:
 $SingleFirewallBlockingError = 'Connection to database failed because of the server-side firewall blocking.'
 $SingleFirewallBlockingErrorAction = 'By default MySQL Single Server will reject all connections only if the Client has been added to the Server Firewall rule.
 Please ensure the client IP is added in the firewall rule in Portal by using (Public IP firewall rule) or (Vnet Firewall rule) or (Allow access to Azure services) option. 
-- For Single Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
-- For Flexible Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
+    - For Single Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-manage-firewall-using-portal
+    - For Flexible Server, please refer to https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
 $NotUsingPasswordError = 'Connection to database failed because the password is missing.'
 $NotUsingPasswordErrorAction = 'It seems that the password is not provided. Please ensure the password is correctly input for a successful authentication.'
@@ -219,10 +219,10 @@ $ConnectionTimeoutErrorAction = 'We suggest you:
 
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailure = 'TCP Connectivity to the Azure Database for MySQL Flexible server Public Endpoint fails because of network blockage or network package loss or no response from the server.'
 $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest checking the following:
-Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
-Please check if the server is in a Stopped Status or not.
-Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
-Or you can check with your network team on the Network setting.
+    - Please check if the Client IP address has been added to the Public Firewall Rule of the server from the portal.
+    - Please check if the server is in a Stopped Status or not.
+    - Please check your Azure VM NSG or Firewall Rule to ensure that the 3306 port or the IP of your Azure MySQL server has been enabled
+    - Or you can check with your network team on the Network setting.
 Check this link for more details on the connection setting for MySQL Flexible server: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
 $AADFailure = 'Connection to database failed because the token used for this connection test is invalid.'
@@ -232,8 +232,8 @@ Support for AAD can be found at:
     - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication for Flexible Server
 We suggest you:
     - Please verify if the AAD account used is correctly configured: 
-        - https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication for Single Server
-        - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad for Flexible Server
+    - https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication for Single Server
+    - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad for Flexible Server
     - Please verify if token is expired and try to regenerate a new token if needed.'
 
 $AADFailureFlex = 'Connection to database failed because the token used for this connection test is invalid.'
@@ -248,12 +248,12 @@ $InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Serv
 Ref: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string'
         
 $DNSResolutionFailure = "Fail to find the IP address of the given server name, this usually happens because of the reasons below:
-1.	Server Name is incorrect.
-2.	Incorrect DNS setting. You must set up the Private DNS zone or find another solutions if it is a Flexible server using Private Endpoint in order to correctly resolve the IP."
+    1.	Server Name is incorrect.
+    2.	Incorrect DNS setting. You must set up the Private DNS zone or find another solutions if it is a Flexible server using Private Endpoint in order to correctly resolve the IP."
 
 $DNSResolutionFailureAction = "We suggest checking on the following:
-1.	Make sure you are connecting to the correct and intended server by comparing with the server name provided by the portal.
-2.	For Flexible server with Private Endpoint, check if you have setup the Private DNS ZONE (https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#using-private-dns-zone) or customer DNS server with DNS forwarder correctly for the DNS setting(https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#integration-with-custom-dns-server)"
+    1.	Make sure you are connecting to the correct and intended server by comparing with the server name provided by the portal.
+    2.	For Flexible server with Private Endpoint, check if you have setup the Private DNS ZONE (https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#using-private-dns-zone) or customer DNS server with DNS forwarder correctly for the DNS setting(https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet#integration-with-custom-dns-server)"
 
 $DNSResolutionGotMultipleAddresses = 'While testing DNS resolution from multiples sources (hosts file/cache/your DNS server/external DNS service) we got multiple addresses.
 To connect to Azure MySQL Single Server, you need to allow network traffic to and from all Gateways for the region.
@@ -286,8 +286,7 @@ $MySQL_Redirect = "Azure MySQL Single Server supports Redirect and Proxy for the
 
     If you are using Proxy, the Redirect Policy related tests would not be a problem.
     If you are using Redirect, failure to reach ports in the range of 11000-11999 is usually a client-side networking issue (like DNS issue or a port being blocked) that you will need to pursue with your local network administrator.
-    Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection. 
-   "
+    Please check more about redirection connection policies at https://docs.microsoft.com/en-us/azure/mysql/howto-redirection."
 
 $AzureMySQL_VNetTestError = 'TCP connection to the MySQL server Private Endpoint on the 3306 failed, which means firewall blocking or remote server is not responding'
 $AzureMySQL_VNetTestErrorAction = 'When connecting to the MySQL by Private Endpoint, please takes these things into consideration for the client network environment.
@@ -300,7 +299,7 @@ We strongly recommend you request assistance from your network administrator, so
     - The Network Security Groups (NSG) on the managed instance subnet allows access on port 3306.
     - If you are unable to connect from an Azure hosted client (like an Azure virtual machine), check if you have a Network Security Group set on the client subnet that might be blocking *outbound* access on port 3306.
     - Any networking device used (like firewalls, NVAs) do not block the traffic mentioned above.
-- If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview 
+    - If you are using peering via VPN gateway, ensure the two virtual networks are properly peered, see more at https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview 
 Learn more about how to connect your application to Azure MySQL VNet Integrated Flexible Server at https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet'
 
 
@@ -516,20 +515,6 @@ function ValidateDNS([String] $Server) {
         Write-Host " Error at Resolve the IP for the server during advanced DNS check." -Foreground Red
         Write-Host ' The Error Message is: ' $_.Exception.Message -ForegroundColor Red
         Write-Host
-    
-        #Write-Host $_.Exception.Message -Foreground Red
-        #       $msg=$_.Exception.Message      
-        #      [void]$summaryLog.AppendLine()
-        #      [void]$summaryLog.AppendLine($msg.Trim())
-
-        #      [void]$summaryRecommendedAction.AppendLine('We suggest you:')s
-        #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server name is correct or not.')
-        #     [void]$summaryRecommendedAction.AppendLine('    - Please verify if the server is a VNET integrated Flexible Server. The IP resolution will fail if you are connecting from a public or unlinked VNET!')
-
-        #     $action_msg='erver etc. to resolve the server to the correct IP'
-        #     [void]$summaryRecommendedAction.AppendLine()
-        #    [void]$summaryRecommendedAction.AppendLine($action_msg)
-
         TrackWarningAnonymously 'AdvanceDNSResolutionCheckFailed'
     }
 }
@@ -606,12 +591,6 @@ function IsMySQLSinglePublic([String] $resolvedAddress) {
         return $false
     }
 }    
-
-
-
-#function IsSinglePrivateLink([String] $Server) {
-#    [bool]((((Resolve-DnsName $Server) | Where-Object { ($_.Name -Match ".privatelink.") } | Measure-Object).Count) -gt #0)
-#}
 
 
 function SanitizeString([String] $param) {
@@ -1048,7 +1027,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 [void]$summaryLog.AppendLine($msg.Trim())
             }
 
-            Write-Host ' The server' $Server 'is running on ' -ForegroundColor White -NoNewline
+            Write-Host ' The server' $Server 'is running in ' -ForegroundColor White -NoNewline
             Write-Host $gateway.Region -ForegroundColor Yellow
 
             Write-Host
@@ -1276,6 +1255,8 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         Write-Host $msg -Foreground Red
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg.Trim())
+        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues.'
+        [void]$summaryRecommendedAction.AppendLine($ActionMsg.Trim())
         TrackWarningAnonymously 'ERROR at RunConnectionToDatabaseTestsAndAdvancedTests'
     }
 }
@@ -1340,8 +1321,8 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
         else {
-            #ShawnXxy/AzMySQL-Connectivity-Checker
-            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            #marlonj-ms/AzMySQL-Connectivity-Checker
+            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
         $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
         [System.Reflection.Assembly]::Load($assembly) | Out-Null
@@ -1468,7 +1449,7 @@ try {
         Write-Host
         Write-Host 'All the tests are now completed!' -ForegroundColor Green
         Write-Host
-        [void]$summaryRecommendedAction.AppendLine(' Addtional Reference for the sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues')
+        [void]$summaryRecommendedAction.AppendLine
 
     }
     catch {
@@ -1497,7 +1478,8 @@ try {
             Write-Host 'We could not detect any issue while using MySQL driver, we suggest you:' -ForegroundColor Green
             Write-Host ' - Verify if you are using an updated version of the client driver or tool.' -ForegroundColor Yellow
             Write-Host ' - Verify if you can connect using a different client driver or tool.' -ForegroundColor Yellow
-
+            Write-Host ' - More sample error message to the MySQL database for other drivers can be found: https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-troubleshoot-connectivity-issues' -ForegroundColor Yellow
+            
             if (IsMySQLFlexPublic $resolvedAddress ) {
                 Write-Host ' See required versions of drivers and tools at https://docs.microsoft.com/en-us/azure/mysql/concepts-compatibility' -ForegroundColor Yellow
             }
@@ -1505,7 +1487,7 @@ try {
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string' -ForegroundColor Yellow
             Write-Host
-            Write-Host 'If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues' -ForegroundColor Green
+            Write-Host ' If you have any feedback/issue/request let us know at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/issues' -ForegroundColor Green
 
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
@@ -1517,6 +1499,7 @@ try {
 
         if ($canWriteFiles) {
             try {
+                
                 Stop-Transcript | Out-Null
             }
             catch [System.InvalidOperationException] { }
@@ -1535,12 +1518,13 @@ finally {
         }
 
         if ($PSVersionTable.Platform -eq 'Unix') {
+            Remove-Item ".\MySql.Data.dll" -Force
             Get-ChildItem
         }
         else {
             Invoke-Item (Get-Location).Path
         }
 
-        Remove-Item ".\MySql.Data.dll" -Force
+       
     }
 }
