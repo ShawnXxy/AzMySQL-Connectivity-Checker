@@ -1,5 +1,13 @@
 ﻿#Run locally parameters
+Try{
 [System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+}
+try {
+    Write-Host MySQL Connector has not been installed on this Machine. Will use local one instead.
+}
+catch {
+    {1:<#Do this if a terminating exception happens#>}
+}
 $LocalPath = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
 $Path = Join-Path $LocalPath 'AzureMySQLConnectivityChecker.ps1'
 
