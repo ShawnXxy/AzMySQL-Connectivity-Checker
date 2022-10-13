@@ -315,7 +315,7 @@ Learn more about how to connect your application to Azure MySQL VNet Integrated 
 
 $ServerNameNotSpecified = 'The parameter $Server was not specified, please set the parameters on the script'
 $ServerNameNotSpecifiedAction = 'Server Name with correct format is necessary.  Database name, user and password are optional but desirable.
-You can see more details about how to use this tool at https://github.com/marlonj-ms/MySQL-Connectivity-Checker'
+You can see more details about how to use this tool at https://github.com/ShawnXxy/MySQL-Connectivity-Checker'
 
 #$CannotDownloadAdvancedScript = 'Advanced connectivity policy tests script could not be downloaded!
 #Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/
@@ -1276,7 +1276,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
         Write-Host $msg -Foreground Red
         [void]$summaryLog.AppendLine()
         [void]$summaryLog.AppendLine($msg.Trim())
-        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/issues.'
+        $ActionMsg='Database Connection Test failed due to an exception, please report your issue at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues.'
         [void]$summaryRecommendedAction.AppendLine($ActionMsg.Trim())
         TrackWarningAnonymously 'ERROR at RunConnectionToDatabaseTestsAndAdvancedTests'
     }
@@ -1342,8 +1342,8 @@ try {
             Copy-Item -Path $($LocalPath + '/netstandard2.0/MySql.Data.dll') -Destination $MySQLDllPath
         }
         else {
-            #marlonj-ms/AzMySQL-Connectivity-Checker
-            Invoke-WebRequest -Uri $('https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
+            #ShawnXxy/AzMySQL-Connectivity-Checker
+            Invoke-WebRequest -Uri $('https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/raw/' + $RepositoryBranch + '/netstandard2.0/MySql.Data.dll') -OutFile $MySQLDllPath -UseBasicParsing
         }
         $assembly = [System.IO.File]::ReadAllBytes($MySQLDllPath)
         [System.Reflection.Assembly]::Load($assembly) | Out-Null
@@ -1508,7 +1508,7 @@ try {
             Write-Host ' - Verify your connection string and credentials.' -ForegroundColor Yellow
             Write-Host ' See more at https://docs.microsoft.com/en-us/azure/mysql/single-server/how-to-connection-string' -ForegroundColor Yellow
             Write-Host
-            Write-Host ' If you have any feedback/issue/request let us know at https://github.com/marlonj-ms/MySQL-Connectivity-Checker/issues' -ForegroundColor Green
+            Write-Host ' If you have any feedback/issue/request let us know at https://github.com/ShawnXxy/MySQL-Connectivity-Checker/issues' -ForegroundColor Green
 
             TrackWarningAnonymously 'NoRecommendedActions2'
         }
