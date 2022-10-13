@@ -136,6 +136,8 @@ In order to run this script on Linux you need to
 
 3. Extract all the files into a folder.
 
+### Windows
+#### Option 1
 4. Open Windows PowerShell ISE in Administrator mode.  
 For the better results, our recommendation is to use the advanced connectivity tests which demand to start PowerShell in Administrator mode. You can still run the basic tests, in case you decide not to run this way. Please note that script parameters 'RunAdvancedConnectivityPolicyTests' and 'CollectNetworkTrace' will only work if the admin privileges are granted.
 
@@ -149,6 +151,21 @@ For the better results, our recommendation is to use the advanced connectivity t
    For Security Consideration, you might not be able to execute the script with error such as ''. To fix this error, you can Bypass ExecutionPolicy by using 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting.
 
 9. The results can be seen in the output window.
+
+#### Option 2
+4. Open the file named 'RunLocally.ps1' you can find in the previous folder and update the parameters on the script, you need to set server name. Database name, user and password are optional but desirable. 
+
+5. Execute the Script. (For example, you can use '.\RunLocally.ps1' in the command window.)
+
+6. The results can be seen in the output window.
+
+### Linux
+4. Open the file named 'RunLocally.ps1' you can find in the previous folder and update the parameters on the script, you need to set server name. Database name, user and password are optional but desirable. 
+
+5. Execute the Script. (For example, you can use './RunLocally.ps1' in the command window.)
+
+6. The results can be seen in the output window.
+
 If the user has the permissions to create folders, a folder with the resulting log file will be created.
 When running on Windows, the folder will be opened automatically after the script completes.
 A zip file with all the log files (AllFiles.zip) will be created.
