@@ -18,7 +18,7 @@ $parameters = @{
     Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 
     ## Optional parameters (default values will be used if ommited)
-    SendAnonymousUsageData             = $true  # Set as $true (default) or $false
+    SendAnonymousUsageData             = $true  # Set as $true (default) or $false； Send Anonymous Usage Data.
     CollectNetworkTrace                = $true  # Set as $true (default) or $false
     ConnectionAttempts                 = 3 # Number of connection attempts while running advanced connectivity tests
     DelayBetweenConnections            = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
