@@ -6,6 +6,8 @@ This PowerShell script will test the database connection as well as check the ne
 - Supports Single, Flexible (please provide FQDN).
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
+< For Security Consideration, you might not be able to execute the Powershell Script with error such as 'xx.ps1 cannot be loaded because running scripts is disabled on this system'. To fix this error, you can change ExecutionPolicy by using 'Set-ExecutionPolicy Unrestricted', or 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting. >
+
 **In order to run it you need to:**
 1. Open Windows PowerShell ISE (in Administrator mode if possible)
 In order for a network trace to be collected along with the tests ('CollectNetworkTrace' parameter) on the Windows Machine, PowerShell must be run as an administrator.
@@ -26,8 +28,8 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
 
         ## Optional parameters (default values will be used if omitted)
         SendAnonymousUsageData = $true  # Set as $true (default) or $false. Send Anonymous Usage Data.
-        ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
-        DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
+        ConnectionAttempts = 5 # Number of connection attempts 
+        DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts 
         CollectNetworkTrace = $true  # Set as $true (default) or $false
      }
 
@@ -79,8 +81,8 @@ In order to run this script on Linux you need to
 
         ## Optional parameters (default values will be used if omitted)
         SendAnonymousUsageData = $true  # Set as $true (default) or $false;  Send Anonymous Usage Data.
-        ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
-        DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
+        ConnectionAttempts = 5 # Number of connection attempts 
+        DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts
         CollectNetworkTrace = $true  # Set as $true (default) or $false
       }
 
@@ -135,7 +137,7 @@ In order to run this script on Linux you need to
 ### Windows
 #### Option 1
 4. Open Windows PowerShell ISE in Administrator mode.  
-For the better results, our recommendation is to use the advanced connectivity tests which demand to start PowerShell in Administrator mode. You can still run the basic tests, in case you decide not to run this way. Please note that script parameters 'RunAdvancedConnectivityPolicyTests' and 'CollectNetworkTrace' will only work if the admin privileges are granted.
+For the better results, our recommendation is to start PowerShell in Administrator mode. Please note that script parameters 'CollectNetworkTrace' will only work if the admin privileges are granted.
 
 5. From PowerShell ISE, open the file named 'RunLocally.ps1' you can find in the previous folder.
 
@@ -144,7 +146,6 @@ For the better results, our recommendation is to use the advanced connectivity t
 7. Save the changes.
 
 8. Click Run Script (play button). You cannot run this partially or copy paste to the command line.
-   For Security Consideration, you might not be able to execute the script with error such as ''. To fix this error, you can Bypass ExecutionPolicy by using 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting.
 
 9. The results can be seen in the output window.
 
