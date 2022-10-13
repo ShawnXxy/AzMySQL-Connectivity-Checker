@@ -99,11 +99,13 @@ if (!$(Get-Command 'netsh' -errorAction SilentlyContinue) -and $CollectNetworkTr
 
 # PowerShell Container Image Support End
 
+# MySQL Flexible Server with public endpoint will not be resolved to a GW or private link cname
+# So if a FQDN provided cannot be resolved to a GW or private link, it is considered as a Flexible Server
 function IsMySQLFlexPublic([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
-
+    $gateway = $MySQLSterlingGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
+    
     # return [bool]((!$gateway) -and (!$hasPrivateLink))
     if (!$gateway -and (!$hasPrivateLink)) {
         return $true
@@ -113,19 +115,56 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     }
 }
 
+# If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
+#   -- a Single Server configured with privatelink and making connections from a client in the same vnet
+#   -- a Flexible Server configured with VNet Intergrated and making connections from a client in the same vnet
 function IsMySQLVNet([String] $resolvedAddress) {
     
     $hasPrivateLink = HasPrivateLink $Server
-    $gateway = $MySQLSterlingGateways| Where-Object { $_.Gateways -eq $resolvedAddress }
-
+    $gateway = $MySQLSterlingGateways | Where-Object { $_.Gateways -eq $resolvedAddress }
+    
     # return [bool]((!$gateway) -and ($hasPrivateLink))
+    # IP is not gateway IP and contains private key words.
     if (!$gateway -and $hasPrivateLink) {
+        #No Public IP with Private alias.
         return $true
     }
     else {
         return $false
     }
 }
+
+
+function IsMySQLSingleVNet([String] $resolvedAddress) {
+    
+    $hasPrivateLink = HasPrivateLink $Server
+    $single = IsMySingleServer  $Server
+    if ( $hasPrivateLink -and $single) 
+    { return $true }
+    else {
+        return $false
+    }
+
+}
+
+function IsMySQLFlexVnet([String] $resolvedAddress) {
+    $hasPrivateLink = HasPrivateLink $Server
+    $single = IsMySingleServer  $Server
+    if ( $hasPrivateLink -and !$single) 
+    { return $true }
+    else { return $false }
+}
+
+function IsMySQLSinglePublic([String] $resolvedAddress) {
+    $hasPrivateLink = HasPrivateLink $Server
+    $single = IsMySingleServer  $Server
+    if ( !$hasPrivateLink -and $single) 
+    { return $true }
+    else {
+        return $false
+    }
+}    
+
 
 function SendAnonymousUsageData {
     try {
@@ -144,7 +183,7 @@ function SendAnonymousUsageData {
         $body = New-Object PSObject `
         | Add-Member -PassThru NoteProperty name 'Microsoft.ApplicationInsights.Event' `
         | Add-Member -PassThru NoteProperty time $([System.dateTime]::UtcNow.ToString('o')) `
-        | Add-Member -PassThru NoteProperty iKey "c65afb3b-f428-49d2-a3de-cf2ecc803cc3" `
+        | Add-Member -PassThru NoteProperty iKey "ded5f360-7d7c-4534-a220-5289030a83c1" `
         | Add-Member -PassThru NoteProperty tags (New-Object PSObject | Add-Member -PassThru NoteProperty 'ai.user.id' $StringBuilderHash.ToString()) `
         | Add-Member -PassThru NoteProperty data (New-Object PSObject `
             | Add-Member -PassThru NoteProperty baseType 'EventData' `
@@ -238,16 +277,24 @@ try {
     
     if (!$Server -or $Server.Length -eq 0) {
         Write-Output 'The $Server parameter is empty'
-        Write-Output 'Please see more details about how to use this tool at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker'
+        Write-Output 'Please see more details about how to use this tool at https://github.com/marlonj-ms/AzMySQL-Connectivity-Checker'
         Write-Output ''
         throw
     }
     
     if (!$Server.EndsWith('.mysql.database.azure.com') `
             -and !$Server.EndsWith('.privatelink.mysql.database.azure.com') `
+            -and !$Server.EndsWith('.private.mysql.database.azure.com') `
             -and !$Server.EndsWith('.mysql.database.chinacloudapi.cn') `
-            -and !$Server.EndsWith('.privatelink.mysql.database.chinacloudapi.com')) {
+            -and !$Server.EndsWith('.privatelink.mysql.database.chinacloudapi.com') `
+            -and !$Server.EndsWith('.private.mysql.database.chinacloudapi.com')) {
         $Server = $Server + '.mysql.database.azure.com'
+    } else {
+        $msg = 'You seem to be using a custom domain, if not, please provide the FQDN like servername.mysql.database.azure.com'
+        Write-Host $msg -Foreground Yellow
+        [void]$summaryLog.AppendLine($msg)
+        [void]$summaryRecommendedAction.AppendLine($msg)
+        TrackWarningAnonymously 'CustomDomain'
     }
 
     if ($SendAnonymousUsageData) {

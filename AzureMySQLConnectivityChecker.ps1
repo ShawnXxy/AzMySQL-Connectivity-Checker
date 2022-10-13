@@ -1401,10 +1401,18 @@ try {
         }
 
         if (!$Server.EndsWith('.mysql.database.azure.com') `
-                -and !$Server.EndsWith('.mysql.database.chinacloudapi.cn') `
-                -and !$Server.EndsWith('.mysql.database.chinacloudapi.com') `
-                -and !$Server.EndsWith('.privatelink.mysql.database.azure.com')) {
+            -and !$Server.EndsWith('.privatelink.mysql.database.azure.com') `
+            -and !$Server.EndsWith('.private.mysql.database.azure.com') `
+            -and !$Server.EndsWith('.mysql.database.chinacloudapi.cn') `
+            -and !$Server.EndsWith('.privatelink.mysql.database.chinacloudapi.com') `
+            -and !$Server.EndsWith('.private.mysql.database.chinacloudapi.com')) {
             $Server = $Server + '.mysql.database.azure.com'
+        } else {
+            $msg = 'You seem to be using a custom domain, if not, please provide the FQDN like servername.mysql.database.azure.com'
+            Write-Host $msg -Foreground Yellow
+            [void]$summaryLog.AppendLine($msg)
+            [void]$summaryRecommendedAction.AppendLine($msg)
+            TrackWarningAnonymously 'CustomDomain'
         }
 
         #Print local network configuration
