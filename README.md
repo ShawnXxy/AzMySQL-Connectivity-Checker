@@ -25,7 +25,7 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
         Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 
         ## Optional parameters (default values will be used if omitted)
-        SendAnonymousUsageData = $true  # Set as $true (default) or $false
+        SendAnonymousUsageData = $true  # Set as $true (default) or $false. Send Anonymous Usage Data.
         ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
         DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
         CollectNetworkTrace = $true  # Set as $true (default) or $false
@@ -78,7 +78,7 @@ In order to run this script on Linux you need to
         Password = ''  # Set the login password you wish to use, 'AzMySQLConnCheckerPassword' will be used by default if nothing is set
 
         ## Optional parameters (default values will be used if omitted)
-        SendAnonymousUsageData = $true  # Set as $true (default) or $false
+        SendAnonymousUsageData = $true  # Set as $true (default) or $false;  Send Anonymous Usage Data.
         ConnectionAttempts = 5 # Number of connection attempts while running advanced connectivity tests
         DelayBetweenConnections = 1 # Number of seconds to wait between connection attempts while running advanced connectivity tests
         CollectNetworkTrace = $true  # Set as $true (default) or $false
