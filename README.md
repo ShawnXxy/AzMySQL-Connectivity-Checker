@@ -6,7 +6,14 @@ This PowerShell script will test the database connection as well as check the ne
 - Supports Single, Flexible (please provide FQDN).
 - Supports Public Cloud (*.msyql.database.azure.com), Azure China (*.mysql.database.chinacloudapi.cn)  
 
-< For Security Consideration, you might not be able to execute the Powershell Script with error such as 'xx.ps1 cannot be loaded because running scripts is disabled on this system'. To fix this error, you can change ExecutionPolicy by using 'Set-ExecutionPolicy Unrestricted', or 'Set-ExecutionPolicy Bypass' or unblock the script using 'Unblock-File script_name.ps1'. Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting. >
+> For Security Consideration, you might not be able to execute the Powershell Script with error such as 'xx.ps1 cannot be loaded because running scripts is disabled on this system'. <br>
+> 
+> To fix this error, you can change *ExecutionPolicy* by 
+> * using *'Set-ExecutionPolicy Unrestricted'*, 
+> * or *'Set-ExecutionPolicy Bypass'* 
+> * or unblock the script using *'Unblock-File script_name.ps1'*.
+> 
+> Refer to https://social.technet.microsoft.com/wiki/contents/articles/38496.unblock-downloaded-powershell-scripts.aspx for more details on the security setting. 
 
 **In order to run it you need to:**
 1. Open Windows PowerShell ISE (in Administrator mode if possible)
