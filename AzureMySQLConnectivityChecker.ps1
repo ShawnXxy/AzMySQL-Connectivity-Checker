@@ -772,7 +772,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
             return $false
         }
-        elseif ($erMsg -Match 'validating access token' -or $erMsg -Match 'cannot be loaded: plugin not enabled') {
+        elseif ($erMsg -Match 'validating access token') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
