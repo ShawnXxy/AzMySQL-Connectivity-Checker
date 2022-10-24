@@ -225,23 +225,35 @@ $AzureMySQLFlex_PublicEndPoint_TCPConnectionTestFailureAction = 'We suggest chec
     - Or you can check with your network team on the Network setting.
 Check this link for more details on the connection setting for MySQL Flexible server: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-public'
 
-$AADFailure = 'Connection to database failed because the token used for this connection test is invalid.'
-$AADFailureAction = 'It seems that you are connecting via a AAD account, but the token is invalid.
+$AADFailure_token = 'Connection to database failed because the token used for this connection test is invalid.'
+$AADFailureAction_token = 'It seems that you are connecting via a AAD account, but the token is invalid.
 Support for AAD can be found at: 
     - https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication for Single Server
     - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication for Flexible Server
 We suggest you:
     - Please verify if the AAD account used is correctly configured: 
-    - https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication for Single Server
-    - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad for Flexible Server
-    - Please verify if token is expired and try to regenerate a new token if needed.'
+        - https://learn.microsoft.com/en-us/azure/mysql/single-server/how-to-configure-sign-in-azure-ad-authentication for Single Server
+        - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad for Flexible Server
+    - Please verify if token is expired and try to regenerate a new token if needed.
+    - Please verify if the connection string used to pass token is correct. '
 
-$AADFailureFlex = 'Connection to database failed because the token used for this connection test is invalid.'
-$AADFailureActionFlex = 'It seems that you are connecting via a AAD account, but the token is invalid.
-Support for AAD can be found at: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication
+$AADFailure_plugin = 'Connection to database failed because cleartext plugin is not enabled.'
+$AADFailureAction_plugin = 'It seems that you are connecting via a AAD account, but the cleartext plugin is not found.
+Support for AAD can be found at: 
+    - https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication for Single Server
+    - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication for Flexible Server
 We suggest you:
-    - Please verify if the AAD account used is correctly configured: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad
-    - Please verify if token is expired and try to regenerate a new token if needed.'
+    - Please verify if the plugin --enable-cleartext-plugin is used and specified in the connection string. '
+
+
+$AADFailure_mid = 'Connection to database failed because the managed identity used is refused.'
+$AADFailureAction_mid = 'It seems that you are connecting via a AAD account, but the managed identity has no privileges to complete the request .
+Support for AAD can be found at: 
+    - https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication for Single Server
+    - https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication for Flexible Server
+We suggest you:
+    - Please verify if the managed identity used in this connecting request is correct. This error normally occurred when you are using someone elses managed identity. 
+    - Please verify if the managed identity used has the correct privileges to complete the request. Permission details could be referred at https://learn.microsoft.com/en-us/azure/mysql/flexible-server/concepts-azure-ad-authentication#permissions'
 
 $InvalidUsernameError = 'Connection to database failed because the username is incorrect.'
 $InvalidUsernameErrorAction = 'It seems that you are connecting to a Single Server and the format of username used for a Single Server is incorrect. The username should be {your_user}@{servername} format.
@@ -760,18 +772,41 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
             return $false
         }
-        elseif ($erMsg -Match 'access token' -or $erMsg -Match 'cannot be loaded: plugin not enabled') {
+        elseif ($erMsg -Match 'validating access token') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
             }
             Write-Host 'Error Message:' 
             Write-Host ' ' $erMsg #-ForegroundColor Yellow
-            [void]$summaryLog.AppendLine($AADFailure)
-            [void]$summaryRecommendedAction.AppendLine($AADFailureAction)
-            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure)
+            [void]$summaryLog.AppendLine($AADFailure_token)
+            [void]$summaryRecommendedAction.AppendLine($AADFailureAction_token)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure_token)
             return $false
-            
+        } 
+        elseif ($erMsg -Match 'cannot be loaded: plugin not enabled') {
+            if ($erno -ne '0') {
+                Write-Host 'Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
+            }
+            Write-Host 'Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($AADFailure_plugin)
+            [void]$summaryRecommendedAction.AppendLine($AADFailureAction_plugin)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure_plugin)
+            return $false
+        } 
+        elseif ($erMsg -Match 'Azure AD endpoint' -or $erMsg -Match 'managed identity') {
+            if ($erno -ne '0') {
+                Write-Host 'Error Code' -ForegroundColor Red
+                Write-Host ' ' $erno -ForegroundColor Red
+            }
+            Write-Host 'Error Message:' 
+            Write-Host ' ' $erMsg #-ForegroundColor Yellow
+            [void]$summaryLog.AppendLine($AADFailure_mid)
+            [void]$summaryRecommendedAction.AppendLine($AADFailureAction_mid)
+            TrackWarningAnonymously ('TestConnectionToDatabase | AAD: ' + $AADFailure_mid)
+            return $false
         } 
         else {
             if ($erno -ne '0') {
