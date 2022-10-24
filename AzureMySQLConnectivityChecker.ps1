@@ -772,7 +772,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
             TrackWarningAnonymously ('TestConnectionToDatabase | Timeout: ' + $ConnectionTimeoutError)
             return $false
         }
-        elseif ($erMsg -Match 'validating access token' -or $erMsg -Match 'cannot be loaded: plugin not enabled') {
+        elseif ($erMsg -Match 'validating access token') {
             if ($erno -ne '0') {
                 Write-Host 'Error Code' -ForegroundColor Red
                 Write-Host ' ' $erno -ForegroundColor Red
@@ -1442,13 +1442,14 @@ try {
             -and !$Server.EndsWith('.privatelink.mysql.database.chinacloudapi.com') `
             -and !$Server.EndsWith('.private.mysql.database.chinacloudapi.com')) {
             $Server = $Server + '.mysql.database.azure.com'
-        } else {
-            $msg = 'You seem to be using a custom domain, if not, please provide the FQDN like servername.mysql.database.azure.com'
-            Write-Host $msg -Foreground Yellow
-            [void]$summaryLog.AppendLine($msg)
-            [void]$summaryRecommendedAction.AppendLine($msg)
-            TrackWarningAnonymously 'CustomDomain'
-        }
+        } 
+        # else {
+        #     $msg = 'You seem to be using a custom domain, if not, please provide the FQDN like servername.mysql.database.azure.com'
+        #     Write-Host $msg -Foreground Yellow
+        #     [void]$summaryLog.AppendLine($msg)
+        #     [void]$summaryRecommendedAction.AppendLine($msg)
+        #     TrackWarningAnonymously 'CustomDomain'
+        # }
 
         #Print local network configuration
         PrintLocalNetworkConfiguration
