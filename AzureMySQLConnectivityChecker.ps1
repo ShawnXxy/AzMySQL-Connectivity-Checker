@@ -1416,7 +1416,7 @@ try {
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host '    Delay Between TCP Connections: ' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host '    Delay Between TCP Connections:  ' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
