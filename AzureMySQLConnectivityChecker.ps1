@@ -410,12 +410,12 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
         else {
             if ($dnsResult -and $dnsResult.IPAddress -and !([string]::IsNullOrEmpty($dnsResult.IPAddress))) {
                 $dnsResultIpAddress = $dnsResult.IPAddress
-                $msg = ' Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
+                $msg = '    Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
                 Write-Host $msg
                 [void]$summaryLog.AppendLine($msg.Trim())
             }
             else {
-                Write-Host ' Could not find DNS record in' $dnsSource
+                Write-Host '    Could not find DNS record in' $dnsSource
             }
         }
         return $dnsResultIpAddress
@@ -643,8 +643,8 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
-        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
+        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) -ForegroundColor Green
+        [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) 
         [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
         $MySQLConnection.Close()
 
@@ -839,7 +839,7 @@ function PrintLocalNetworkConfiguration() {
 
     #Todo:add route table and IP config information
 
-    Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$networkInterfaces.DomainName -ForegroundColor Green
+    Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$computerProperties.DomainName -ForegroundColor Green
 
     foreach ($networkInterface in $networkInterfaces) {
         if ($networkInterface.NetworkInterfaceType -eq 'Loopback') {
@@ -854,16 +854,16 @@ function PrintLocalNetworkConfiguration() {
         # [void]$summaryLog.AppendLine(' Interface type: ' + $networkInterface.NetworkInterfaceType)
         # [void]$summaryLog.AppendLine(' Operational status: ' +  $networkInterface.OperationalStatus)
 
-        Write-Host ' Interface name: ' $networkInterface.Name
-        Write-Host ' Interface description: ' $networkInterface.Description
-        Write-Host ' Interface type: ' $networkInterface.NetworkInterfaceType
-        Write-Host ' Operational status: ' $networkInterface.OperationalStatus
+        Write-Host '    Interface name: ' $networkInterface.Name
+        Write-Host '    Interface description: ' $networkInterface.Description
+        Write-Host '    Interface type: ' $networkInterface.NetworkInterfaceType
+        Write-Host '    Operational status: ' $networkInterface.OperationalStatus
 
-        Write-Host ' Unicast address list:'
-        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
+        Write-Host '    Unicast address list:'
+        Write-Host $('      ' + [String]::Join([Environment]::NewLine + '       ', [System.Linq.Enumerable]::Select($properties.UnicastAddresses, [Func[System.Net.NetworkInformation.UnicastIPAddressInformation, IPAddress]] { $args[0].Address })))
 
-        Write-Host ' DNS server address list:'
-        Write-Host $('  ' + [String]::Join([Environment]::NewLine + '  ', $properties.DnsAddresses))
+        Write-Host '    DNS server address list:'
+        Write-Host $('      ' + [String]::Join([Environment]::NewLine + '       ', $properties.DnsAddresses))
 
         Write-Host
     }
@@ -882,7 +882,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            $msg = '   TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
+            $msg = '    TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
             Write-Host $msg -ForegroundColor Green
             [void]$summaryLog.AppendLine($msg.Trim())
             PrintAverageConnectionTime $resolvedAddress 3306
@@ -937,7 +937,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
         }
        
         Write-Host
-        Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Green
+        Write-Host 'TCP Connectivity test start (please wait):' -ForegroundColor Yellow
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
@@ -982,7 +982,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
 }
 
 function PrintAverageConnectionTime($addressList, $port) {
-    Write-Host ' Printing average TCP connection time for 5 connection attempts:'
+    Write-Host '    Printing average TCP connection time for 5 connection attempts:'
     $stopwatch = [StopWatch]::new()
 
     foreach ($ipAddress in $addressList) {
@@ -1017,10 +1017,10 @@ function PrintAverageConnectionTime($addressList, $port) {
             $ilb = ' [ilb]'
         }
 
-        Write-Host '   Server IP Address:'$ipAddress'  Port:'$port
-        Write-Host '   Successful connections:'$numSuccessful
-        Write-Host '   Failed connections:'$numFailed
-        Write-Host '   Average response time:'$avg' ms '  #$ilb
+        Write-Host '        Server IP Address:'$ipAddress'  Port:'$port
+        Write-Host '        Successful connections:'$numSuccessful
+        Write-Host '        Failed connections:'$numFailed
+        Write-Host '        Average response time:'$avg' ms '  #$ilb
     }
 }
 
@@ -1223,9 +1223,9 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
 
     Write-Host
     [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Green
+    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Yellow
     Try {
-        Write-Host 'Checking if' $Database 'exists:' -ForegroundColor White
+        Write-Host '    Checking if' $Database 'exists:' -ForegroundColor Yellow
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString = 'server=' + $Server + ';port=' + $gatewayPort + ';uid=' + $User + ';pwd=' + $Password + ';database=' + $Database }
         $MySQLConnection.Open()
 
@@ -1264,7 +1264,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
-                    $msg = $Database + ' was found in MySQL'
+                    $msg = '    ' + $Database + ' was found in MySQL'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg.Trim())
 
@@ -1397,26 +1397,26 @@ try {
         Write-Host '*********************************************' -ForegroundColor Green
         Write-Host
         Write-Host 'MySQL Connection Information:' -ForegroundColor Yellow
-        Write-Host ' Server:    ' $Server -ForegroundColor Yellow
+        Write-Host '    Server:    ' $Server -ForegroundColor Yellow
         if ($null -ne $User) {
-            Write-Host ' User:      ' $User -ForegroundColor Yellow
+            Write-Host '    User:      ' $User -ForegroundColor Yellow
         }
         if ($null -ne $Database) {
-            Write-Host ' Database:  ' $Database -ForegroundColor Yellow
+            Write-Host '    Database:  ' $Database -ForegroundColor Yellow
         }
 
         Write-Host
         Write-Host 'Other Script Setting Information:' -ForegroundColor Yellow
         if ($null -ne $CollectNetworkTrace) {
-            Write-Host ' CollectNetworkTrace:           ' $CollectNetworkTrace -ForegroundColor Yellow
+            Write-Host '    CollectNetworkTrace:           ' $CollectNetworkTrace -ForegroundColor Yellow
             TrackWarningAnonymously ('CollectNetworkTrace:' + $CollectNetworkTrace)
         }
         if ($null -ne $ConnectionAttempts) {
-            Write-Host ' TCP Connection Attempts:    	' $ConnectionAttempts -ForegroundColor Yellow
+            Write-Host '    TCP Connection Attempts:    	' $ConnectionAttempts -ForegroundColor Yellow
             TrackWarningAnonymously ('ConnectionAttempts:' + $ConnectionAttempts)
         }
         if ($null -ne $DelayBetweenConnections) {
-            Write-Host ' Delay Between TCP Connections: ' $DelayBetweenConnections -ForegroundColor Yellow
+            Write-Host '    Delay Between TCP Connections: ' $DelayBetweenConnections -ForegroundColor Yellow
             TrackWarningAnonymously ('DelayBetweenConnections:' + $DelayBetweenConnections)
         }
         
