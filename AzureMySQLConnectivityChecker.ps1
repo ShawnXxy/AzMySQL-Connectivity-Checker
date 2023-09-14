@@ -643,7 +643,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("  The connection to server {0} and database {1} succeeded.", $Server, $Database)) -ForegroundColor Green
+        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) -ForegroundColor Green
         [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) 
         [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
         $MySQLConnection.Close()
@@ -882,7 +882,7 @@ function RunMySQLFlexPublicConnectivityTests($resolvedAddress) {
         $testResult = Test-NetConnection $resolvedAddress -Port 3306 -WarningAction SilentlyContinue
 
         if ($testResult.TcpTestSucceeded) {
-            $msg = '    TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
+            $msg = 'TCP Connectivity test to ' + $Server + ' ' + $resolvedAddress + ':3306  is successful, which typically means there is no network issue.'
             Write-Host $msg -ForegroundColor Green
             [void]$summaryLog.AppendLine($msg.Trim())
             PrintAverageConnectionTime $resolvedAddress 3306
@@ -1264,7 +1264,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
 
                 if ($databaseFound -eq $true) {
-                    $msg = '    ' + $Database + ' was found in MySQL'
+                    $msg = '        ' + $Database + ' was found in MySQL'
                     Write-Host $msg -Foreground Green
                     [void]$summaryLog.AppendLine($msg.Trim())
 
