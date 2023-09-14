@@ -410,12 +410,12 @@ function PrintDNSResults($dnsResult, [string] $dnsSource, $errorVariable, $Serve
         else {
             if ($dnsResult -and $dnsResult.IPAddress -and !([string]::IsNullOrEmpty($dnsResult.IPAddress))) {
                 $dnsResultIpAddress = $dnsResult.IPAddress
-                $msg = '    Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
+                $msg = 'Found DNS record in ' + $dnsSource + ' (IP Address:' + $dnsResult.IPAddress + ')'
                 Write-Host $msg
                 [void]$summaryLog.AppendLine($msg.Trim())
             }
             else {
-                Write-Host '    Could not find DNS record in' $dnsSource
+                Write-Host 'Could not find DNS record in' $dnsSource
             }
         }
         return $dnsResultIpAddress
@@ -643,7 +643,7 @@ function TestConnectionToDatabase($Server, $gatewayPort, $Database, $User, $Pass
         #Write-Host $MySQLConnection
         $MySQLConnection.Open()
     
-        Write-Host ([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) -ForegroundColor Green
+        Write-Host ([string]::Format("  The connection to server {0} and database {1} succeeded.", $Server, $Database)) -ForegroundColor Green
         [void]$summaryLog.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database)) 
         [void]$summaryRecommendedAction.AppendLine([string]::Format("The connection to server {0} and database {1} succeeded.", $Server, $Database))
         $MySQLConnection.Close()
@@ -1223,7 +1223,7 @@ function LookupDatabaseMySQL($Server, $dbPort, $Database, $User, $Password) {
 
     Write-Host
     [void]$summaryLog.AppendLine()
-    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait).", $Database)) -ForegroundColor Yellow
+    Write-Host ([string]::Format("Testing connecting to database - {0} (please wait):", $Database)) -ForegroundColor Yellow
     Try {
         Write-Host '    Checking if' $Database 'exists:' -ForegroundColor Yellow
         $MySQLConnection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString = 'server=' + $Server + ';port=' + $gatewayPort + ';uid=' + $User + ';pwd=' + $Password + ';database=' + $Database }
@@ -1256,9 +1256,9 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault -Match 'True') {
-                $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
+                $msg = '    Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
-                Write-Host "Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
+                Write-Host "    Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
                 [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
