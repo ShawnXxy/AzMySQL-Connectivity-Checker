@@ -561,7 +561,7 @@ function IsMySQLFlexPublic([String] $resolvedAddress) {
     }
 }
 
-# If a Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
+# If an Azure MySQL cannot be resolved into a GW address but has privatelink FQDN, it could be 
 #   -- a Single Server configured with privatelink and making connections from a client in the same vnet
 #   -- a Flexible Server configured with VNet Intergrated and making connections from a client in the same vnet
 function IsMySQLVNet([String] $resolvedAddress) {
@@ -926,12 +926,12 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
     Try {
 
         if (IsMySQLSingleVNet($resolvedAddress)) {
-            Write-Host 'Detected as a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
+            Write-Host 'Detected as an Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQLSingleServerVNetConnectivityTest' 
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link on the 3306 port.' -ForegroundColor Green
         }
         else {
-            Write-Host 'Detected as a Azure MySQL Flexible Server using Private Endpoint or a Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
+            Write-Host 'Detected as an Azure MySQL Flexible Server using private connections or an Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQLVNetConnectivityTests' 
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link or Endpoint on the 3306 port.' -ForegroundColor Green
         }
@@ -982,7 +982,7 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
 }
 
 function PrintAverageConnectionTime($addressList, $port) {
-    Write-Host '    Printing average TCP connection time for 5 connection attempts:'
+    Write-Host 'Printing average TCP connection time for 5 connection attempts:'
     $stopwatch = [StopWatch]::new()
 
     foreach ($ipAddress in $addressList) {
@@ -1017,10 +1017,10 @@ function PrintAverageConnectionTime($addressList, $port) {
             $ilb = ' [ilb]'
         }
 
-        Write-Host '        Server IP Address:'$ipAddress'  Port:'$port
-        Write-Host '        Successful connections:'$numSuccessful
-        Write-Host '        Failed connections:'$numFailed
-        Write-Host '        Average response time:'$avg' ms '  #$ilb
+        Write-Host '    Server IP Address:'$ipAddress'  Port:'$port
+        Write-Host '    Successful connections:'$numSuccessful
+        Write-Host '    Failed connections:'$numFailed
+        Write-Host '    Average response time:'$avg' ms '  #$ilb
     }
 }
 
@@ -1039,7 +1039,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             # Write-Host ' This connection seems to be using Private Connection, skipping Gateway connectivity tests' -ForegroundColor Yellow
             # TrackWarningAnonymously 'MySQL | PrivateLink'
             else {
-                $msg = ' WARNING: ' + $resolvedAddress + ' is not a valid Gateway IP Address.'
+                $msg = 'WARNING: ' + $resolvedAddress + ' is not a valid Gateway IP Address.'
                 Write-Host $msg -Foreground Red
                 [void]$summaryLog.AppendLine()
                 [void]$summaryLog.AppendLine($msg.Trim())
@@ -1058,7 +1058,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
         } 
         else {
             if ((IsMySQLSingleVNet $resolvedAddress)) { 
-                $msg = 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve it the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
+                $msg = 'Detected as a MySQL Single Server with Private Endpoint. However, we cannot resolve the Private IP but only the Public IP(Gateway IP) from this machine. Connectivity test will be performed on the Public IP'
                 TrackWarningAnonymously 'MySQLSingleVNetGatewayTest' 
                 Write-Host $msg -ForegroundColor Yellow
                 [void]$summaryLog.AppendLine($msg.Trim())
@@ -1105,11 +1105,11 @@ function RunMySQLConnectivityTests($resolvedAddress) {
             }
             else {
 
-                $msg = '   TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
+                $msg = 'TCP Connectivity to test' + $Server + ' ' + $resolvedAddress + ':3306 fails, either the network has been blocked somewhere or the remote MySQL server has not responded.'
                 Write-Host $msg -ForegroundColor Red
                 [void]$summaryLog.AppendLine($msg.Trim())
                 [void]$summaryLog.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailure)
-                $msg = ' Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
+                $msg = 'Please make sure you fix the connectivity from this machine to ' + $gatewayAddress + ':3306 to avoid issues!'
                 Write-Host $msg -Foreground Red
                 [void]$summaryRecommendedAction.AppendLine($msg.Trim())
                 [void]$summaryRecommendedAction.AppendLine($AzureMySQLSingle_Gateway_TCPConnectionTestFailureAction)
@@ -1119,7 +1119,7 @@ function RunMySQLConnectivityTests($resolvedAddress) {
                 Write-Host 'IP routes for interface:' $testResult.InterfaceAlias
                 Get-NetRoute -InterfaceAlias $testResult.InterfaceAlias -ErrorAction SilentlyContinue -ErrorVariable ProcessError
                 If ($ProcessError) {
-                    Write-Host '  Could not to get IP routes for this interface'
+                    Write-Host 'Could not to get IP routes for this interface'
                 }
                 Write-Host
                 if ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows) {
@@ -1256,9 +1256,9 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
 
         if ($customDatabaseNameWasSet) {
             if ($canConnectToDefault -Match 'True') {
-                $msg = '    Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
+                $msg = 'Default database information_schema can be sucessfully reached. The connectiviy to this MySQL should be good.'
                 Write-Host $msg -Foreground Green
-                Write-Host "    Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
+                Write-Host "Can connect to default database inforamtion_schema? " + $canConnectToDefault -Foreground Yellow
                 [void]$summaryRecommendedAction.AppendLine($msg.Trim())
 
                 $databaseFound = LookupDatabaseMySQL $Server $dbPort $Database $User $Password
@@ -1450,11 +1450,11 @@ try {
         #Collect Network logs during connection Test
         if ($canWriteFiles -and $CollectNetworkTrace) {
             if (-not ($PSVersionTable.PSVersion.Major -le 5 -or $IsWindows -or $(Get-Command 'netsh' -errorAction SilentlyContinue)) ) {
-                Write-Host ' Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
+                Write-Host 'Only Windows Environment presently supports Collect Network Trace.' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             elseif (!$CustomerRunningInElevatedMode) {
-                Write-Host ' Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Red
+                Write-Host 'Powershell must be run as an administrator in order to collect network trace!' -ForegroundColor Red
                 $netWorkTraceStarted = $false
             }
             else {
