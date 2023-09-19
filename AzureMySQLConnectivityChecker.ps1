@@ -932,6 +932,11 @@ function RunMySQLVNetConnectivityTests($resolvedAddress) {
             TrackWarningAnonymously 'MySQLSingleServerVNetConnectivityTest' 
             Write-Host 'Verify Network Connectivity to'  $Server ' with Private Link on the 3306 port.' -ForegroundColor Green
         }
+        elseif (IsMySQLFlexVnet($resolvedAddress)) {
+            Write-Host 'Detected as an Azure MySQL Flexible Server using Private VNet' -ForegroundColor Yellow
+            TrackWarningAnonymously 'MySQLFlexibleServerVNetConnectivityTest' 
+            Write-Host 'Verify Network Connectivity to'  $Server ' with Private VNet on the 3306 port.' -ForegroundColor Green
+        }
         else {
             Write-Host 'Detected as an Azure MySQL Flexible Server using private connections or an Azure MySQL Single Server using Private Link' -ForegroundColor Yellow
             TrackWarningAnonymously 'MySQLVNetConnectivityTests' 
