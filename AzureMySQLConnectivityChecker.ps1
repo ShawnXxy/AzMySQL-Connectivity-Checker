@@ -173,9 +173,11 @@ $AnonymousRunId = ([guid]::NewGuid()).Guid
 
 ### Error Messages
 
-$MySQL_AccessDeniedError = 'Connection to database server failed because the username or password is wrong.'
+$MySQL_AccessDeniedError = 'Connection to database failed because the username or password is wrong.'
 $MySQL_AccessDeniedErrorAction = 'Please double confirm if you are using a correct username or password.
-Please first configure the AAD configuration in Portal if you are trying to establish connections using an AAD account. Reference: https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication'
+Please first configure the AAD configuration if you are trying to establish connections using an AAD account. 
+    - For Single Server, reference: https://learn.microsoft.com/en-us/azure/mysql/single-server/concepts-azure-ad-authentication
+    - For Flexible Server, reference: https://learn.microsoft.com/en-us/azure/mysql/flexible-server/how-to-azure-ad'
 
 $ServerStoppedError = 'Connection to database failed because the server is not in a ready state.'
 $ServerStoppedErrorAction = 'The FQDN can be resolved successfully, however, the MySQL server cannot be reached.
@@ -839,7 +841,7 @@ function PrintLocalNetworkConfiguration() {
 
     #Todo:add route table and IP config information
 
-    Write-Host 'Interface information for client machine'$computerProperties.HostName'.'$computerProperties.DomainName -ForegroundColor Green
+    Write-Host 'Interface information for client machine'$computerProperties.HostName'under domain'$computerProperties.DomainName -ForegroundColor Green
 
     foreach ($networkInterface in $networkInterfaces) {
         if ($networkInterface.NetworkInterfaceType -eq 'Loopback') {
@@ -1295,6 +1297,7 @@ function RunConnectionToDatabaseTestsAndAdvancedTests($Server, $dbPort, $Databas
                 [void]$summaryRecommendedAction.AppendLine()
 
                 $msg = 'Start to check connecitivity to custom database: ' + $Database 
+                Write-Host 
                 Write-Host $msg -Foreground Yellow
 
                 if ($customDatabaseNameWasSet) {
