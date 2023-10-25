@@ -53,8 +53,8 @@ In order for a network trace to be collected along with the tests ('CollectNetwo
     catch {
         Write-Host 'ERROR: The script file could not be downloaded or the script execution failed:' -ForegroundColor Red
         $_.Exception
-        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
-        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/MySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'Confirm this machine can access https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
+        Write-Host 'or use a machine with Internet access to see how to run this from machines without Internet. See how at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/' -ForegroundColor Yellow
         Write-Host 'or raise your issue at https://github.com/ShawnXxy/AzMySQL-Connectivity-Checker/issues if the script execution fails..' -ForegroundColor Yellow
     }
     #end
